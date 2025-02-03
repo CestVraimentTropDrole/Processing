@@ -1,88 +1,63 @@
-class Player {
-  int x, y, speed, velY;
-  color couleur;
-  float bulletX, bulletY;
-  boolean bulletActive, isJump;
-  char moveLeft, moveRight;
+Game game;
 
-  int direction;
-  int score;
+boolean leftPressed1 = false;
+boolean rightPressed1 = false;
+boolean leftPressed2 = false;
+boolean rightPressed2 = false;
+
+void setup()
+{
+    fullScreen();
+    game = new Game();
+}
+
+void draw()
+{
+    game.update();
+    game.draw();
   
-  Player(int startX, int startY, color c, int dir) {
+    // Joueur 1
+    if (leftPressed1 && !rightPressed1) 
+      game.player1.move(-1);
+    if (rightPressed1 && !leftPressed1) 
+      game.player1.move(1);
+  
+    // Joueur 2
+    if (leftPressed2 && !rightPressed2) 
+      game.player2.move(-1);
+    if (rightPressed2 && !leftPressed2) 
+      game.player2.move(1);
+}
 
-    x = startX;
-    y = startY;
-    velY = 0;
-    couleur = c;
-    speed = 5;
-    bulletActive = false;
+void keyPressed()
+{
+    if (!game.gameOver) {
+      if (key == 'q') leftPressed1 = true;
+      if (key == 'd') rightPressed1 = true;
 
-    isJump = false;
-    direction = dir;
-    score = 0;
+      if (keyCode == LEFT) leftPressed2 = true;
+      if (keyCode == RIGHT) rightPressed2 = true;
 
-  }
 
-  void move(int leftKey, int rightKey) {
-    if (keyPressed) {
-      if (keyCode == leftKey && x > 5 && !(x - speed < player2.x + 50 && x > player2.x )) { 
-        x -= speed * direction;  // Déplacer à gauche
-      } 
-      else if (keyCode == rightKey && x + 50 < width-5 && !(x + speed + 50 > player1.x && x < player1.x)) { 
-        x += speed * direction;  // Déplacer à droite
-      }
+      if (key == 'z') game.player1.jump();
+      if (key == 's') game.player1.crouch(true);
+      if (key == ' ') game.player1.shoot();
+
+      if (keyCode == UP) game.player2.jump();
+      if (keyCode == DOWN) game.player2.crouch(true);
+      if (key == '0') game.player2.shoot();
     }
-    
-    if (y < height-150) {
-      velY += 1;
-      isJump = true;
-    } else {
-      y = height-150;
-      isJump = false;
-    }
-    y += velY;
-  }
+    if (key == 'r' && game.gameOver) game.reset();
+}
 
+void keyReleased()
+{
+    if (key == 'q') leftPressed1 = false;
+    if (key == 'd') rightPressed1 = false;
 
+    if (keyCode == LEFT) leftPressed2 = false;
+    if (keyCode == RIGHT) rightPressed2 = false;
 
-  void shoot() {
-    if (!bulletActive) {
-      bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
-      bulletY = y + 50;
-      bulletActive = true;
-    }
-  }
-
-  void updateBullet() {
-    if (bulletActive) {
-      bulletX += bulletSpeed * direction;  // Déplacement de la balle
-
-      // Si la balle sort de l'écran, réinitialiser
-      if (bulletX < 0 || bulletX > width) {
-        resetBullet();
-      }
-    }
-  }
-
-  void resetBullet() {
-    bulletActive = false;
-  }
-
-  void display() {
-    //fill(couleur);
-    //rect(x, y, 50, 150); // Affichage du joueur
-    image(image,x,y);
-  }
-
-  void displayBullet() {
-    if (bulletActive) {
-      fill(255, 255, 0); // Couleur jaune pour les balles
-      ellipse(bulletX, bulletY, 10, 10); // Affichage de la balle
-    }
-  }
-
-  void reset() {
-    x = (couleur == color(0, 255, 0)) ? 10 : 735; // Réinitialiser la position du joueur
-    y = 440;
-  }
+    if (key == 's') game.player1.crouch(false);
+    if (keyCode == DOWN) game.player2.crouch(false);
 }
