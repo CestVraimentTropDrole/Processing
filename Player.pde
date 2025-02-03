@@ -63,8 +63,9 @@ class Player {
   }
 
   void display() {
-    fill(couleur);
-    rect(x, y, 50, 150); // Affichage du joueur
+    //fill(couleur);
+    //rect(x, y, 50, 150); // Affichage du joueur
+    image(image,x,y);
   }
 
   void displayBullet() {

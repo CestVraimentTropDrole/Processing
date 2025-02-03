@@ -1,20 +1,28 @@
+PImage image;
+
 int bulletSpeed = 10; // Vitesse des balles
 boolean gameOver = false; // Si le jeu est terminé
 
-Player player1;
-Player player2;
+Player player1 = new Player(10, 440, color(0, 255, 0), 1);  // Joueur 1 (vert)
+Player player2 = new Player(735, 440, color(255, 0, 0), -1); // Joueur 2 (rouge)
 
 void setup() {
   size(800, 600); // Taille de la fenêtre
   background(200); // Fond de la fenêtre
-  player1 = new Player(10, 440, color(0, 255, 0), 1);  // Joueur 1 (vert)
-  player2 = new Player(735, 440, color(255, 0, 0), -1); // Joueur 2 (rouge)
+  image = loadImage("/assets/sprites/player.png");
+  image.resize(50,150);
 }
 
 void draw() {
   background(200); // Effacer l'écran à chaque frame
 
   if (!gameOver) {
+    // Affichage des textes
+    textSize(32);
+    fill(0);
+    text("Joueur 1 : " + player1.score, 50, 50);
+    text("Joueur 2 : " + player2.score, width - 50, 50);
+    
     // Déplacer et afficher les joueurs
     player1.move(LEFT, RIGHT);  
     player1.display();  
