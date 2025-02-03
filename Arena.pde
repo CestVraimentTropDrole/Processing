@@ -45,19 +45,10 @@ class Arena {
     
     boolean checkPlayerDeath(Player player)
     {
-        float edgeBuffer = 100;
-        
-        // Élargir la zone de mort si le pourcentage est élevé
-        if (player.damagePercent >= 80) {
-            edgeBuffer = 50;  // Zone de mort plus proche
-        }
-        if (player.damagePercent >= 100) {
-            edgeBuffer = 0;   // Mort dès qu'on sort de l'écran
-        }
-        
-        return player.pos.y > deathY || 
-               player.pos.x < -edgeBuffer || 
-               player.pos.x > width + edgeBuffer;
+        // Mort si très loin de l'écran
+        return player.pos.y > deathY + 300 || 
+               player.pos.x < -500 || 
+               player.pos.x > width + 500;
     }
     
     void handlePlayerCollision(Player player)
@@ -78,11 +69,5 @@ class Arena {
         if (!onAnyPlatform && !player.isJumping) {
             player.isJumping = true;
         }
-        
-        // Collision avec les bords de l'écran
-        if (player.pos.x < 0) 
-            player.pos.x = 0;
-        if (player.pos.x + player.sprite.width > width) 
-            player.pos.x = width - player.sprite.width;
     }
 }

@@ -3,7 +3,7 @@ class Player {
     PImage sprite;
     color col;
     int direction, score;
-    float speed = 5;
+    float speed = 15;
     float normalHeight, crouchHeight;
     boolean isJumping, isCrouching;
     Bullet bullet;
@@ -16,6 +16,7 @@ class Player {
     float knockbackMultiplier = 0.1;
     boolean isInKnockback = false;
     int knockbackTimer = 0;
+    boolean isDeathKnockback = false;
   
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
@@ -33,7 +34,8 @@ class Player {
     {
         if (isInKnockback) {
             knockbackTimer--;
-            if (knockbackTimer <= 0) {
+            // Si c'est un knockback de mort, pas de contrôle possible
+            if (!isDeathKnockback && knockbackTimer <= 0) {
                 isInKnockback = false;
                 vel.x = 0;  // Arrête net le knockback horizontal
                 if (vel.y < 0) {  // Si le joueur monte encore
@@ -41,7 +43,6 @@ class Player {
                 }
             }
         }
-        
         applyPhysics();
         bullet.update();
     }
@@ -62,25 +63,29 @@ class Player {
         float baseHorizontalKnockback = 5;
         float baseVerticalKnockback = 1;
         
-        // Knockback exponentiel après 80%
-        float multiplier;
-        if (damagePercent >= 80) {
-            multiplier = 1 + pow((damagePercent - 80) * 0.1, 2);  // Augmentation exponentielle
-        } else {
-            multiplier = 1 + (damagePercent * knockbackMultiplier);
-        }
-        
-        // Knockback très fort après 100%
+        // Knockback spécial de mort au-dessus de 100%
         if (damagePercent >= 100) {
-            baseHorizontalKnockback = 15;  // Triple la base
-            baseVerticalKnockback = 3;
+            baseHorizontalKnockback = 16;
+            baseVerticalKnockback = 4;
+            knockbackTimer = 30;
+            isDeathKnockback = true;  // Active le mode "mort"
+        } else {
+            float multiplier = 1 + (damagePercent * knockbackMultiplier);
+            knockbackTimer = 15;
+            isDeathKnockback = false;
         }
         
-        vel.x = baseHorizontalKnockback * multiplier * direction;
-        vel.y = -baseVerticalKnockback * multiplier;
-        
+        if (isDeathKnockback) {
+            // Trajectoire plus dramatique pour la mort
+            vel.x = baseHorizontalKnockback * direction;
+            vel.y = -baseVerticalKnockback;
+        } else {
+            // Knockback normal
+            float multiplier = 1 + (damagePercent * knockbackMultiplier);
+            vel.x = baseHorizontalKnockback * multiplier * direction;
+            vel.y = -baseVerticalKnockback * multiplier;
+        }
         isInKnockback = true;
-        knockbackTimer = 15;
         isJumping = true;
     }
     
@@ -152,6 +157,7 @@ class Player {
         damagePercent = 0;
         isInKnockback = false;
         knockbackTimer = 0;
+        isDeathKnockback = false;
     }
     
     void crouch(boolean crouching)
