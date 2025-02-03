@@ -10,7 +10,7 @@ void setup() {
   player1 = new Player(width/4, height, color(0, 255, 0), 1);
   player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1);
   background(200);
-  image = loadImage("/assets/sprites/player.png");
+  image = loadImage("assets/sprites/player.png");
   image.resize(50,150);
 }
 
