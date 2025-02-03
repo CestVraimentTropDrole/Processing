@@ -17,6 +17,8 @@ class Player {
     boolean isInKnockback = false;
     int knockbackTimer = 0;
     boolean isDeathKnockback = false;
+    boolean isCrouchingState;
+    Arena arena;
   
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
@@ -140,7 +142,44 @@ class Player {
         popMatrix();
         bullet.draw();
     }
-    
+        
+    void crouch(boolean crouching)
+    {
+        if (isCrouchingState == crouching) {
+            return;
+        }
+
+        isCrouchingState = crouching;
+        isCrouching = crouching;
+        
+        if (crouching) {
+            sprite.resize(sprite.width, int(crouchHeight));
+            pos.y += (normalHeight - crouchHeight);
+        } else {
+            // Vérifie s'il y a de la place pour se relever
+            float newY = pos.y - (normalHeight - crouchHeight);
+            boolean canStand = true;
+            
+            // Vérifie les collisions avec les plateformes
+            for (Platform p : arena.platforms) {
+                if (newY < p.y + p.h && newY + normalHeight > p.y &&
+                    pos.x + sprite.width > p.x && pos.x < p.x + p.w) {
+                    canStand = false;
+                    break;
+                }
+            }
+            
+            if (canStand) {
+                sprite.resize(sprite.width, int(normalHeight));
+                pos.y = newY;
+            } else {
+                // Si on ne peut pas se relever, on reste accroupi
+                isCrouchingState = true;
+                isCrouching = true;
+            }
+        }
+    }
+
     void reset()
     {
         // Ca reset tout ses stats en gros
@@ -158,19 +197,6 @@ class Player {
         isInKnockback = false;
         knockbackTimer = 0;
         isDeathKnockback = false;
-    }
-    
-    void crouch(boolean crouching)
-    {
-        isCrouching = crouching;
-        if (crouching) {
-            // Réduire la taille du sprite et ajuster la position du joueur pour faire genre il sneak
-            sprite.resize(sprite.width, int(crouchHeight));
-            pos.y += normalHeight - crouchHeight;
-        } else {
-            // Et inversement pour le faire revenir a la normale
-            sprite.resize(sprite.width, int(normalHeight));
-            pos.y -= normalHeight - crouchHeight;
-        }
+        isCrouchingState = false;
     }
 } 

@@ -19,6 +19,8 @@ class Game {
         arena = new Arena(width, height); // Utilise la taille de l'écran littéralement donc faites gaffe !
         player1 = new Player(width/4, height - 200, player1Sprite, bulletSprite, color(0, 255, 0), 1);
         player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSprite, color(255, 0, 0), -1);
+        player1.arena = arena;
+        player2.arena = arena;
         gameOver = false;
     }
 
