@@ -64,6 +64,17 @@ void keyPressed() {
     player2.shoot();
   }
 
+<<<<<<< Updated upstream
+=======
+  
+  //Si le joueur appuie sur la touche de saut
+  if (key == 'w' && !gameOver && !player1.isJump) {
+    println("Peut sauter");
+    player1.velY = -15;
+    player1.isJump = true;
+  }
+
+>>>>>>> Stashed changes
   // Relancer le jeu si gameOver est vrai
   if (key == 'r' && gameOver) {
     gameOver = false; // Réinitialiser l'état du jeu
@@ -83,7 +94,12 @@ void checkCollisions() {
     score1++;  // Joueur 1 gagne un point
     player2.reset();  // Réinitialiser le joueur 2
     player1.resetBullet();  // Réinitialiser la balle du joueur 1
+<<<<<<< Updated upstream
     if (score1 >= 2) { // Si joueur 1 a 2 points, game over
+=======
+
+    if (player1.score >= 2) {
+>>>>>>> Stashed changes
       gameOver = true;
     }
   }
@@ -93,7 +109,12 @@ void checkCollisions() {
     score2++;  // Joueur 2 gagne un point
     player1.reset();  // Réinitialiser le joueur 1
     player2.resetBullet();  // Réinitialiser la balle du joueur 2
+<<<<<<< Updated upstream
     if (score2 >= 2) { // Si joueur 2 a 2 points, game over
+=======
+
+    if (player2.score >= 2) {
+>>>>>>> Stashed changes
       gameOver = true;
     }
   }
