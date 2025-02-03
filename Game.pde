@@ -95,11 +95,16 @@ class Game {
     void checkCollisions()
     {
         // Collisions balles/joueurs
-        if (player1.bullet.isActive() && player1.bullet.hits(player2)) {
+        int hitIndex1 = player1.bullet.checkHit(player2);
+        if (hitIndex1 >= 0) {
             handleHit(player1, player2);
+            player1.bullet.removeBullet(hitIndex1);
         }
-        if (player2.bullet.isActive() && player2.bullet.hits(player1)) {
+        
+        int hitIndex2 = player2.bullet.checkHit(player1);
+        if (hitIndex2 >= 0) {
             handleHit(player2, player1);
+            player2.bullet.removeBullet(hitIndex2);
         }
         
         // Check si tu tombes
@@ -114,7 +119,7 @@ class Game {
         player1.handleArenaCollision(arena);
         player2.handleArenaCollision(arena);
     }
-  
+
     void handleHit(Player attacker, Player target)
     {
         float baseDamage = random(1, 4);  // Dégâts aléatoires entre 1% et 4%
@@ -124,7 +129,6 @@ class Game {
         int knockbackDirection = (attacker.pos.x < target.pos.x) ? 1 : -1;
         
         target.takeDamage(baseDamage, baseKnockback, knockbackDirection);
-        attacker.bullet.reset();
     }
   
     void reset()
