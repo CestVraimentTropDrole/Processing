@@ -10,8 +10,8 @@ Player player2;
 void setup() {
   size(800, 600); // Taille de la fenêtre
   background(200); // Fond de la fenêtre
-  player1 = new Player(10, 440, color(0, 255, 0));  // Joueur 1 (vert)
-  player2 = new Player(735, 440, color(255, 0, 0)); // Joueur 2 (rouge)
+  player2 = new Player(10, 440, color(0, 255, 0));  // Joueur 1 (vert)
+  player1 = new Player(735, 440, color(255, 0, 0)); // Joueur 2 (rouge)
 }
 
 void draw() {
