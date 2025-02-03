@@ -14,14 +14,17 @@ void setup() {
   player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1); // Joueur 2 (rouge)
   
   background(200); // Fond de la fenêtre
+
   image = loadImage("/assets/sprites/player.png");
   image.resize(50,150);
+
 }
 
 void draw() {
-  background(200); // Effacer l'écran à chaque frame
+  background(200);
 
   if (!gameOver) {
+
     // Affichage des textes
     textSize(32);
     fill(0);
@@ -54,23 +57,38 @@ void draw() {
     } else {
       text("Match nul!", width / 2 - 100, height / 2);
     }
+    textSize(16);
+    text("Appuyez sur 'R' pour relancer", width / 2 - 75, height / 2 + 50);
   }
 }
 
 void keyPressed() {
-  // Si la touche espace est pressée, tirer pour les joueurs
+  // Touche de tir
   if (key == ' ' && !gameOver) {
     player1.shoot();
   }
   if (key == 'a' && !gameOver) {
     player2.shoot();
   }
+
   
   //Si le joueur appuie sur la touche de saut
   if (key == 'w' && !gameOver && !player1.isJump) {
     println("Peut sauter");
     player1.velY = -15;
     player1.isJump = true;
+
+
+  // Relancer le jeu si gameOver est vrai
+  if (key == 'r' && gameOver) {
+    gameOver = false; // Réinitialiser l'état du jeu
+    player1.reset();  // Réinitialiser le joueur 1
+    player2.reset();  // Réinitialiser le joueur 2
+    player1.resetBullet();  // Réinitialiser la balle du joueur 1
+    player2.resetBullet();  // Réinitialiser la balle du joueur 2
+    score1 = 0; // Réinitialiser les scores
+    score2 = 0; // Réinitialiser les scores
+
   }
 }
 
@@ -81,7 +99,9 @@ void checkCollisions() {
     player1.score++;  // Joueur 1 gagne un point
     player2.reset();  // Réinitialiser le joueur 2
     player1.resetBullet();  // Réinitialiser la balle du joueur 1
-    if (player1.score >= 1) {
+
+    if (player1.score >= 2) {
+
       gameOver = true;
     }
   }
@@ -91,7 +111,9 @@ void checkCollisions() {
     player2.score++;  // Joueur 2 gagne un point
     player1.reset();  // Réinitialiser le joueur 1
     player2.resetBullet();  // Réinitialiser la balle du joueur 2
-    if (player2.score >= 1) {
+
+    if (player2.score >= 2) {
+
       gameOver = true;
     }
   }
