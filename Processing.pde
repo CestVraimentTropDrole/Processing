@@ -1,88 +1,95 @@
-class Player {
-  int x, y, speed, velY;
-  color couleur;
-  float bulletX, bulletY;
-  boolean bulletActive, isJump;
-  char moveLeft, moveRight;
+PImage image;
+int bulletSpeed = 20;
+boolean gameOver = false;
 
-  int direction;
-  int score;
-  
-  Player(int startX, int startY, color c, int dir) {
+Player player1;
+Player player2;
 
-    x = startX;
-    y = startY;
-    velY = 0;
-    couleur = c;
-    speed = 5;
-    bulletActive = false;
+void setup() {
+  fullScreen();
+  player1 = new Player(width/4, height, color(0, 255, 0), 1);
+  player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1);
+  background(200);
+  image = loadImage("assets/sprites/player.png");
+  image.resize(50,150);
+}
 
-    isJump = false;
-    direction = dir;
-    score = 0;
+void draw() {
+  background(200);
 
-  }
-
-  void move(int leftKey, int rightKey) {
-    if (keyPressed) {
-      if (keyCode == leftKey && x > 5 && !(x - speed < player2.x + 50 && x > player2.x )) { 
-        x -= speed * direction;  // Déplacer à gauche
-      } 
-      else if (keyCode == rightKey && x + 50 < width-5 && !(x + speed + 50 > player1.x && x < player1.x)) { 
-        x += speed * direction;  // Déplacer à droite
-      }
-    }
+  if (!gameOver) {
+    textSize(32);
+    fill(0);
+    text("Joueur 1 : " + player1.score, 50, 50);
+    text("Joueur 2 : " + player2.score, width - 50, 50);
     
-    if (y < height-150) {
-      velY += 1;
-      isJump = true;
+    player1.move(LEFT, RIGHT);  
+    player1.display();  
+    player2.move(UP, DOWN);  
+    player2.display();  
+
+    player1.updateBullet();
+    player2.updateBullet();
+    player1.displayBullet();
+    player2.displayBullet();
+
+    checkCollisions();
+  } else {
+    textSize(32);
+    fill(0);
+    if (player1.score > player2.score) {
+      text("Joueur 1 gagne!", width / 2 - 150, height / 2);
+    } else if (player1.score < player2.score) {
+      text("Joueur 2 gagne!", width / 2 - 150, height / 2);
     } else {
-      y = height-150;
-      isJump = false;
+      text("Match nul!", width / 2 - 100, height / 2);
     }
-    y += velY;
+    textSize(16);
+    text("Appuyez sur 'R' pour relancer", width / 2 - 75, height / 2 + 50);
+  }
+}
+
+void keyPressed() {
+  if (key == ' ' && !gameOver) {
+    player1.shoot();
+  }
+  if (key == 'a' && !gameOver) {
+    player2.shoot();
   }
 
-
-
-  void shoot() {
-    if (!bulletActive) {
-      bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
-      bulletY = y + 50;
-      bulletActive = true;
-    }
+  if (key == 'w' && !gameOver && !player1.isJump) {
+    println("Peut sauter");
+    player1.velY = -15;
+    player1.isJump = true;
   }
 
-  void updateBullet() {
-    if (bulletActive) {
-      bulletX += bulletSpeed * direction;  // Déplacement de la balle
-
-      // Si la balle sort de l'écran, réinitialiser
-      if (bulletX < 0 || bulletX > width) {
-        resetBullet();
-      }
-    }
+  if (key == 'r' && gameOver) {
+    gameOver = false;
+    player1.reset();
+    player2.reset();
+    player1.resetBullet();
+    player2.resetBullet();
+    player1.score = 0;
+    player2.score = 0;
   }
+}
 
-  void resetBullet() {
-    bulletActive = false;
-  }
-
-  void display() {
-    //fill(couleur);
-    //rect(x, y, 50, 150); // Affichage du joueur
-    image(image,x,y);
-  }
-
-  void displayBullet() {
-    if (bulletActive) {
-      fill(255, 255, 0); // Couleur jaune pour les balles
-      ellipse(bulletX, bulletY, 10, 10); // Affichage de la balle
+void checkCollisions() {
+  if (player1.bulletActive && dist(player1.bulletX, player1.bulletY, player2.x, player2.y) < 10) {
+    player1.score++;
+    player2.reset();
+    player1.resetBullet();
+    if (player1.score >= 2) {
+      gameOver = true;
     }
   }
 
-  void reset() {
-    x = (couleur == color(0, 255, 0)) ? 10 : 735; // Réinitialiser la position du joueur
-    y = 440;
+  if (player2.bulletActive && dist(player2.bulletX, player2.bulletY, player1.x, player1.y) < 60) {
+    player2.score++;
+    player1.reset();
+    player2.resetBullet();
+    if (player2.score >= 2) {
+      gameOver = true;
+    }
   }
 }
