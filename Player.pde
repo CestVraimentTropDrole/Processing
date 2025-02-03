@@ -1,42 +1,62 @@
 class Player {
-  int x, y, speed;
+  int x, y, speed, velY;
   color couleur;
   float bulletX, bulletY;
-  boolean bulletActive;
+  boolean bulletActive, isJump;
   char moveLeft, moveRight;
 
-  Player(int startX, int startY, color c) {
+  int direction;
+  int score;
+  
+  Player(int startX, int startY, color c, int dir) {
+
     x = startX;
     y = startY;
+    velY = 0;
     couleur = c;
     speed = 5;
     bulletActive = false;
+
+    isJump = false;
+    direction = dir;
+    score = 0;
+
   }
 
   void move(int leftKey, int rightKey) {
     if (keyPressed) {
-        if (keyCode == leftKey && x > 5 && !(x - speed < player2.x + 50 && x > player2.x )) { 
-            x -= speed;  // Déplacer à gauche si pas de collision
-        } 
-        else if (keyCode == rightKey && x + 50 < width - 5 && !(x + speed + 50 > player1.x && x < player1.x)) { 
-            x += speed;  // Déplacer à droite si pas de collision
-        }
+      if (keyCode == leftKey && x > 5 && !(x - speed < player2.x + 50 && x > player2.x ))) { 
+        x -= speed * direction;  // Déplacer à gauche
+      } 
+      else if (keyCode == rightKey && x + 50 < width-5 && !(x + speed + 50 > player1.x && x < player1.x)) { 
+        x += speed * direction;  // Déplacer à droite
+      }
     }
+    
+    if (y < height-150) {
+      velY += 1;
+      isJump = true;
+    } else {
+      y = height-150;
+      isJump = false;
+    }
+    y += velY;
   }
 
 
 
   void shoot() {
     if (!bulletActive) {
-      bulletX = x + 25; // Positionner la balle au centre du joueur
-      bulletY = y;
+      bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
+      bulletY = y + 50;
       bulletActive = true;
     }
   }
 
   void updateBullet() {
     if (bulletActive) {
-      bulletX += bulletSpeed;  // Déplacement de la balle vers la droite
+      bulletX += bulletSpeed * direction;  // Déplacement de la balle
+
       // Si la balle sort de l'écran, réinitialiser
       if (bulletX < 0 || bulletX > width) {
         resetBullet();
@@ -49,8 +69,9 @@ class Player {
   }
 
   void display() {
-    fill(couleur);
-    rect(x, y, 50, 150); // Affichage du joueur
+    //fill(couleur);
+    //rect(x, y, 50, 150); // Affichage du joueur
+    image(image,x,y);
   }
 
   void displayBullet() {
