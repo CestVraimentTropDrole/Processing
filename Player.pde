@@ -1,29 +1,43 @@
 class Player {
-  int x, y, speed;
+  int x, y, speed, velY;
   color couleur;
   float bulletX, bulletY;
-  boolean bulletActive;
+  boolean bulletActive, isJump;
   char moveLeft, moveRight;
-  boolean movingRight; // Nouvelle variable pour savoir si on tire vers la droite ou gauche
+  int direction;
+  int score;
   
-  Player(int startX, int startY, color c) {
+  Player(int startX, int startY, color c, int dir) {
     x = startX;
     y = startY;
+    velY = 0;
     couleur = c;
     speed = 5;
     bulletActive = false;
-    movingRight = true; // Par défaut, on tire vers la droite
+    isJump = false;
+    direction = dir;
+    score = 0;
   }
 
   void move(int leftKey, int rightKey) {
     if (keyPressed) {
       if (keyCode == leftKey && x > 5) { 
-        x -= speed;  // Déplacer à gauche
+        x -= speed * direction;  // Déplacer à gauche
       } 
       else if (keyCode == rightKey && x + 50 < width-5) { 
-        x += speed;  // Déplacer à droite
+        x += speed * direction;  // Déplacer à droite
       }
     }
+    
+    if (y >= 440) {
+      y = 440;
+      velY = 0;
+      isJump = false;
+    } else {
+      velY += 1;
+      isJump = true;
+    }
+    y += velY;
   }
 
   void shoot() {
@@ -31,17 +45,12 @@ class Player {
       bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
       bulletY = y-50;
       bulletActive = true;
-      movingRight = (key == ' ') ? true : false; // Si joueur 1 appuie sur espace, tirer vers la droite
     }
   }
 
   void updateBullet() {
     if (bulletActive) {
-      if (movingRight) {
-        bulletX += bulletSpeed;  // Déplacement de la balle vers la droite
-      } else {
-        bulletX -= bulletSpeed;  // Déplacement de la balle vers la gauche
-      }
+      bulletX += bulletSpeed * direction;  // Déplacement de la balle
 
       // Si la balle sort de l'écran, réinitialiser
       if (bulletX < 0 || bulletX > width) {
