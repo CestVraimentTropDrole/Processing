@@ -62,7 +62,20 @@ class Player {
         float baseHorizontalKnockback = 5;
         float baseVerticalKnockback = 1;
         
-        float multiplier = 1 + (damagePercent * knockbackMultiplier);
+        // Knockback exponentiel après 80%
+        float multiplier;
+        if (damagePercent >= 80) {
+            multiplier = 1 + pow((damagePercent - 80) * 0.1, 2);  // Augmentation exponentielle
+        } else {
+            multiplier = 1 + (damagePercent * knockbackMultiplier);
+        }
+        
+        // Knockback très fort après 100%
+        if (damagePercent >= 100) {
+            baseHorizontalKnockback = 15;  // Triple la base
+            baseVerticalKnockback = 3;
+        }
+        
         vel.x = baseHorizontalKnockback * multiplier * direction;
         vel.y = -baseVerticalKnockback * multiplier;
         

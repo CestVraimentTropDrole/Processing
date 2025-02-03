@@ -117,7 +117,7 @@ class Game {
   
     void handleHit(Player attacker, Player target)
     {
-        float baseDamage = 5;  // Dégâts de base
+        float baseDamage = random(1, 4);  // Dégâts aléatoires entre 1% et 4%
         float baseKnockback = 5;  // Knockback de base
         
         // Direction du knockback (opposée à l'attaquant)

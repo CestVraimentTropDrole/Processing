@@ -46,7 +46,18 @@ class Arena {
     boolean checkPlayerDeath(Player player)
     {
         float edgeBuffer = 100;
-        return player.pos.y > deathY ||  (player.damagePercent > 100 && (player.pos.x < -edgeBuffer || player.pos.x > width + edgeBuffer));
+        
+        // Élargir la zone de mort si le pourcentage est élevé
+        if (player.damagePercent >= 80) {
+            edgeBuffer = 50;  // Zone de mort plus proche
+        }
+        if (player.damagePercent >= 100) {
+            edgeBuffer = 0;   // Mort dès qu'on sort de l'écran
+        }
+        
+        return player.pos.y > deathY || 
+               player.pos.x < -edgeBuffer || 
+               player.pos.x > width + edgeBuffer;
     }
     
     void handlePlayerCollision(Player player)
