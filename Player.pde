@@ -15,14 +15,16 @@ class Player {
 
   void move(int leftKey, int rightKey) {
     if (keyPressed) {
-      if (keyCode == leftKey && x > 5) {
-        x -= speed;  // Déplacer à gauche
-      } 
-      else if (keyCode == rightKey && x + 50 < width - 5  && player1.x + 50  != player2.x && player2.x != player1.x) { 
-        x += speed;  // Déplacer à droite
-      }
+        if (keyCode == leftKey && x > 5 && !(x - speed < player2.x + 50 && x > player2.x )) { 
+            x -= speed;  // Déplacer à gauche si pas de collision
+        } 
+        else if (keyCode == rightKey && x + 50 < width - 5 && !(x + speed + 50 > player1.x && x < player1.x)) { 
+            x += speed;  // Déplacer à droite si pas de collision
+        }
     }
   }
+
+
 
   void shoot() {
     if (!bulletActive) {
