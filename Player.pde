@@ -29,13 +29,12 @@ class Player {
       }
     }
     
-    if (y >= 440) {
-      y = 440;
-      velY = 0;
-      isJump = false;
-    } else {
+    if (y < 440) {
       velY += 1;
       isJump = true;
+    } else {
+      y = 440;
+      isJump = false;
     }
     y += velY;
   }
