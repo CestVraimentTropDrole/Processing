@@ -45,7 +45,8 @@ class Arena {
     
     boolean checkPlayerDeath(Player player)
     {
-        return player.pos.y > deathY;
+        float edgeBuffer = 100;
+        return player.pos.y > deathY ||  (player.damagePercent > 100 && (player.pos.x < -edgeBuffer || player.pos.x > width + edgeBuffer));
     }
     
     void handlePlayerCollision(Player player)

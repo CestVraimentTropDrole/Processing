@@ -12,6 +12,10 @@ class Player {
     int maxJumps = 2;
     float jumpForce = -15;
     int lives = 3;  
+    float damagePercent = 0;
+    float knockbackMultiplier = 0.1;
+    boolean isInKnockback = false;
+    int knockbackTimer = 0;
   
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
@@ -27,24 +31,53 @@ class Player {
     
     void update()
     {
+        if (isInKnockback) {
+            knockbackTimer--;
+            if (knockbackTimer <= 0) {
+                isInKnockback = false;
+                vel.x = 0;  // Arrête net le knockback horizontal
+                if (vel.y < 0) {  // Si le joueur monte encore
+                    vel.y = 0;    // On arrête la montée
+                }
+            }
+        }
+        
         applyPhysics();
         bullet.update();
     }
-    
+
     void applyPhysics()
     {
         if (isJumping) {
-            // Applique de la gravitas pour faire comme un vrai double saut
-            vel.y += 0.8;
+            if (!isInKnockback) {
+                vel.y += 0.6;
+            }
         }
         pos.add(vel);
+    }
+
+    void takeDamage(float damage, float knockback, int direction)
+    {
+        damagePercent += damage;
+        float baseHorizontalKnockback = 5;
+        float baseVerticalKnockback = 1;
+        
+        float multiplier = 1 + (damagePercent * knockbackMultiplier);
+        vel.x = baseHorizontalKnockback * multiplier * direction;
+        vel.y = -baseVerticalKnockback * multiplier;
+        
+        isInKnockback = true;
+        knockbackTimer = 15;
+        isJumping = true;
     }
     
     void move(float dx)
     {
-        pos.x += dx * speed;
-        if (dx < 0) facing = -1;
-        if (dx > 0) facing = 1;
+        if (!isInKnockback) {
+            pos.x += dx * speed;
+            if (dx < 0) facing = -1;
+            if (dx > 0) facing = 1;
+        }
     }
     
     void jump()
@@ -103,6 +136,9 @@ class Player {
         crouchHeight = normalHeight * 0.6;
         bullet.reset();
         facing = direction;
+        damagePercent = 0;
+        isInKnockback = false;
+        knockbackTimer = 0;
     }
     
     void crouch(boolean crouching)

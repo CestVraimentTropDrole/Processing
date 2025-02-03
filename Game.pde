@@ -56,9 +56,20 @@ class Game {
     void displayScore()
     {
         textSize(32);
-        fill(0);
-        text("J1: " + player1.score, 50, 50);
-        text("J2: " + player2.score, width - 150, 50);
+        
+        // Joueur 1 (gauche)
+        fill(0, 255, 0);
+        text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);  // Pourcentage
+        for (int i = 0; i < player1.lives; i++) {
+            text("<3", 50 + i * 40, 90);
+        }
+        
+        // Joueur 2 (droite)
+        fill(255, 0, 0);
+        text(nf(player2.damagePercent, 0, 1) + "%", width - 150, 50);
+        for (int i = 0; i < player2.lives; i++) {
+            text("<3", width - 150 + i * 40, 90);
+        }
     }
   
     void handleDeath(Player deadPlayer, Player winner)
@@ -106,11 +117,14 @@ class Game {
   
     void handleHit(Player attacker, Player target)
     {
-        attacker.score++;
-        target.reset();
+        float baseDamage = 5;  // Dégâts de base
+        float baseKnockback = 5;  // Knockback de base
+        
+        // Direction du knockback (opposée à l'attaquant)
+        int knockbackDirection = (attacker.pos.x < target.pos.x) ? 1 : -1;
+        
+        target.takeDamage(baseDamage, baseKnockback, knockbackDirection);
         attacker.bullet.reset();
-        if (attacker.score >= 3) 
-            gameOver = true;
     }
   
     void reset()
