@@ -29,11 +29,11 @@ class Player {
       }
     }
     
-    if (y < 440) {
+    if (y < height-150) {
       velY += 1;
       isJump = true;
     } else {
-      y = 440;
+      y = height-150;
       isJump = false;
     }
     y += velY;
@@ -42,7 +42,7 @@ class Player {
   void shoot() {
     if (!bulletActive) {
       bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
-      bulletY = y-50;
+      bulletY = y + 50;
       bulletActive = true;
     }
   }

@@ -1,13 +1,18 @@
 PImage image;
 
-int bulletSpeed = 10; // Vitesse des balles
+int bulletSpeed = 20; // Vitesse des balles
 boolean gameOver = false; // Si le jeu est terminé
 
-Player player1 = new Player(10, 440, color(0, 255, 0), 1);  // Joueur 1 (vert)
-Player player2 = new Player(735, 440, color(255, 0, 0), -1); // Joueur 2 (rouge)
+Player player1;
+Player player2;
 
 void setup() {
-  size(800, 600); // Taille de la fenêtre
+  //size(800, 600); // Taille de la fenêtre
+  fullScreen();
+  
+  player1 = new Player(width/4, height, color(0, 255, 0), 1);  // Joueur 1 (vert)
+  player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1); // Joueur 2 (rouge)
+  
   background(200); // Fond de la fenêtre
   image = loadImage("/assets/sprites/player.png");
   image.resize(50,150);
