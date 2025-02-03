@@ -74,6 +74,9 @@ void keyPressed() {
     player1.isJump = true;
   }
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   // Relancer le jeu si gameOver est vrai
   if (key == 'r' && gameOver) {
@@ -99,6 +102,9 @@ void checkCollisions() {
 =======
 
     if (player1.score >= 2) {
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       gameOver = true;
     }
@@ -114,6 +120,9 @@ void checkCollisions() {
 =======
 
     if (player2.score >= 2) {
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       gameOver = true;
     }
