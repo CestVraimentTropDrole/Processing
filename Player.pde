@@ -39,12 +39,14 @@ class Player {
         }
     }
     
+    y += velY;
     
     if (y < height-150) {
       velY += 1;
       isJump = true;
     } else {
       y = height-150;
+      velY = 0;
       isJump = false;
     }
     y += velY;
