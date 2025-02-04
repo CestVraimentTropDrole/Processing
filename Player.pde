@@ -25,13 +25,20 @@ class Player {
 
   void move(int leftKey, int rightKey) {
     if (keyPressed) {
-      if (keyCode == leftKey && x > 5 && !(x - speed < player2.x + 50 && x > player2.x )) { 
-        x -= speed * direction;  // Déplacer à gauche
-      } 
-      else if (keyCode == rightKey && x + 50 < width-5 && !(x + speed + 50 > player1.x && x < player1.x)) { 
-        x += speed * direction;  // Déplacer à droite
-      }
+        // Vérification pour aller à gauche
+        if (keyCode == leftKey && x > 5) { 
+            if (!(x - speed < player1.x + 50 && x > player1.x)) { 
+                x -= speed;  // Déplacer à gauche
+            }
+        } 
+        // Vérification pour aller à droite
+        else if (keyCode == rightKey && x + 50 < width - 5) { 
+            if (!(x + speed + 50 > player2.x && x < player2.x)) { 
+                x += speed;  // Déplacer à droite
+            }
+        }
     }
+    
     
     if (y < height-150) {
       velY += 1;
