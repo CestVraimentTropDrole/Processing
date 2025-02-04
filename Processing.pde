@@ -5,10 +5,13 @@ boolean gameOver = false;
 Player player1;
 Player player2;
 
+Weapons[]weapons = {new Pistol(), new Gun()};
+int currentWeaponsIndex = 0; 
+
 void setup() {
   fullScreen();
-  player1 = new Player(width/4, height, color(0, 255, 0), 1);
-  player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1);
+  player1 = new Player(width/4, height, color(0, 255, 0), 1, weapons[currentWeaponsIndex]);
+  player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1, weapons[currentWeaponsIndex]);
   background(200);
   image = loadImage("assets/sprites/player.png");
   image.resize(50,150);
@@ -83,19 +86,26 @@ void keyPressed() {
 void checkCollisions() {
   if (player1.bulletActive && dist(player1.bulletX, player1.bulletY, player2.x + 25, player2.y + 75) < 50) {
     player1.score++;
-    player2.reset();
-    player1.resetBullet();
-    if (player1.score >= 2) {
-      gameOver = true;
-    }
+    newRound();
   }
 
   if (player2.bulletActive && dist(player2.bulletX, player2.bulletY, player1.x, player1.y) < 60) {
     player2.score++;
-    player1.reset();
-    player2.resetBullet();
-    if (player2.score >= 2) {
-      gameOver = true;
-    }
+    newRound();
   }
+}
+
+void newRound() {
+  player1.reset();
+  player2.reset();
+  player1.resetBullet();
+  player2.resetBullet();
+  
+  if (player2.score >= 2 || player1.score >= 2) {
+      gameOver = true;
+  } else {
+    currentWeaponsIndex = (currentWeaponsIndex + 1) % weapons.length;
+    player1.weapons = weapons[currentWeaponsIndex];
+    player2.weapons = weapons[currentWeaponsIndex];
+  } 
 }

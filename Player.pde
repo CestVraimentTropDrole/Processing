@@ -8,7 +8,9 @@ class Player {
   int direction;
   int score;
   
-  Player(int startX, int startY, color c, int dir) {
+  Weapons weapons;
+  
+  Player(int startX, int startY, color c, int dir, Weapons startWeapons) {
 
     x = startX;
     y = startY;
@@ -20,6 +22,8 @@ class Player {
     isJump = false;
     direction = dir;
     score = 0;
+    
+    weapons = startWeapons;
 
   }
 
@@ -54,17 +58,21 @@ class Player {
 
 
 
-  void shoot() {
-    if (!bulletActive) {
-      bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
-      bulletY = y + 50;
-      bulletActive = true;
-    }
+  //void shoot() {
+    //if (!bulletActive) {
+      //bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
+      //bulletY = y + 50;
+      //bulletActive = true;
+    //}
+  //}
+  
+  void shoot(){
+    weapons.fire(this);
   }
 
   void updateBullet() {
     if (bulletActive) {
-      bulletX += bulletSpeed * direction;  // Déplacement de la balle
+      bulletX += weapons.bulletSpeed * direction;  // Déplacement de la balle
 
       // Si la balle sort de l'écran, réinitialiser
       if (bulletX < 0 || bulletX > width) {
@@ -85,8 +93,8 @@ class Player {
 
   void displayBullet() {
     if (bulletActive) {
-      fill(255, 255, 0); // Couleur jaune pour les balles
-      ellipse(bulletX, bulletY, 10, 10); // Affichage de la balle
+      fill(weapons.bulletCouleur); // Couleur jaune pour les balles
+      ellipse(bulletX, bulletY, weapons.bulletSize, weapons.bulletSize); // Affichage de la balle
     }
   }
 
