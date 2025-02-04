@@ -20,8 +20,8 @@ void draw() {
   if (!gameOver) {
     textSize(32);
     fill(0);
-    text("Joueur 1 : " + player1.score, 50, 50);
-    text("Joueur 2 : " + player2.score, width - 50, 50);
+    text("Joueur 1 : " + player1.score, width/4, 50);
+    text("Joueur 2 : " + player2.score, width/4 + width/2 - 50, 50);
     
     player1.move(LEFT, RIGHT);  
     player1.display();  
@@ -62,6 +62,12 @@ void keyPressed() {
     player1.velY = -15;
     player1.isJump = true;
   }
+  
+  if (key == 'x' && !gameOver && !player2.isJump) {
+    println("Peut sauter");
+    player2.velY = -15;
+    player2.isJump = true;
+  }
 
   if (key == 'r' && gameOver) {
     gameOver = false;
@@ -75,7 +81,7 @@ void keyPressed() {
 }
 
 void checkCollisions() {
-  if (player1.bulletActive && dist(player1.bulletX, player1.bulletY, player2.x, player2.y) < 10) {
+  if (player1.bulletActive && dist(player1.bulletX, player1.bulletY, player2.x + 25, player2.y + 75) < 50) {
     player1.score++;
     player2.reset();
     player1.resetBullet();

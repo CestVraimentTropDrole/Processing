@@ -91,7 +91,7 @@ class Player {
   }
 
   void reset() {
-    x = (couleur == color(0, 255, 0)) ? 10 : 735; // Réinitialiser la position du joueur
+    x = (couleur == color(0, 255, 0)) ? width / 4 : width / 4 + width / 2 - 50;
     y = 440;
   }
 }
