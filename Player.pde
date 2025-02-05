@@ -199,4 +199,4 @@ class Player {
         isDeathKnockback = false;
         isCrouchingState = false;
     }
-} 
+}
