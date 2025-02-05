@@ -1,3 +1,4 @@
+/*
 class Pistol extends Weapons {
   Pistol(){
     super(20,10,color(255,255,0));
@@ -11,3 +12,4 @@ class Pistol extends Weapons {
     }
   }
 }
+*/
