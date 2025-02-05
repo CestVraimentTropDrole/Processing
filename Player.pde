@@ -1,6 +1,7 @@
 class Player {
     PVector pos, vel;
     PImage sprite;
+    PImage originalSprite;
     color col;
     int direction, score;
     float speed = 15;
@@ -24,6 +25,7 @@ class Player {
     {
         pos = new PVector(x, y);
         vel = new PVector();
+        originalSprite = playerSprite.copy();
         sprite = playerSprite;
         col = c;
         direction = dir;
@@ -153,6 +155,7 @@ class Player {
         isCrouching = crouching;
         
         if (crouching) {
+            sprite = originalSprite.copy();  // Utilise une nouvelle copie
             sprite.resize(sprite.width, int(crouchHeight));
             pos.y += (normalHeight - crouchHeight);
         } else {
@@ -170,7 +173,7 @@ class Player {
             }
             
             if (canStand) {
-                sprite.resize(sprite.width, int(normalHeight));
+                sprite = originalSprite.copy();  // Restaure le sprite original
                 pos.y = newY;
             } else {
                 // Si on ne peut pas se relever, on reste accroupi
@@ -189,6 +192,7 @@ class Player {
         isJumping = false;
         jumpCount = 0;
         isCrouching = false;
+        sprite = originalSprite.copy();
         normalHeight = sprite.height;
         crouchHeight = normalHeight * 0.6;
         bullet.reset();
