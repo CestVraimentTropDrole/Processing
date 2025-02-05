@@ -9,12 +9,10 @@ class Game {
   
     Game()
     {
-        playerSprite = loadImage("assets/sprites/player.png");
+        playerSprite = loadImage("assets/sprites/player_red_idle.png");
         bulletSprite = loadImage("assets/sprites/bullet.png");
         PImage player1Sprite = playerSprite.copy();
         PImage player2Sprite = playerSprite.copy();
-        player1Sprite.resize(50, 150);
-        player2Sprite.resize(50, 150);
         bulletSprite.resize(20, 20);
         
         arena = new Arena(width, height); // Utilise la taille de l'écran littéralement donc faites gaffe !
