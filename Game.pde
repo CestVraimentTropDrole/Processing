@@ -5,6 +5,7 @@ class Game {
     boolean gameOver;
     PImage playerSprite;
     PImage bulletSprite;
+    Bot bot;
   
     Game()
     {
@@ -21,6 +22,7 @@ class Game {
         player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSprite, color(255, 0, 0), -1);
         player1.arena = arena;
         player2.arena = arena;
+        //bot = new Bot(player2, player1, 3);
         gameOver = false;
     }
 
@@ -37,6 +39,7 @@ class Game {
             if (!gameOver) {
                 player1.update();
                 player2.update();
+                //bot.update();
                 checkCollisions();
             }
     }
@@ -140,5 +143,6 @@ class Game {
         player1.score = 0;
         player2.score = 0;
         gameOver = false;
+        //bot.stop();
     }
 }
