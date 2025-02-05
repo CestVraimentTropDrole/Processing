@@ -6,12 +6,18 @@ class Game {
     PImage playerSprite1, playerSprite2;
     PImage bulletSprite;
     Bot bot;
+    PImage gunSprite, pistolSprite;
+    ArrayList<Weapon> weapons;
   
     Game()
     {
         playerSprite1 = loadImage("assets/sprites/player_red_idle.png");
         playerSprite2 = loadImage("assets/sprites/player_yellow_idle.png");
         bulletSprite = loadImage("assets/sprites/bullet.png");
+        gunSprite = loadImage("assets/sprites/gun_ak47.png");
+        pistolSprite = loadImage("assets/sprites/gun_gunsimple.png");
+        
+        weapons = new ArrayList<Weapon>();
         PImage player1Sprite = playerSprite1.copy();
         PImage player2Sprite = playerSprite2.copy();
         bulletSprite.resize(20, 20);
@@ -19,12 +25,14 @@ class Game {
         arena = new Arena(width, height); 
         player1 = new Player(width/4, height - 200, player1Sprite, bulletSprite, color(0, 255, 0), 1);
         player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSprite, color(255, 0, 0), -1);
+        spawnWeapons();
         player1.arena = arena;
         player2.arena = arena;
         gameOver = false;
     }
 
-    void startGame() {
+    void startGame()
+    {
         // Initialisation du jeu
         gameOver = false;
         player1.score = 0;
@@ -41,6 +49,12 @@ class Game {
             gameOver = true;
         }
     }
+
+    void spawnWeapons()
+    {
+        weapons.add(new Gun(width/4, height-400, gunSprite, bulletSprite));
+        weapons.add(new Pistol(3*width/4, height-400, pistolSprite, bulletSprite));
+    }    
     
     void update()
     {
@@ -48,9 +62,18 @@ class Game {
             player1.update();
             player2.update();
             checkCollisions();
+            
+            for (Weapon weapon : weapons) {
+                if (weapon.canPickup(player1) && keyPressed && key == ' ') {
+                    weapon.pickup(player1);
+                }
+                if (weapon.canPickup(player2) && keyPressed && key == '0') {
+                    weapon.pickup(player2);
+                }
+            }
         }
     }
-    
+
     void draw()
     {
         background(200);
@@ -58,6 +81,9 @@ class Game {
     
         if (!gameOver) {
             displayScore();
+            for (Weapon weapon : weapons) {
+                weapon.draw();
+            }
             player1.draw();
             player2.draw();
         } else {

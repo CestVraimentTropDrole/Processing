@@ -1,6 +1,6 @@
 class Bullet {
-    PVector pos, vel;
-    PImage sprite;
+    PVector pos;
+    PImage bulletSprite;
     boolean active;
     float speed = 15;
     ArrayList<PVector> bullets;
@@ -10,11 +10,16 @@ class Bullet {
  
     Bullet(PImage bulletSprite)
     {
-        sprite = bulletSprite;
+        this.bulletSprite = bulletSprite;
         bullets = new ArrayList<PVector>();
         directions = new ArrayList<Integer>();
     }
     
+    void setBulletSprite(PImage newSprite)
+    {
+        this.bulletSprite = newSprite;
+    }
+
     boolean canShoot()
     {
         return millis() - lastShotTime >= cooldownDuration;
@@ -64,7 +69,7 @@ class Bullet {
     void draw()
     {
         for (PVector bullet : bullets) {
-            image(sprite, bullet.x, bullet.y);
+            image(bulletSprite, bullet.x, bullet.y);
         }
     }
 

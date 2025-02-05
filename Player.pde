@@ -20,6 +20,7 @@ class Player {
     boolean isDeathKnockback = false;
     boolean isCrouchingState;
     Arena arena;
+    Weapon currentWeapon = null;
 
     // Dash properties
     float dashDistance;
@@ -156,9 +157,16 @@ class Player {
         }
     }
     
+    void equip(Weapon weapon)
+    {
+        currentWeapon = weapon;
+    }
+
     void shoot()
     {
-        // Tirer une balle dans la direction que le joueur fait face
+        if (currentWeapon == null) 
+            return;
+        
         bullet.fire(pos.x + sprite.width/2, pos.y + sprite.height/2, facing);
     }
     
@@ -178,12 +186,17 @@ class Player {
     {
         pushMatrix();
         if (facing < 0) {
-            // Dessiner le sprite du joueur en le retournant horizontalement pour créer un effet de miroir
             translate(pos.x + sprite.width, pos.y);
             scale(-1, 1);
             image(sprite, 0, 0);
+            if (currentWeapon != null) {
+                image(currentWeapon.sprite, sprite.width/2, sprite.height/2);
+            }
         } else {
             image(sprite, pos.x, pos.y);
+            if (currentWeapon != null) {
+                image(currentWeapon.sprite, pos.x + sprite.width/2, pos.y + sprite.height/2);
+            }
         }
         popMatrix();
         bullet.draw();
