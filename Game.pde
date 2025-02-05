@@ -8,7 +8,7 @@ class Game {
     Bot bot;
     PImage gunSprite, pistolSprite;
     ArrayList<Weapon> weapons;
-  
+
     Game()
     {
         playerSprite1 = loadImage("assets/sprites/player_red_idle.png");

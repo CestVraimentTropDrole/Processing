@@ -27,7 +27,7 @@ class Weapon
     
     boolean canPickup(Player player)
     {
-        float pickupRadius = 100; // Augmenté de 50 à 100
+        float pickupRadius = 100;
         return !isPickedUp && 
                abs(player.pos.x - x) < pickupRadius && 
                abs(player.pos.y - y) < pickupRadius;

@@ -1,7 +1,6 @@
 class Bullet {
     PVector pos;
     PImage bulletSprite;
-    boolean active;
     float speed = 15;
     ArrayList<PVector> bullets;
     ArrayList<Integer> directions;
