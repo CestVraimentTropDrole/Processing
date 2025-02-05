@@ -15,31 +15,39 @@ class Game {
         PImage player2Sprite = playerSprite.copy();
         bulletSprite.resize(20, 20);
         
-        arena = new Arena(width, height); // Utilise la taille de l'écran littéralement donc faites gaffe !
+        arena = new Arena(width, height); 
         player1 = new Player(width/4, height - 200, player1Sprite, bulletSprite, color(0, 255, 0), 1);
         player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSprite, color(255, 0, 0), -1);
         player1.arena = arena;
         player2.arena = arena;
-        //bot = new Bot(player2, player1, 3);
         gameOver = false;
     }
 
+    void startGame() {
+        // Initialisation du jeu
+        gameOver = false;
+        player1.score = 0;
+        player2.score = 0;
+        player1.lives = 3;
+        player2.lives = 3;
+        player1.reset();
+        player2.reset();
+    }
 
     void checkGameState()
     {
-        if (player1.score <= 0 || player2.score <= 0) {
+        if (player1.lives <= 0 || player2.lives <= 0) {
             gameOver = true;
         }
     }
     
     void update()
     {
-            if (!gameOver) {
-                player1.update();
-                player2.update();
-                //bot.update();
-                checkCollisions();
-            }
+        if (!gameOver) {
+            player1.update();
+            player2.update();
+            checkCollisions();
+        }
     }
     
     void draw()
@@ -55,14 +63,14 @@ class Game {
             displayGameOver();
         }
     }
-  
+
     void displayScore()
     {
         textSize(32);
         
         // Joueur 1 (gauche)
         fill(0, 255, 0);
-        text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);  // Pourcentage
+        text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);  
         for (int i = 0; i < player1.lives; i++) {
             text("<3", 50 + i * 40, 90);
         }
@@ -92,7 +100,7 @@ class Game {
         String winner = (player1.lives <= 0) ? "J2" : "J1";
         text(winner + " gagne!", width/2 - 100, height/2);
         textSize(16);
-        text("'R' pour relancer", width/2 - 75, height/2 + 50);
+        text("'R' pour relancer, 'H' pour retour", width/2 - 90, height/2 + 50);
     }
   
     void checkCollisions()
@@ -110,7 +118,7 @@ class Game {
             player2.bullet.removeBullet(hitIndex2);
         }
         
-        // Check si tu tombes
+        // Vérification de la mort des joueurs
         if (arena.checkPlayerDeath(player1)) {
             handleDeath(player1, player2);
         }
@@ -125,15 +133,15 @@ class Game {
 
     void handleHit(Player attacker, Player target)
     {
-        float baseDamage = random(1, 4);  // Dégâts aléatoires entre 1% et 4%
-        float baseKnockback = 5;  // Knockback de base
+        float baseDamage = random(1, 4);  
+        float baseKnockback = 5;  
         
-        // Direction du knockback (opposée à l'attaquant)
+        // Direction du knockback
         int knockbackDirection = (attacker.pos.x < target.pos.x) ? 1 : -1;
         
         target.takeDamage(baseDamage, baseKnockback, knockbackDirection);
     }
-  
+
     void reset()
     {
         player1.reset();
@@ -141,6 +149,5 @@ class Game {
         player1.score = 0;
         player2.score = 0;
         gameOver = false;
-        //bot.stop();
     }
 }
