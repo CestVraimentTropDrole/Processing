@@ -20,6 +20,15 @@ class Player {
     boolean isDeathKnockback = false;
     boolean isCrouchingState;
     Arena arena;
+
+    // Dash properties
+    float dashDistance;
+    boolean isDashing = false;
+    int dashCooldown = 500;
+    long lastDashTime = 0;
+    float dashVelocity = 0;
+    float distanceDashed = 0;
+    int dashTimer = 0;
   
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
@@ -31,9 +40,36 @@ class Player {
         direction = dir;
         facing = dir;
         bullet = new Bullet(bulletSprite);
+        normalHeight = sprite.height;
+        crouchHeight = normalHeight * 0.6;
+        dashDistance = sprite.width * 2;
         reset();
     }
-    
+
+    void dash(boolean left, boolean right)
+    {
+        if (isCrouching || isDashing || (millis() - lastDashTime < dashCooldown)) 
+            return;
+        
+        float dashSpeed = 25;
+        float dashDistance = 300;
+        dashTimer = 15;
+        
+        if (left) {
+            dashVelocity = -dashSpeed;
+            facing = -1;
+        } else if (right) {
+            dashVelocity = dashSpeed;
+            facing = 1;
+        } else {
+            dashVelocity = facing * dashSpeed;
+        }
+        
+        isDashing = true;
+        distanceDashed = 0;
+        lastDashTime = millis();
+    }
+
     void update()
     {
         if (isInKnockback) {
@@ -53,10 +89,18 @@ class Player {
 
     void applyPhysics()
     {
-        if (isJumping) {
-            if (!isInKnockback) {
-                vel.y += 0.6;
+        if (isDashing) {
+            distanceDashed += abs(dashVelocity);
+            if (distanceDashed >= 300) {
+                isDashing = false;
+                vel.x = 0;
+            } else {
+                vel.x = dashVelocity;
             }
+        }
+        
+        if (isJumping && !isInKnockback && !isDashing) {
+            vel.y += 0.6;
         }
         pos.add(vel);
     }
