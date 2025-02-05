@@ -3,16 +3,17 @@ class Game {
     Player player2;
     Arena arena;
     boolean gameOver;
-    PImage playerSprite;
+    PImage playerSprite1, playerSprite2;
     PImage bulletSprite;
     Bot bot;
   
     Game()
     {
-        playerSprite = loadImage("assets/sprites/player_red_idle.png");
+        playerSprite1 = loadImage("assets/sprites/player_red_idle.png");
+        playerSprite2 = loadImage("assets/sprites/player_yellow_idle.png");
         bulletSprite = loadImage("assets/sprites/bullet.png");
-        PImage player1Sprite = playerSprite.copy();
-        PImage player2Sprite = playerSprite.copy();
+        PImage player1Sprite = playerSprite1.copy();
+        PImage player2Sprite = playerSprite2.copy();
         bulletSprite.resize(20, 20);
         
         arena = new Arena(width, height); 
