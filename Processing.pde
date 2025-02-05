@@ -13,8 +13,7 @@ void setup() {
   player1 = new Player(width/4, height, color(0, 255, 0), 1, weapons[currentWeaponsIndex]);
   player2 = new Player(width/4 + width/2 - 50, height, color(255, 0, 0), -1, weapons[currentWeaponsIndex]);
   background(200);
-  image = loadImage("assets/sprites/player.png");
-  image.resize(50,150);
+  image = loadImage("assets/sprites/player_red_idle.png");
 }
 
 void draw() {

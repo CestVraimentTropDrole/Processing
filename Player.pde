@@ -7,9 +7,9 @@ class Player {
 
   int direction;
   int score;
-  
+
   Weapons weapons;
-  
+
   Player(int startX, int startY, color c, int dir, Weapons startWeapons) {
 
     x = startX;
@@ -22,29 +22,28 @@ class Player {
     isJump = false;
     direction = dir;
     score = 0;
-    
-    weapons = startWeapons;
 
+    weapons = startWeapons;
   }
 
   void move(int leftKey, int rightKey) {
     if (keyPressed) {
-        // Vérification pour aller à gauche
-        if (keyCode == leftKey && x > 5) { 
-            if (!(x - speed < player1.x + 50 && x > player1.x)) { 
-                x -= speed;  // Déplacer à gauche
-            }
-        } 
-        // Vérification pour aller à droite
-        else if (keyCode == rightKey && x + 50 < width - 5) { 
-            if (!(x + speed + 50 > player2.x && x < player2.x)) { 
-                x += speed;  // Déplacer à droite
-            }
+      // Vérification pour aller à gauche
+      if (keyCode == leftKey && x > 5) {
+        if (!(x - speed < player1.x + 50 && x > player1.x)) {
+          x -= speed;  // Déplacer à gauche
         }
+      }
+      // Vérification pour aller à droite
+      else if (keyCode == rightKey && x + 50 < width - 5) {
+        if (!(x + speed + 50 > player2.x && x < player2.x)) {
+          x += speed;  // Déplacer à droite
+        }
+      }
     }
-    
+
     y += velY;
-    
+
     if (y < height-150) {
       velY += 1;
       isJump = true;
@@ -59,14 +58,14 @@ class Player {
 
 
   //void shoot() {
-    //if (!bulletActive) {
-      //bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
-      //bulletY = y + 50;
-      //bulletActive = true;
-    //}
+  //if (!bulletActive) {
+  //bulletX = x + 25; // Position initiale de la balle (au centre du joueur)
+  //bulletY = y + 50;
+  //bulletActive = true;
   //}
-  
-  void shoot(){
+  //}
+
+  void shoot() {
     weapons.fire(this);
   }
 
@@ -86,9 +85,11 @@ class Player {
   }
 
   void display() {
-    //fill(couleur);
-    //rect(x, y, 50, 150); // Affichage du joueur
-    image(image,x,y);
+    pushMatrix();
+    translate(x + (direction == -1 ? image.width : 0), y);  //Déplace l’origine si l’image doit être retournée
+    scale(direction, 1);  //Applique l’effet miroir si direction == -1
+    image(image, 0, 0); //Affiche l'image retournée
+    popMatrix();
   }
 
   void displayBullet() {
