@@ -86,6 +86,7 @@ class Player {
         }
         applyPhysics();
         bullet.update();
+        bullet.updateReload();
     }
 
     void applyPhysics()
@@ -189,19 +190,19 @@ class Player {
             translate(pos.x + sprite.width, pos.y);
             scale(-1, 1);
             image(sprite, 0, 0);
-            if (currentWeapon != null) {
-                image(currentWeapon.sprite, sprite.width/2, sprite.height/2);
-            }
         } else {
             image(sprite, pos.x, pos.y);
-            if (currentWeapon != null) {
-                image(currentWeapon.sprite, pos.x + sprite.width/2, pos.y + sprite.height/2);
-            }
         }
         popMatrix();
+        
+        // Dessiner l'arme si elle existe
+        if (currentWeapon != null) {
+            currentWeapon.draw();
+        }
+        
         bullet.draw();
     }
-        
+
     void crouch(boolean crouching)
     {
         if (isCrouchingState == crouching) {

@@ -82,7 +82,9 @@ class Game {
         if (!gameOver) {
             displayScore();
             for (Weapon weapon : weapons) {
-                weapon.draw();
+                if (!weapon.isPickedUp) {
+                    weapon.draw();
+                }
             }
             player1.draw();
             player2.draw();

@@ -6,12 +6,18 @@ class Bullet {
     ArrayList<Integer> directions;
     long lastShotTime = 0;
     int cooldownDuration = 500;
+    int currentAmmo = 10;
+    int maxAmmo = 10;
+    boolean isReloading = false;
+    long reloadStartTime = 0;
+    int reloadDuration = 2000; // 2 secondes pour recharger
  
     Bullet(PImage bulletSprite)
     {
         this.bulletSprite = bulletSprite;
         bullets = new ArrayList<PVector>();
         directions = new ArrayList<Integer>();
+        currentAmmo = maxAmmo;
     }
     
     void setBulletSprite(PImage newSprite)
@@ -21,7 +27,23 @@ class Bullet {
 
     boolean canShoot()
     {
-        return millis() - lastShotTime >= cooldownDuration;
+        return millis() - lastShotTime >= cooldownDuration && currentAmmo > 0 && !isReloading;
+    }
+    
+    void startReload()
+    {
+        if (!isReloading && currentAmmo < maxAmmo) {
+            isReloading = true;
+            reloadStartTime = millis();
+        }
+    }
+    
+    void updateReload()
+    {
+        if (isReloading && millis() - reloadStartTime >= reloadDuration) {
+            currentAmmo = maxAmmo;
+            isReloading = false;
+        }
     }
     
     void fire(float x, float y, int direction)
@@ -30,6 +52,7 @@ class Bullet {
             bullets.add(new PVector(x, y));
             directions.add(direction);
             lastShotTime = millis();
+            currentAmmo--;
         }
     }
     
