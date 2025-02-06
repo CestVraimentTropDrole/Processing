@@ -61,10 +61,15 @@ void keyPressed()
         if (key == 's') game.player1.crouch(true);
         if (key == ' ') game.player1.shoot();
         if (key == 'e') game.player1.dash(leftPressed1, rightPressed1);
+        if (key == 'r') game.player1.bullet.startReload();
+        if (key == 'a') game.player1.activateShield();
 
         if (keyCode == UP) game.player2.jump();
         if (keyCode == DOWN) game.player2.crouch(true);
         if (key == '0') game.player2.shoot();
+        if (key == 'l') game.player2.dash(leftPressed2, rightPressed2);
+        if (key == 'p') game.player2.bullet.startReload();
+        if (key == 'm') game.player2.activateShield();
     }
 }
 
@@ -78,4 +83,7 @@ void keyReleased()
 
     if (key == 's') game.player1.crouch(false);
     if (keyCode == DOWN) game.player2.crouch(false);
+
+    if (key == 'a') game.player1.deactivateShield();
+    if (key == 'm') game.player2.deactivateShield();
 }

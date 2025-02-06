@@ -21,6 +21,7 @@ class Player {
     boolean isCrouchingState;
     Arena arena;
     Weapon currentWeapon = null;
+    Shield shield;
 
     // Dash properties
     float dashDistance;
@@ -44,6 +45,7 @@ class Player {
         normalHeight = sprite.height;
         crouchHeight = normalHeight * 0.6;
         dashDistance = sprite.width * 2;
+        shield = new Shield(this);
         reset();
     }
 
@@ -84,8 +86,10 @@ class Player {
                 }
             }
         }
+        shield.update();
         applyPhysics();
         bullet.update();
+        bullet.updateReload();
     }
 
     void applyPhysics()
@@ -108,34 +112,54 @@ class Player {
 
     void takeDamage(float damage, float knockback, int direction)
     {
-        damagePercent += damage;
-        float baseHorizontalKnockback = 5;
-        float baseVerticalKnockback = 1;
-        
-        // Knockback spécial de mort au-dessus de 100%
-        if (damagePercent >= 100) {
-            baseHorizontalKnockback = 16;
-            baseVerticalKnockback = 4;
-            knockbackTimer = 30;
-            isDeathKnockback = true;  // Active le mode "mort"
-        } else {
-            float multiplier = 1 + (damagePercent * knockbackMultiplier);
-            knockbackTimer = 15;
-            isDeathKnockback = false;
-        }
-        
-        if (isDeathKnockback) {
+        if (!shield.isActive) {
+            damagePercent += damage;
+            float baseHorizontalKnockback = 5;
+            float baseVerticalKnockback = 1;
+            
+            // Knockback spécial de mort au-dessus de 100%
+            if (damagePercent >= 100) {
+                baseHorizontalKnockback = 16;
+                baseVerticalKnockback = 4;
+                knockbackTimer = 30;
+                isDeathKnockback = true;  // Active le mode "mort"
+            } else {
+                float multiplier = 1 + (damagePercent * knockbackMultiplier);
+                knockbackTimer = 15;
+                isDeathKnockback = false;
+            }
+            
+            if (isDeathKnockback) {
             // Trajectoire plus dramatique pour la mort
-            vel.x = baseHorizontalKnockback * direction;
-            vel.y = -baseVerticalKnockback;
-        } else {
+                vel.x = baseHorizontalKnockback * direction;
+                vel.y = -baseVerticalKnockback;
+            } else {
             // Knockback normal
-            float multiplier = 1 + (damagePercent * knockbackMultiplier);
-            vel.x = baseHorizontalKnockback * multiplier * direction;
-            vel.y = -baseVerticalKnockback * multiplier;
+                float multiplier = 1 + (damagePercent * knockbackMultiplier);
+                vel.x = baseHorizontalKnockback * multiplier * direction;
+                vel.y = -baseVerticalKnockback * multiplier;
+            }
+            isInKnockback = true;
+            isJumping = true;
+        } else {
+            // Si le shield est actif, il absorbe les dégâts
+            shield.currentSize -= damage * 2;
+            if (shield.currentSize <= shield.minSize) {
+                // Shield break
+                shield.deactivate();
+                takeDamage(damage * 1.5f, knockback * 1.5f, direction); // Dégâts et knockback augmentés
+            }
         }
-        isInKnockback = true;
-        isJumping = true;
+    }
+
+    void activateShield()
+    {
+        shield.activate();
+    }
+
+    void deactivateShield()
+    {
+        shield.deactivate();
     }
     
     void move(float dx)
@@ -189,19 +213,23 @@ class Player {
             translate(pos.x + sprite.width, pos.y);
             scale(-1, 1);
             image(sprite, 0, 0);
-            if (currentWeapon != null) {
-                image(currentWeapon.sprite, sprite.width/2, sprite.height/2);
-            }
         } else {
             image(sprite, pos.x, pos.y);
-            if (currentWeapon != null) {
-                image(currentWeapon.sprite, pos.x + sprite.width/2, pos.y + sprite.height/2);
-            }
         }
         popMatrix();
+        
+        // Dessiner l'arme si elle existe
+        if (currentWeapon != null) {
+            currentWeapon.draw();
+        }
+        
+        float shieldX = pos.x + sprite.width/2;
+        float shieldY = pos.y + sprite.height/2;
+        shield.draw(shieldX, shieldY);
+
         bullet.draw();
     }
-        
+
     void crouch(boolean crouching)
     {
         if (isCrouchingState == crouching) {
@@ -259,5 +287,7 @@ class Player {
         knockbackTimer = 0;
         isDeathKnockback = false;
         isCrouchingState = false;
+        shield.currentSize = shield.maxSize; // Reset shield size
+        shield.deactivate();
     }
 }
