@@ -1,6 +1,7 @@
 class Player {
     PVector pos, vel;
     PImage sprite;
+    PImage originalSprite;
     color col;
     int direction, score;
     float speed = 15;
@@ -19,19 +20,57 @@ class Player {
     boolean isDeathKnockback = false;
     boolean isCrouchingState;
     Arena arena;
+    Weapon currentWeapon = null;
+
+    // Dash properties
+    float dashDistance;
+    boolean isDashing = false;
+    int dashCooldown = 500;
+    long lastDashTime = 0;
+    float dashVelocity = 0;
+    float distanceDashed = 0;
+    int dashTimer = 0;
   
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
         pos = new PVector(x, y);
         vel = new PVector();
+        originalSprite = playerSprite.copy();
         sprite = playerSprite;
         col = c;
         direction = dir;
         facing = dir;
         bullet = new Bullet(bulletSprite);
+        normalHeight = sprite.height;
+        crouchHeight = normalHeight * 0.6;
+        dashDistance = sprite.width * 2;
         reset();
     }
-    
+
+    void dash(boolean left, boolean right)
+    {
+        if (isCrouching || isDashing || (millis() - lastDashTime < dashCooldown)) 
+            return;
+        
+        float dashSpeed = 25;
+        float dashDistance = 300;
+        dashTimer = 15;
+        
+        if (left) {
+            dashVelocity = -dashSpeed;
+            facing = -1;
+        } else if (right) {
+            dashVelocity = dashSpeed;
+            facing = 1;
+        } else {
+            dashVelocity = facing * dashSpeed;
+        }
+        
+        isDashing = true;
+        distanceDashed = 0;
+        lastDashTime = millis();
+    }
+
     void update()
     {
         if (isInKnockback) {
@@ -51,10 +90,18 @@ class Player {
 
     void applyPhysics()
     {
-        if (isJumping) {
-            if (!isInKnockback) {
-                vel.y += 0.6;
+        if (isDashing) {
+            distanceDashed += abs(dashVelocity);
+            if (distanceDashed >= 300) {
+                isDashing = false;
+                vel.x = 0;
+            } else {
+                vel.x = dashVelocity;
             }
+        }
+        
+        if (isJumping && !isInKnockback && !isDashing) {
+            vel.y += 0.6;
         }
         pos.add(vel);
     }
@@ -110,9 +157,16 @@ class Player {
         }
     }
     
+    void equip(Weapon weapon)
+    {
+        currentWeapon = weapon;
+    }
+
     void shoot()
     {
-        // Tirer une balle dans la direction que le joueur fait face
+        if (currentWeapon == null) 
+            return;
+        
         bullet.fire(pos.x + sprite.width/2, pos.y + sprite.height/2, facing);
     }
     
@@ -132,12 +186,17 @@ class Player {
     {
         pushMatrix();
         if (facing < 0) {
-            // Dessiner le sprite du joueur en le retournant horizontalement pour créer un effet de miroir
             translate(pos.x + sprite.width, pos.y);
             scale(-1, 1);
             image(sprite, 0, 0);
+            if (currentWeapon != null) {
+                image(currentWeapon.sprite, sprite.width/2, sprite.height/2);
+            }
         } else {
             image(sprite, pos.x, pos.y);
+            if (currentWeapon != null) {
+                image(currentWeapon.sprite, pos.x + sprite.width/2, pos.y + sprite.height/2);
+            }
         }
         popMatrix();
         bullet.draw();
@@ -153,6 +212,7 @@ class Player {
         isCrouching = crouching;
         
         if (crouching) {
+            sprite = originalSprite.copy();  // Utilise une nouvelle copie
             sprite.resize(sprite.width, int(crouchHeight));
             pos.y += (normalHeight - crouchHeight);
         } else {
@@ -170,7 +230,7 @@ class Player {
             }
             
             if (canStand) {
-                sprite.resize(sprite.width, int(normalHeight));
+                sprite = originalSprite.copy();  // Restaure le sprite original
                 pos.y = newY;
             } else {
                 // Si on ne peut pas se relever, on reste accroupi
@@ -189,6 +249,7 @@ class Player {
         isJumping = false;
         jumpCount = 0;
         isCrouching = false;
+        sprite = originalSprite.copy();
         normalHeight = sprite.height;
         crouchHeight = normalHeight * 0.6;
         bullet.reset();
