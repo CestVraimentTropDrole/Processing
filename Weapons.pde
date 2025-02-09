@@ -10,6 +10,7 @@ class Weapon {
     int currentAmmo;
     float minDamage;
     float maxDamage;
+    int reloadTime;
     float damage;
     long spawnTime;
     float alpha = 255;

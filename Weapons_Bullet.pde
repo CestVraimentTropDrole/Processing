@@ -90,7 +90,7 @@ class Bullet {
         this.currentCooldown = 500;
         this.currentAmmo = this.maxAmmo;
         this.isReloading = false;
-        this.reloadTime = reloadTime;
+        this.reloadDuration = 2000;
     }
 
     boolean canShoot()
