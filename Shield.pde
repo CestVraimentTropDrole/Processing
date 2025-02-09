@@ -1,9 +1,10 @@
 class Shield {
-    float maxSize = 150;
+    static final float MAX_SIZE = 150;
+    static final float MIN_SIZE = 0;
+    static final float SHRINK_RATE = 1.0;
+    static final float RECHARGE_RATE = 1.0;
+
     float currentSize;
-    float minSize = 0;           // Une taille minimum plus grande pour éviter de casser trop facilement (si besoin)
-    float shrinkRate = 1.0;       // Plus rapide pour une meilleure réactivité
-    float rechargeRate = 1.0;     // Recharge beaucoup plus rapide
     float alpha = 150;
     boolean isActive = false;
     Player owner;
@@ -11,7 +12,7 @@ class Shield {
     Shield(Player player)
     {
         this.owner = player;
-        currentSize = maxSize;
+        currentSize = MAX_SIZE;
     }
 
     void activate()
@@ -27,13 +28,13 @@ class Shield {
     void update()
     {
         if (isActive) {
-            currentSize = max(minSize, currentSize - shrinkRate);
-            if (currentSize <= minSize) {
+            currentSize = max(MIN_SIZE, currentSize - SHRINK_RATE);
+            if (currentSize <= MIN_SIZE) {
                 // Au lieu de désactiver complètement, on garde le shield minimal (si besoin)
-                currentSize = minSize;
+                currentSize = MIN_SIZE;
             }
         } else {
-            currentSize = min(maxSize, currentSize + rechargeRate);
+            currentSize = min(MAX_SIZE, currentSize + RECHARGE_RATE);
         }
     }
 

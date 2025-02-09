@@ -1,10 +1,11 @@
 class Player {
+    static final float SPEED = 15;
+
     PVector pos, vel;
     PImage sprite;
     PImage originalSprite;
     color col;
     int direction, score;
-    float speed = 15;
     float normalHeight, crouchHeight;
     boolean isJumping, isCrouching;
     Bullet bullet;
@@ -144,7 +145,7 @@ class Player {
         } else {
             // Si le shield est actif, il absorbe les dégâts
             shield.currentSize -= damage * 2;
-            if (shield.currentSize <= shield.minSize) {
+            if (shield.currentSize <= shield.MIN_SIZE) {
                 // Shield break
                 shield.deactivate();
                 takeDamage(damage * 1.5f, knockback * 1.5f, direction); // Dégâts et knockback augmentés
@@ -165,7 +166,7 @@ class Player {
     void move(float dx)
     {
         if (!isInKnockback) {
-            pos.x += dx * speed;
+            pos.x += dx * SPEED;
             if (dx < 0) facing = -1;
             if (dx > 0) facing = 1;
         }
@@ -287,7 +288,7 @@ class Player {
         knockbackTimer = 0;
         isDeathKnockback = false;
         isCrouchingState = false;
-        shield.currentSize = shield.maxSize; // Reset shield size
+        shield.currentSize = shield.MAX_SIZE; // Reset shield size
         shield.deactivate();
     }
 }

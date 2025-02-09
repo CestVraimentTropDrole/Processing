@@ -6,7 +6,6 @@ class Game {
     PImage playerSprite1, playerSprite2;
     PImage bulletSimple, bulletLaser, bulletArrow, bulletLong;
     PImage p1Life, p2Life;
-    Bot bot;
     PImage gunSprite, pistolSprite, blasterSprite, bowSprite;
     ArrayList<Weapon> weapons;
     int weaponSpawnTimer = 0;
