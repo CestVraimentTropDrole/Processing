@@ -4,35 +4,42 @@ class Game {
     Arena arena;
     boolean gameOver;
     PImage playerSprite1, playerSprite2;
-    PImage bulletSprite;
+    PImage bulletSimple, bulletLaser, bulletArrow, bulletLong;
     PImage p1Life, p2Life;
     Bot bot;
     PImage gunSprite, pistolSprite, blasterSprite, bowSprite;
     ArrayList<Weapon> weapons;
     int weaponSpawnTimer = 0;
-    final int WEAPON_SPAWN_DELAY = 600; // 10 secondes (60 frames * 10)
+    final int WEAPON_SPAWN_DELAY = 100; // 10 secondes (60 frames * 10)
     final int WEAPON_LIFETIME = 5000; // 5 secondes (ms)
 
     Game()
     {
         playerSprite1 = loadImage("assets/sprites/player_red_idle.png");
         playerSprite2 = loadImage("assets/sprites/player_yellow_idle.png");
-        bulletSprite = loadImage("assets/sprites/bullet.png");
         gunSprite = loadImage("assets/sprites/gun_ak47.png");
         pistolSprite = loadImage("assets/sprites/gun_gunsimple.png");
         blasterSprite = loadImage("assets/sprites/gun_blaster.png");
         bowSprite = loadImage("assets/sprites/gun_bow.png");
         p1Life = loadImage("assets/sprites/life_red.png");
         p2Life = loadImage("assets/sprites/life_yellow.png");
+        bulletSimple = loadImage("assets/sprites/bullet_simple.png");
+        bulletLaser = loadImage("assets/sprites/bullet_laser.png");
+        bulletArrow = loadImage("assets/sprites/bullet_arrow.png");
+        bulletLong = loadImage("assets/sprites/bullet_long.png");
+
 
         weapons = new ArrayList<Weapon>();
         PImage player1Sprite = playerSprite1.copy();
         PImage player2Sprite = playerSprite2.copy();
-        bulletSprite.resize(20, 20);
+        bulletSimple.resize(20, 20);
+        bulletLaser.resize(20, 20);
+        bulletArrow.resize(20, 20);
+        bulletLong.resize(20, 20);
 
         arena = new Arena(width, height);
-        player1 = new Player(width/4, height - 200, player1Sprite, bulletSprite, color(0, 255, 0), 1);
-        player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSprite, color(255, 0, 0), -1);
+        player1 = new Player(width/4, height - 200, player1Sprite, bulletSimple, color(0, 255, 0), 1);
+        player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSimple, color(255, 0, 0), -1);
         player1.arena = arena;
         player2.arena = arena;
         gameOver = false;
@@ -82,24 +89,20 @@ class Game {
 
     void spawnRandomWeapon()
     {
-        // Choisir une plateforme aléatoire
         Platform platform = arena.platforms.get((int)random(arena.platforms.size()));
-
-        // Position aléatoire sur la plateforme
         float weaponX = random(platform.x + 30, platform.x + platform.w - 30);
-        float weaponY = platform.y - 60; // Juste au-dessus de la plateforme
+        float weaponY = platform.y - 60;
 
-        // Choisir aléatoirement entre les armes disponibles
         Weapon newWeapon;
         float rand = random(1);
         if (rand < 0.25) {
-            newWeapon = new Gun(weaponX, weaponY, gunSprite, bulletSprite);
+            newWeapon = new Gun(weaponX, weaponY, gunSprite, bulletLong);  // AK47 avec balles longues
         } else if (rand < 0.5) {
-            newWeapon = new Pistol(weaponX, weaponY, pistolSprite, bulletSprite);
+            newWeapon = new Pistol(weaponX, weaponY, pistolSprite, bulletSimple);  // Pistolet avec balles simples
         } else if (rand < 0.75) {
-            newWeapon = new Blaster(weaponX, weaponY, blasterSprite, bulletSprite);
+            newWeapon = new Blaster(weaponX, weaponY, blasterSprite, bulletLaser);  // Blaster avec laser
         } else {
-            newWeapon = new Bow(weaponX, weaponY, bowSprite, bulletSprite);
+            newWeapon = new Bow(weaponX, weaponY, bowSprite, bulletArrow);  // Arc avec flèches
         }
         newWeapon.spawnTime = millis();
         weapons.add(newWeapon);
@@ -209,7 +212,7 @@ class Game {
 
     void handleHit(Player attacker, Player target)
     {
-        float baseDamage = random(1, 4);
+        float baseDamage = attacker.bullet.damage;
         float baseKnockback = 5;
 
         // Direction du knockback

@@ -1,5 +1,4 @@
-class Weapon
-{
+class Weapon {
     PImage sprite;
     PImage bulletSprite;
     float x, y;
@@ -7,18 +6,23 @@ class Weapon
     Player owner = null;
     float bulletSpeed;
     float cooldown;
+    int maxAmmo;
+    int currentAmmo;
+    float damage;
     long spawnTime;
     float alpha = 255;
     boolean isFading = false;
 
-    Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown)
-    {
+    Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown, int maxAmmo, float damage) {
         this.x = x;
         this.y = y;
         this.sprite = weaponSprite;
         this.bulletSprite = bulletSprite;
         this.bulletSpeed = bulletSpeed;
         this.cooldown = cooldown;
+        this.maxAmmo = maxAmmo;
+        this.currentAmmo = maxAmmo;
+        this.damage = damage;
     }
 
     void fadeOut()
@@ -87,16 +91,25 @@ class Weapon
             isPickedUp = true;
             owner = player;
             player.equip(this);
+            owner.bullet.setBulletSprite(this.bulletSprite);
         }
     }
 
     void shoot()
     {
-        if (owner != null && owner.bullet.canShoot()){
-            owner.bullet.setBulletSprite(this.bulletSprite);
+        if (owner != null && owner.bullet.canShoot() && currentAmmo > 0) {
             owner.bullet.speed = this.bulletSpeed;
             owner.bullet.cooldownDuration = (int)this.cooldown;
+            owner.bullet.damage = this.damage;
             owner.shoot();
+            currentAmmo--;
+
+            if (currentAmmo <= 0) {
+                owner.bullet.resetBulletSprite(); // Reset the bullet sprite when weapon is empty
+                owner.currentWeapon = null;
+                owner = null;
+                isPickedUp = false;
+            }
         }
     }
 }

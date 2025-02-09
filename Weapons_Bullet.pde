@@ -1,28 +1,43 @@
 class Bullet {
     PVector pos;
-    PImage bulletSprite;
+    PImage currentBulletSprite; // Renamed from bulletSprite
+    PImage defaultBulletSprite; // Store the default sprite
     float speed = 15;
     ArrayList<PVector> bullets;
     ArrayList<Integer> directions;
+    ArrayList<PImage> bulletSprites; // New: Store sprite for each bullet
     long lastShotTime = 0;
     int cooldownDuration = 500;
     int currentAmmo = 10;
     int maxAmmo = 10;
     boolean isReloading = false;
     long reloadStartTime = 0;
-    int reloadDuration = 2000; // 2 secondes pour recharger
+    int reloadDuration = 2000;
+    float damage = 1.0;
 
     Bullet(PImage bulletSprite)
     {
-        this.bulletSprite = bulletSprite;
+        this.defaultBulletSprite = bulletSprite;
+        this.currentBulletSprite = bulletSprite;
         bullets = new ArrayList<PVector>();
         directions = new ArrayList<Integer>();
+        bulletSprites = new ArrayList<PImage>(); // Initialize the sprite list
         currentAmmo = maxAmmo;
     }
 
     void setBulletSprite(PImage newSprite)
     {
-        this.bulletSprite = newSprite;
+        this.currentBulletSprite = newSprite;
+    }
+
+    void resetBulletSprite()
+    {
+        this.currentBulletSprite = this.defaultBulletSprite;
+    }
+
+    void setBulletDamage(float newDamage)
+    {
+        this.damage = newDamage;
     }
 
     boolean canShoot()
@@ -51,6 +66,7 @@ class Bullet {
         if (canShoot()) {
             bullets.add(new PVector(x, y));
             directions.add(direction);
+            bulletSprites.add(currentBulletSprite); // Store the current sprite for this bullet
             lastShotTime = millis();
             currentAmmo--;
         }
@@ -64,6 +80,7 @@ class Bullet {
             if (bullet.x < -50 || bullet.x > width + 50) {
                 bullets.remove(i);
                 directions.remove(i);
+                bulletSprites.remove(i);
             }
         }
     }
@@ -85,13 +102,16 @@ class Bullet {
         if (index >= 0 && index < bullets.size()) {
             bullets.remove(index);
             directions.remove(index);
+            bulletSprites.remove(index);
         }
     }
 
     void draw()
     {
-        for (PVector bullet : bullets) {
-            image(bulletSprite, bullet.x, bullet.y);
+        for (int i = 0; i < bullets.size(); i++) {
+            PVector bullet = bullets.get(i);
+            PImage sprite = bulletSprites.get(i);
+            image(sprite, bullet.x, bullet.y);
         }
     }
 
@@ -104,5 +124,7 @@ class Bullet {
     {
         bullets.clear();
         directions.clear();
+        bulletSprites.clear();
+        resetBulletSprite();
     }
 }
