@@ -7,7 +7,10 @@ class Weapon
     Player owner = null;
     float bulletSpeed;
     float cooldown;
-    
+    long spawnTime;
+    float alpha = 255;
+    boolean isFading = false;
+
     Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown)
     {
         this.x = x;
@@ -17,20 +20,31 @@ class Weapon
         this.bulletSpeed = bulletSpeed;
         this.cooldown = cooldown;
     }
-    
+
+    void fadeOut()
+    {
+        isFading = true;
+        alpha -= 5;
+        alpha = max(0, alpha);
+    }
+
     void draw()
     {
         if (!isPickedUp) {
+            if (isFading) {
+                tint(255, alpha);
+            }
             image(sprite, x, y);
+            noTint();
             return;
         }
-        
+
         if (owner != null) {
             pushMatrix();
             if (owner.bullet.isReloading) {
                 float baseX = owner.pos.x + owner.sprite.width * (owner.facing < 0 ? 0.10f : 0.90f);
                 float baseY = owner.pos.y + owner.sprite.height * 0.56f;
-                
+
                 translate(baseX, baseY);
                 if (owner.facing < 0) {
                     scale(-1, 1); // Ajout du scale pour le côté gauche
@@ -60,15 +74,13 @@ class Weapon
             popMatrix();
         }
     }
-    
+
     boolean canPickup(Player player)
     {
         float pickupRadius = 100;
-        return !isPickedUp && 
-               abs(player.pos.x - x) < pickupRadius && 
-               abs(player.pos.y - y) < pickupRadius;
+        return !isPickedUp && abs(player.pos.x - x) < pickupRadius && abs(player.pos.y - y) < pickupRadius;
     }
-    
+
     void pickup(Player player)
     {
         if (canPickup(player)) {

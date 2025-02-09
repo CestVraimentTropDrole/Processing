@@ -11,7 +11,7 @@ class Bullet {
     boolean isReloading = false;
     long reloadStartTime = 0;
     int reloadDuration = 2000; // 2 secondes pour recharger
- 
+
     Bullet(PImage bulletSprite)
     {
         this.bulletSprite = bulletSprite;
@@ -19,7 +19,7 @@ class Bullet {
         directions = new ArrayList<Integer>();
         currentAmmo = maxAmmo;
     }
-    
+
     void setBulletSprite(PImage newSprite)
     {
         this.bulletSprite = newSprite;
@@ -29,7 +29,7 @@ class Bullet {
     {
         return millis() - lastShotTime >= cooldownDuration && currentAmmo > 0 && !isReloading;
     }
-    
+
     void startReload()
     {
         if (!isReloading && currentAmmo < maxAmmo) {
@@ -37,7 +37,7 @@ class Bullet {
             reloadStartTime = millis();
         }
     }
-    
+
     void updateReload()
     {
         if (isReloading && millis() - reloadStartTime >= reloadDuration) {
@@ -45,7 +45,7 @@ class Bullet {
             isReloading = false;
         }
     }
-    
+
     void fire(float x, float y, int direction)
     {
         if (canShoot()) {
@@ -55,7 +55,7 @@ class Bullet {
             currentAmmo--;
         }
     }
-    
+
     void update()
     {
         for (int i = bullets.size() - 1; i >= 0; i--) {
@@ -67,7 +67,7 @@ class Bullet {
             }
         }
     }
-    
+
     int checkHit(Player target)
     {
         for (int i = 0; i < bullets.size(); i++) {
@@ -79,7 +79,7 @@ class Bullet {
         }
         return -1;  // Aucune balle n'a touché
     }
-    
+
     void removeBullet(int index)
     {
         if (index >= 0 && index < bullets.size()) {
@@ -87,7 +87,7 @@ class Bullet {
             directions.remove(index);
         }
     }
-    
+
     void draw()
     {
         for (PVector bullet : bullets) {

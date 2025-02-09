@@ -1,7 +1,7 @@
 class Platform {
     float x, y, w, h;
     boolean isMain; // Permet de savoir si c'est la Main Platform ou non
-  
+
     Platform(float x, float y, float w, float h, boolean isMain)
     {
         this.x = x;
@@ -10,13 +10,13 @@ class Platform {
         this.h = h;
         this.isMain = isMain;
     }
-  
+
     void draw()
     {
         fill(isMain ? #8B4513 : #A0522D); // Couleur de la Main Platform (tu peux changer poto, j'ai mis au pif)
         rect(x, y, w, h);
     }
-  
+
     boolean isOnPlatform(float px, float py, float ph, float vy)
     {
         // Collision horizontale

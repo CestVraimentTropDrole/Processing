@@ -9,6 +9,9 @@ class Game {
     Bot bot;
     PImage gunSprite, pistolSprite;
     ArrayList<Weapon> weapons;
+    int weaponSpawnTimer = 0;
+    final int WEAPON_SPAWN_DELAY = 600; // 10 secondes (60 frames * 10)
+    final int WEAPON_LIFETIME = 5000; // 5 secondes (ms)
 
     Game()
     {
@@ -24,11 +27,10 @@ class Game {
         PImage player1Sprite = playerSprite1.copy();
         PImage player2Sprite = playerSprite2.copy();
         bulletSprite.resize(20, 20);
-        
-        arena = new Arena(width, height); 
+
+        arena = new Arena(width, height);
         player1 = new Player(width/4, height - 200, player1Sprite, bulletSprite, color(0, 255, 0), 1);
         player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSprite, color(255, 0, 0), -1);
-        spawnWeapons();
         player1.arena = arena;
         player2.arena = arena;
         gameOver = false;
@@ -53,19 +55,18 @@ class Game {
         }
     }
 
-    void spawnWeapons()
-    {
-        weapons.add(new Gun(width/4, height-400, gunSprite, bulletSprite));
-        weapons.add(new Pistol(3*width/4, height-400, pistolSprite, bulletSprite));
-    }    
-    
     void update()
     {
         if (!gameOver) {
             player1.update();
             player2.update();
             checkCollisions();
-            
+            updateWeapons();
+            weaponSpawnTimer++;
+            if (weaponSpawnTimer >= WEAPON_SPAWN_DELAY) {
+                spawnRandomWeapon();
+                weaponSpawnTimer = 0;
+            }
             for (Weapon weapon : weapons) {
                 if (weapon.canPickup(player1) && keyPressed && key == ' ') {
                     weapon.pickup(player1);
@@ -77,11 +78,47 @@ class Game {
         }
     }
 
+    void spawnRandomWeapon()
+    {
+        // Choisir une plateforme aléatoire
+        Platform platform = arena.platforms.get((int)random(arena.platforms.size()));
+
+        // Position aléatoire sur la plateforme
+        float weaponX = random(platform.x + 30, platform.x + platform.w - 30);
+        float weaponY = platform.y - 60; // Juste au-dessus de la plateforme
+
+        // Choisir aléatoirement entre un pistolet et un fusil (a changer)
+        Weapon newWeapon;
+        if (random(1) < 0.5) {
+            newWeapon = new Gun(weaponX, weaponY, gunSprite, bulletSprite);
+        } else {
+            newWeapon = new Pistol(weaponX, weaponY, pistolSprite, bulletSprite);
+        }
+        newWeapon.spawnTime = millis();
+        weapons.add(newWeapon);
+    }
+
+    void updateWeapons()
+    {
+        for (int i = weapons.size() - 1; i >= 0; i--) {
+            Weapon weapon = weapons.get(i);
+            if (!weapon.isPickedUp) {
+                long timeAlive = millis() - weapon.spawnTime;
+                if (timeAlive > WEAPON_LIFETIME) {
+                    weapon.fadeOut();
+                    if (weapon.alpha <= 0) {
+                        weapons.remove(i);
+                    }
+                }
+            }
+        }
+    }
+
     void draw()
     {
         background(200);
         arena.draw();
-    
+
         if (!gameOver) {
             displayScore();
             for (Weapon weapon : weapons) {
@@ -99,14 +136,14 @@ class Game {
     void displayScore()
     {
         textSize(32);
-        
+
         // Joueur 1 (gauche)
         fill(0, 255, 0);
-        text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);  
+        text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);
         for (int i = 0; i < player1.lives; i++) {
             image(p1Life, 50 + i * 40, 70);
         }
-        
+
         // Joueur 2 (droite)
         fill(255, 0, 0);
         text(nf(player2.damagePercent, 0, 1) + "%", width - 150, 50);
@@ -114,7 +151,7 @@ class Game {
             image(p2Life, width - 150 + i * 40, 70);
         }
     }
-  
+
     void handleDeath(Player deadPlayer, Player winner)
     {
         deadPlayer.lives--;
@@ -134,7 +171,7 @@ class Game {
         textSize(16);
         text("'R' pour relancer, 'H' pour retour", width/2 - 90, height/2 + 50);
     }
-  
+
     void checkCollisions()
     {
         // Collisions balles/joueurs
@@ -143,13 +180,13 @@ class Game {
             handleHit(player1, player2);
             player1.bullet.removeBullet(hitIndex1);
         }
-        
+
         int hitIndex2 = player2.bullet.checkHit(player1);
         if (hitIndex2 >= 0) {
             handleHit(player2, player1);
             player2.bullet.removeBullet(hitIndex2);
         }
-        
+
         // Vérification de la mort des joueurs
         if (arena.checkPlayerDeath(player1)) {
             handleDeath(player1, player2);
@@ -157,7 +194,7 @@ class Game {
         if (arena.checkPlayerDeath(player2)) {
             handleDeath(player2, player1);
         }
-        
+
         // Collisions joueurs/arène
         player1.handleArenaCollision(arena);
         player2.handleArenaCollision(arena);
@@ -165,12 +202,12 @@ class Game {
 
     void handleHit(Player attacker, Player target)
     {
-        float baseDamage = random(1, 4);  
-        float baseKnockback = 5;  
-        
+        float baseDamage = random(1, 4);
+        float baseKnockback = 5;
+
         // Direction du knockback
         int knockbackDirection = (attacker.pos.x < target.pos.x) ? 1 : -1;
-        
+
         target.takeDamage(baseDamage, baseKnockback, knockbackDirection);
     }
 

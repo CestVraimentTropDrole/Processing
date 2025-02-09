@@ -2,7 +2,7 @@ class Bot {
     Player player;
     Player target;
     int difficulty;
-    
+
     float shootRange;
     float minDistance;
     int thinkDelay;
@@ -11,15 +11,14 @@ class Bot {
     float moveChance;
     float reactionTime;
     boolean perfectAim;
-    
+
     int thinkTimer = 0;
     int patrolTimer = 0;
     boolean isPatrollingRight = true;
     float lastX = 0;
     int stuckCounter = 0;
     float edgeMargin = 30;
-    
-    
+
     Bot(Player botPlayer, Player targetPlayer, int diff)
     {
         player = botPlayer;
@@ -27,7 +26,7 @@ class Bot {
         lastX = player.pos.x;
         setDifficulty(diff);
     }
-    
+
     void setDifficulty(int diff)
     {
         difficulty = diff;
@@ -42,7 +41,7 @@ class Bot {
                 reactionTime = 30;
                 perfectAim = false;
                 break;
-                
+
             case 1: // NORMAL
                 shootRange = 400;
                 minDistance = 200;
@@ -53,7 +52,7 @@ class Bot {
                 reactionTime = 20;
                 perfectAim = false;
                 break;
-                
+
             case 2: // DUR
                 shootRange = 500;
                 minDistance = 150;
@@ -64,7 +63,7 @@ class Bot {
                 reactionTime = 10;
                 perfectAim = true;
                 break;
-                
+
             case 3: // HARDCORE
                 shootRange = 600;
                 minDistance = 100;
@@ -77,12 +76,12 @@ class Bot {
                 break;
         }
     }
-    
+
     void update()
     {
         thinkTimer++;
         patrolTimer++;
-        
+
         // Check si le bot est bloqué
         if (abs(player.pos.x - lastX) < 1) {
             stuckCounter++;
@@ -94,19 +93,19 @@ class Bot {
             stuckCounter = 0;
         }
         lastX = player.pos.x;
-        
+
         if (thinkTimer >= thinkDelay) {
             thinkTimer = 0;
             think();
         }
-        
+
         // Comportement autonome quand le joueur est loin (Prototype)
         float distance = abs(player.pos.x - target.pos.x);
 
         if (distance > shootRange * 1.5) {
             patrol();
         }
-        
+
         if (!player.isJumping) {
             if (difficulty == 3) {
                 float bulletDistance = checkIncomingBullets();
@@ -117,12 +116,12 @@ class Bot {
                 player.jump();
             }
         }
-        
+
         if (canShoot()) {
             player.shoot();
         }
     }
-    
+
     float checkIncomingBullets()
     {
         float closestBullet = -1;
@@ -137,7 +136,7 @@ class Bot {
         }
         return closestBullet;
     }
-    
+
     void patrol()
     {
         // Move tout seul si t'es loin (Prototype)
@@ -145,21 +144,21 @@ class Bot {
             isPatrollingRight = !isPatrollingRight;
             patrolTimer = 0;
         }
-        
+
         // Évite de sortir de l'écran
         if (player.pos.x < 100) {
             isPatrollingRight = true;
         } else if (player.pos.x > width - 100) {
             isPatrollingRight = false;
         }
-        
+
         move(isPatrollingRight ? 1 : -1);
-        
+
         if (random(1) < jumpChance * 2) {
             player.jump();
         }
     }
-    
+
     boolean canShoot()
     {
         float distance = abs(player.pos.x - target.pos.x);
@@ -170,21 +169,21 @@ class Bot {
                 float predictedX = target.pos.x + target.vel.x * 10;
                 targetOnRight = predictedX > player.pos.x;
             }
-            
+
             return ((targetOnRight && player.facing > 0) || (!targetOnRight && player.facing < 0));
         }
         return false;
     }
-    
+
     void think()
     {
         float dx = target.pos.x - player.pos.x;
         float distance = abs(dx);
-        
+
         if (difficulty == 3) {
             // Mode Hardcore
             float optimalDistance = (shootRange + minDistance) / 2;
-            
+
             if (distance < 50) { // Trop proche
                 move(dx > 0 ? -1 : 1);
             } else if (abs(distance - optimalDistance) > 10) {
@@ -205,7 +204,7 @@ class Bot {
             }
         }
     }
-    
+
     void move(float direction)
     {
         if (direction < 0) {
@@ -216,7 +215,7 @@ class Bot {
             leftPressed2 = false;
         }
     }
-    
+
     void stop()
     {
         leftPressed2 = false;

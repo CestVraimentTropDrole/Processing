@@ -20,19 +20,19 @@ void draw()
     } else {
         game.update();
         game.draw();
-    
+
       // Joueur 1
-    if (leftPressed1 && !rightPressed1) 
+    if (leftPressed1 && !rightPressed1)
         game.player1.move(-1);
-    if (rightPressed1 && !leftPressed1) 
+    if (rightPressed1 && !leftPressed1)
         game.player1.move(1);
-  
+
     // Joueur 2
-    if (leftPressed2 && !rightPressed2) 
+    if (leftPressed2 && !rightPressed2)
         game.player2.move(-1);
-    if (rightPressed2 && !leftPressed2) 
+    if (rightPressed2 && !leftPressed2)
         game.player2.move(1);
-  }
+    }
 }
 
 void keyPressed()
@@ -43,7 +43,7 @@ void keyPressed()
             startScreen.active = false;
             game.startGame();  // Démarre le jeu
         }
-      } else {
+    } else {
         if (key == 'r' && game.gameOver) {
             game.reset();  // Recommence la partie
         } else if (key == 'h' && game.gameOver) {
