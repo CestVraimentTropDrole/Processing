@@ -19,7 +19,7 @@ class Game {
         pistolSprite = loadImage("assets/sprites/gun_gunsimple.png");
         p1Life = loadImage("assets/sprites/life_red.png");
         p2Life = loadImage("assets/sprites/life_yellow.png");
-        
+
         weapons = new ArrayList<Weapon>();
         PImage player1Sprite = playerSprite1.copy();
         PImage player2Sprite = playerSprite2.copy();
