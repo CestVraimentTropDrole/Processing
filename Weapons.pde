@@ -8,12 +8,15 @@ class Weapon {
     float cooldown;
     int maxAmmo;
     int currentAmmo;
+    float minDamage;
+    float maxDamage;
     float damage;
     long spawnTime;
     float alpha = 255;
     boolean isFading = false;
 
-    Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown, int maxAmmo, float damage) {
+    Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown, int maxAmmo, float minDamage, float maxDamage, int reloadTime)
+    {
         this.x = x;
         this.y = y;
         this.sprite = weaponSprite;
@@ -22,7 +25,9 @@ class Weapon {
         this.cooldown = cooldown;
         this.maxAmmo = maxAmmo;
         this.currentAmmo = maxAmmo;
-        this.damage = damage;
+        this.minDamage = minDamage;
+        this.maxDamage = maxDamage;
+        this.reloadTime = reloadTime;
     }
 
     void fadeOut()
@@ -85,27 +90,43 @@ class Weapon {
         return !isPickedUp && abs(player.pos.x - x) < pickupRadius && abs(player.pos.y - y) < pickupRadius;
     }
 
+    float getRandomDamage()
+    {
+        return random(minDamage, maxDamage);
+    }
+
     void pickup(Player player)
     {
         if (canPickup(player)) {
             isPickedUp = true;
             owner = player;
             player.equip(this);
-            owner.bullet.setBulletSprite(this.bulletSprite);
+            owner.bullet.setBulletProperties(
+                this.bulletSprite,
+                this.bulletSpeed,
+                this.getRandomDamage(),
+                (int)this.cooldown
+            );
+            owner.bullet.maxAmmo = this.maxAmmo;
+            owner.bullet.currentAmmo = this.maxAmmo;
+            owner.bullet.reloadDuration = this.reloadTime;
         }
     }
 
     void shoot()
     {
         if (owner != null && owner.bullet.canShoot() && currentAmmo > 0) {
-            owner.bullet.speed = this.bulletSpeed;
-            owner.bullet.cooldownDuration = (int)this.cooldown;
-            owner.bullet.damage = this.damage;
+            owner.bullet.setBulletProperties(
+                this.bulletSprite,
+                this.bulletSpeed,
+                this.getRandomDamage(),
+                (int)this.cooldown
+            );
             owner.shoot();
             currentAmmo--;
 
             if (currentAmmo <= 0) {
-                owner.bullet.resetBulletSprite(); // Reset the bullet sprite when weapon is empty
+                owner.bullet.resetProperties();
                 owner.currentWeapon = null;
                 owner = null;
                 isPickedUp = false;

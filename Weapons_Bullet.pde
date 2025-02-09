@@ -1,11 +1,14 @@
 class Bullet {
     PVector pos;
-    PImage currentBulletSprite; // Renamed from bulletSprite
-    PImage defaultBulletSprite; // Store the default sprite
-    float speed = 15;
+    PImage currentBulletSprite;
+    PImage defaultBulletSprite;
+    float defaultSpeed = 15;
+    float currentSpeed;
+    float currentDamage;
+    int currentCooldown;
     ArrayList<PVector> bullets;
     ArrayList<Integer> directions;
-    ArrayList<PImage> bulletSprites; // New: Store sprite for each bullet
+    ArrayList<BulletProperties> bulletProps;
     long lastShotTime = 0;
     int cooldownDuration = 500;
     int currentAmmo = 10;
@@ -15,13 +18,28 @@ class Bullet {
     int reloadDuration = 2000;
     float damage = 1.0;
 
+    class BulletProperties {
+        float speed;
+        float damage;
+        float cooldown;
+        PImage sprite;
+
+        BulletProperties(float speed, float damage, float cooldown, PImage sprite) {
+            this.speed = speed;
+            this.damage = damage;
+            this.cooldown = cooldown;
+            this.sprite = sprite;
+        }
+    }
+
     Bullet(PImage bulletSprite)
     {
         this.defaultBulletSprite = bulletSprite;
         this.currentBulletSprite = bulletSprite;
+        this.currentSpeed = defaultSpeed;
         bullets = new ArrayList<PVector>();
         directions = new ArrayList<Integer>();
-        bulletSprites = new ArrayList<PImage>(); // Initialize the sprite list
+        bulletProps = new ArrayList<BulletProperties>();
         currentAmmo = maxAmmo;
     }
 
@@ -40,11 +58,6 @@ class Bullet {
         this.damage = newDamage;
     }
 
-    boolean canShoot()
-    {
-        return millis() - lastShotTime >= cooldownDuration && currentAmmo > 0 && !isReloading;
-    }
-
     void startReload()
     {
         if (!isReloading && currentAmmo < maxAmmo) {
@@ -61,26 +74,64 @@ class Bullet {
         }
     }
 
+    void setBulletProperties(PImage sprite, float speed, float damage, int cooldown)
+    {
+        this.currentBulletSprite = sprite;
+        this.currentSpeed = speed;
+        this.currentDamage = damage;
+        this.currentCooldown = cooldown;
+    }
+
+    void resetProperties()
+    {
+        this.currentBulletSprite = this.defaultBulletSprite;
+        this.currentSpeed = this.defaultSpeed;
+        this.currentDamage = 1.0f;
+        this.currentCooldown = 500;
+        this.currentAmmo = this.maxAmmo;
+        this.isReloading = false;
+        this.reloadTime = reloadTime;
+    }
+
+    boolean canShoot()
+    {
+        return millis() - lastShotTime >= currentCooldown && currentAmmo > 0 && !isReloading;
+    }
+
     void fire(float x, float y, int direction)
     {
         if (canShoot()) {
             bullets.add(new PVector(x, y));
             directions.add(direction);
-            bulletSprites.add(currentBulletSprite); // Store the current sprite for this bullet
+            bulletProps.add(new BulletProperties(
+                currentSpeed,
+                currentDamage,
+                currentCooldown,
+                currentBulletSprite
+            ));
             lastShotTime = millis();
             currentAmmo--;
         }
+    }
+
+    float getDamageForBullet(int index)
+    {
+        if (index >= 0 && index < bulletProps.size()) {
+            return bulletProps.get(index).damage;
+        }
+        return currentDamage;
     }
 
     void update()
     {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             PVector bullet = bullets.get(i);
-            bullet.x += speed * directions.get(i);
+            BulletProperties props = bulletProps.get(i);
+            bullet.x += props.speed * directions.get(i);
             if (bullet.x < -50 || bullet.x > width + 50) {
                 bullets.remove(i);
                 directions.remove(i);
-                bulletSprites.remove(i);
+                bulletProps.remove(i);
             }
         }
     }
@@ -89,8 +140,7 @@ class Bullet {
     {
         for (int i = 0; i < bullets.size(); i++) {
             PVector bullet = bullets.get(i);
-            if (bullet.x > target.pos.x && bullet.x < target.pos.x + target.sprite.width && 
-                bullet.y > target.pos.y && bullet.y < target.pos.y + target.sprite.height) {
+            if (bullet.x > target.pos.x && bullet.x < target.pos.x + target.sprite.width && bullet.y > target.pos.y && bullet.y < target.pos.y + target.sprite.height) {
                 return i;  // Retourne l'index de la balle qui touche
             }
         }
@@ -102,7 +152,7 @@ class Bullet {
         if (index >= 0 && index < bullets.size()) {
             bullets.remove(index);
             directions.remove(index);
-            bulletSprites.remove(index);
+            bulletProps.remove(index);
         }
     }
 
@@ -110,8 +160,8 @@ class Bullet {
     {
         for (int i = 0; i < bullets.size(); i++) {
             PVector bullet = bullets.get(i);
-            PImage sprite = bulletSprites.get(i);
-            image(sprite, bullet.x, bullet.y);
+            BulletProperties props = bulletProps.get(i);
+            image(props.sprite, bullet.x, bullet.y);
         }
     }
 
@@ -124,7 +174,7 @@ class Bullet {
     {
         bullets.clear();
         directions.clear();
-        bulletSprites.clear();
-        resetBulletSprite();
+        bulletProps.clear();
+        resetProperties();
     }
 }

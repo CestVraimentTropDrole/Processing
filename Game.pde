@@ -187,13 +187,13 @@ class Game {
         // Collisions balles/joueurs
         int hitIndex1 = player1.bullet.checkHit(player2);
         if (hitIndex1 >= 0) {
-            handleHit(player1, player2);
+            handleHit(player1, player2, hitIndex1);
             player1.bullet.removeBullet(hitIndex1);
         }
 
         int hitIndex2 = player2.bullet.checkHit(player1);
         if (hitIndex2 >= 0) {
-            handleHit(player2, player1);
+            handleHit(player2, player1, hitIndex2);
             player2.bullet.removeBullet(hitIndex2);
         }
 
@@ -210,9 +210,9 @@ class Game {
         player2.handleArenaCollision(arena);
     }
 
-    void handleHit(Player attacker, Player target)
+    void handleHit(Player attacker, Player target, int bulletIndex)
     {
-        float baseDamage = attacker.bullet.damage;
+        float baseDamage = attacker.bullet.getDamageForBullet(bulletIndex);
         float baseKnockback = 5;
 
         // Direction du knockback
