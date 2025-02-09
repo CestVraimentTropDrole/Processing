@@ -7,7 +7,7 @@ class Game {
     PImage bulletSprite;
     PImage p1Life, p2Life;
     Bot bot;
-    PImage gunSprite, pistolSprite;
+    PImage gunSprite, pistolSprite, blasterSprite, bowSprite;
     ArrayList<Weapon> weapons;
     int weaponSpawnTimer = 0;
     final int WEAPON_SPAWN_DELAY = 600; // 10 secondes (60 frames * 10)
@@ -20,6 +20,8 @@ class Game {
         bulletSprite = loadImage("assets/sprites/bullet.png");
         gunSprite = loadImage("assets/sprites/gun_ak47.png");
         pistolSprite = loadImage("assets/sprites/gun_gunsimple.png");
+        blasterSprite = loadImage("assets/sprites/gun_blaster.png");
+        bowSprite = loadImage("assets/sprites/gun_bow.png");
         p1Life = loadImage("assets/sprites/life_red.png");
         p2Life = loadImage("assets/sprites/life_yellow.png");
 
@@ -87,12 +89,17 @@ class Game {
         float weaponX = random(platform.x + 30, platform.x + platform.w - 30);
         float weaponY = platform.y - 60; // Juste au-dessus de la plateforme
 
-        // Choisir aléatoirement entre un pistolet et un fusil (a changer)
+        // Choisir aléatoirement entre les armes disponibles
         Weapon newWeapon;
-        if (random(1) < 0.5) {
+        float rand = random(1);
+        if (rand < 0.25) {
             newWeapon = new Gun(weaponX, weaponY, gunSprite, bulletSprite);
-        } else {
+        } else if (rand < 0.5) {
             newWeapon = new Pistol(weaponX, weaponY, pistolSprite, bulletSprite);
+        } else if (rand < 0.75) {
+            newWeapon = new Blaster(weaponX, weaponY, blasterSprite, bulletSprite);
+        } else {
+            newWeapon = new Bow(weaponX, weaponY, bowSprite, bulletSprite);
         }
         newWeapon.spawnTime = millis();
         weapons.add(newWeapon);
