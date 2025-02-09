@@ -2,6 +2,7 @@ class Arena {
     float width, height;
     ArrayList<Platform> platforms;
     float deathY;
+    PImage background;
   
     Arena(float w, float h)
     {
@@ -10,6 +11,8 @@ class Arena {
         deathY = height + 200;
         platforms = new ArrayList<Platform>();
         setupPlatforms();
+        background = loadImage("assets/sprites/bg_bg1.png");
+        background.resize((int)width,(int)height);
     }
     
     void setupPlatforms()
@@ -30,7 +33,7 @@ class Arena {
     void draw() 
     {
         // Fond
-        background(#87CEEB); //  bleu
+        background(background);
         
         // Plateformes
         for (Platform p : platforms) {
