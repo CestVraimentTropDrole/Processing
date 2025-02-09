@@ -1,35 +1,63 @@
 class Bullet {
     PVector pos;
-    PImage bulletSprite;
-    float speed = 15;
+    PImage currentBulletSprite;
+    PImage defaultBulletSprite;
+    float defaultSpeed = 15;
+    float currentSpeed;
+    float currentDamage;
+    int currentCooldown;
     ArrayList<PVector> bullets;
     ArrayList<Integer> directions;
+    ArrayList<BulletProperties> bulletProps;
     long lastShotTime = 0;
     int cooldownDuration = 500;
     int currentAmmo = 10;
     int maxAmmo = 10;
     boolean isReloading = false;
     long reloadStartTime = 0;
-    int reloadDuration = 2000; // 2 secondes pour recharger
- 
-    Bullet(PImage bulletSprite)
-    {
-        this.bulletSprite = bulletSprite;
-        bullets = new ArrayList<PVector>();
-        directions = new ArrayList<Integer>();
-        currentAmmo = maxAmmo;
-    }
-    
-    void setBulletSprite(PImage newSprite)
-    {
-        this.bulletSprite = newSprite;
+    int reloadDuration = 2000;
+    float damage = 1.0;
+
+    class BulletProperties {
+        float speed;
+        float damage;
+        float cooldown;
+        PImage sprite;
+
+        BulletProperties(float speed, float damage, float cooldown, PImage sprite) {
+            this.speed = speed;
+            this.damage = damage;
+            this.cooldown = cooldown;
+            this.sprite = sprite;
+        }
     }
 
-    boolean canShoot()
+    Bullet(PImage bulletSprite)
     {
-        return millis() - lastShotTime >= cooldownDuration && currentAmmo > 0 && !isReloading;
+        this.defaultBulletSprite = bulletSprite;
+        this.currentBulletSprite = bulletSprite;
+        this.currentSpeed = defaultSpeed;
+        bullets = new ArrayList<PVector>();
+        directions = new ArrayList<Integer>();
+        bulletProps = new ArrayList<BulletProperties>();
+        currentAmmo = maxAmmo;
     }
-    
+
+    void setBulletSprite(PImage newSprite)
+    {
+        this.currentBulletSprite = newSprite;
+    }
+
+    void resetBulletSprite()
+    {
+        this.currentBulletSprite = this.defaultBulletSprite;
+    }
+
+    void setBulletDamage(float newDamage)
+    {
+        this.damage = newDamage;
+    }
+
     void startReload()
     {
         if (!isReloading && currentAmmo < maxAmmo) {
@@ -37,7 +65,7 @@ class Bullet {
             reloadStartTime = millis();
         }
     }
-    
+
     void updateReload()
     {
         if (isReloading && millis() - reloadStartTime >= reloadDuration) {
@@ -45,53 +73,95 @@ class Bullet {
             isReloading = false;
         }
     }
-    
+
+    void setBulletProperties(PImage sprite, float speed, float damage, int cooldown)
+    {
+        this.currentBulletSprite = sprite;
+        this.currentSpeed = speed;
+        this.currentDamage = damage;
+        this.currentCooldown = cooldown;
+    }
+
+    void resetProperties()
+    {
+        this.currentBulletSprite = this.defaultBulletSprite;
+        this.currentSpeed = this.defaultSpeed;
+        this.currentDamage = 1.0f;
+        this.currentCooldown = 500;
+        this.currentAmmo = this.maxAmmo;
+        this.isReloading = false;
+        this.reloadDuration = 2000;
+    }
+
+    boolean canShoot()
+    {
+        return millis() - lastShotTime >= currentCooldown && currentAmmo > 0 && !isReloading;
+    }
+
     void fire(float x, float y, int direction)
     {
         if (canShoot()) {
             bullets.add(new PVector(x, y));
             directions.add(direction);
+            bulletProps.add(new BulletProperties(
+                currentSpeed,
+                currentDamage,
+                currentCooldown,
+                currentBulletSprite
+            ));
             lastShotTime = millis();
             currentAmmo--;
         }
     }
-    
+
+    float getDamageForBullet(int index)
+    {
+        if (index >= 0 && index < bulletProps.size()) {
+            return bulletProps.get(index).damage;
+        }
+        return currentDamage;
+    }
+
     void update()
     {
         for (int i = bullets.size() - 1; i >= 0; i--) {
             PVector bullet = bullets.get(i);
-            bullet.x += speed * directions.get(i);
+            BulletProperties props = bulletProps.get(i);
+            bullet.x += props.speed * directions.get(i);
             if (bullet.x < -50 || bullet.x > width + 50) {
                 bullets.remove(i);
                 directions.remove(i);
+                bulletProps.remove(i);
             }
         }
     }
-    
+
     int checkHit(Player target)
     {
         for (int i = 0; i < bullets.size(); i++) {
             PVector bullet = bullets.get(i);
-            if (bullet.x > target.pos.x && bullet.x < target.pos.x + target.sprite.width && 
-                bullet.y > target.pos.y && bullet.y < target.pos.y + target.sprite.height) {
+            if (bullet.x > target.pos.x && bullet.x < target.pos.x + target.sprite.width && bullet.y > target.pos.y && bullet.y < target.pos.y + target.sprite.height) {
                 return i;  // Retourne l'index de la balle qui touche
             }
         }
         return -1;  // Aucune balle n'a touché
     }
-    
+
     void removeBullet(int index)
     {
         if (index >= 0 && index < bullets.size()) {
             bullets.remove(index);
             directions.remove(index);
+            bulletProps.remove(index);
         }
     }
-    
+
     void draw()
     {
-        for (PVector bullet : bullets) {
-            image(bulletSprite, bullet.x, bullet.y);
+        for (int i = 0; i < bullets.size(); i++) {
+            PVector bullet = bullets.get(i);
+            BulletProperties props = bulletProps.get(i);
+            image(props.sprite, bullet.x, bullet.y);
         }
     }
 
@@ -104,5 +174,7 @@ class Bullet {
     {
         bullets.clear();
         directions.clear();
+        bulletProps.clear();
+        resetProperties();
     }
 }
