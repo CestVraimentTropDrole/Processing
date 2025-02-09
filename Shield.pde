@@ -50,8 +50,10 @@ class Shield {
         }
     }
 
-    void draw(float x, float y) {
-        if (!isActive) return;
+    void draw(float x, float y)
+    {
+        if (!isActive)
+            return;
         drawShieldCircle(x, y);
     }
 
