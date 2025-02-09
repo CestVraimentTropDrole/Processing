@@ -5,6 +5,7 @@ class Game {
     boolean gameOver;
     PImage playerSprite1, playerSprite2;
     PImage bulletSprite;
+    PImage p1Life, p2Life;
     Bot bot;
     PImage gunSprite, pistolSprite;
     ArrayList<Weapon> weapons;
@@ -16,7 +17,9 @@ class Game {
         bulletSprite = loadImage("assets/sprites/bullet.png");
         gunSprite = loadImage("assets/sprites/gun_ak47.png");
         pistolSprite = loadImage("assets/sprites/gun_gunsimple.png");
-        
+        p1Life = loadImage("assets/sprites/life_red.png");
+        p2Life = loadImage("assets/sprites/life_yellow.png");
+
         weapons = new ArrayList<Weapon>();
         PImage player1Sprite = playerSprite1.copy();
         PImage player2Sprite = playerSprite2.copy();
@@ -101,14 +104,14 @@ class Game {
         fill(0, 255, 0);
         text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);  
         for (int i = 0; i < player1.lives; i++) {
-            text("<3", 50 + i * 40, 90);
+            image(p1Life, 50 + i * 40, 70);
         }
         
         // Joueur 2 (droite)
         fill(255, 0, 0);
         text(nf(player2.damagePercent, 0, 1) + "%", width - 150, 50);
         for (int i = 0; i < player2.lives; i++) {
-            text("<3", width - 150 + i * 40, 90);
+            image(p2Life, width - 150 + i * 40, 70);
         }
     }
   
