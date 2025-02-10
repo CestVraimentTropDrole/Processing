@@ -1,19 +1,35 @@
+/**
+* Shield - Gestion du bouclier des joueurs
+*
+* Constantes de configuration du bouclier
+**/
 class Shield {
-    float maxSize = 150;
-    float currentSize;
-    float minSize = 0;           // Une taille minimum plus grande pour éviter de casser trop facilement (si besoin)
-    float shrinkRate = 1.0;       // Plus rapide pour une meilleure réactivité
-    float rechargeRate = 1.0;     // Recharge beaucoup plus rapide
-    float alpha = 150;
-    boolean isActive = false;
-    Player owner;
+    static final float MAX_SIZE = 150;        // Taille maximale du bouclier
+    static final float MIN_SIZE = 0;          // Taille minimale du bouclier
+    static final float SHRINK_RATE = 1.0;     // Vitesse de réduction du bouclier
+    static final float RECHARGE_RATE = 1.0;   // Vitesse de recharge du bouclier
+    static final float STROKE_WEIGHT = 3;     // Épaisseur du trait du bouclier
+    static final float SHIELD_ALPHA = 150;    // Transparence du bouclier
 
+    /**
+    * Variables d'état internes
+    * @private Accessibles uniquement dans cette classe
+    **/
+    private float currentSize;   // Taille actuelle du bouclier
+    private boolean isActive;    // État d'activation du bouclier
+    private final Player owner;  // Référence au joueur propriétaire
+
+    /**
+    * Méthodes publiques - Interface externe
+    **/
     Shield(Player player)
     {
-        this.owner = player;
-        currentSize = maxSize;
+        owner = player;
+        currentSize = MAX_SIZE;
+        isActive = false;
     }
 
+    // Contrôles externes du bouclier
     void activate()
     {
         isActive = true;
@@ -24,27 +40,43 @@ class Shield {
         isActive = false;
     }
 
+    // Mise à jour et affichage
     void update()
     {
         if (isActive) {
-            currentSize = max(minSize, currentSize - shrinkRate);
-            if (currentSize <= minSize) {
-                // Au lieu de désactiver complètement, on garde le shield minimal (si besoin)
-                currentSize = minSize;
-            }
+            shrinkShield();
         } else {
-            currentSize = min(maxSize, currentSize + rechargeRate);
+            rechargeShield();
         }
     }
 
     void draw(float x, float y)
     {
-        if (isActive) {
-            noFill();
-            stroke(owner.col, alpha);
-            strokeWeight(3);
-            circle(x, y, currentSize);
-            noStroke();
-        }
+        if (!isActive)
+            return;
+        drawShieldCircle(x, y);
+    }
+
+    /**
+    * Méthodes privées - Logique interne
+    * @private Utilisées uniquement par les méthodes de cette classe
+    **/
+    private void shrinkShield()
+    {
+        currentSize = max(MIN_SIZE, currentSize - SHRINK_RATE);
+    }
+
+    private void rechargeShield()
+    {
+        currentSize = min(MAX_SIZE, currentSize + RECHARGE_RATE);
+    }
+
+    private void drawShieldCircle(float x, float y)
+    {
+        noFill();
+        stroke(owner.col, SHIELD_ALPHA);
+        strokeWeight(STROKE_WEIGHT);
+        circle(x, y, currentSize);
+        noStroke();
     }
 }

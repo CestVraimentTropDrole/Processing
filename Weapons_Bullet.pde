@@ -2,8 +2,7 @@ class Bullet {
     PVector pos;
     PImage currentBulletSprite;
     PImage defaultBulletSprite;
-    float defaultSpeed = 15;
-    float currentSpeed;
+    float currentSpeed = 15;
     float currentDamage;
     int currentCooldown;
     ArrayList<PVector> bullets;
@@ -21,13 +20,11 @@ class Bullet {
     class BulletProperties {
         float speed;
         float damage;
-        float cooldown;
         PImage sprite;
 
         BulletProperties(float speed, float damage, float cooldown, PImage sprite) {
             this.speed = speed;
             this.damage = damage;
-            this.cooldown = cooldown;
             this.sprite = sprite;
         }
     }
@@ -36,26 +33,11 @@ class Bullet {
     {
         this.defaultBulletSprite = bulletSprite;
         this.currentBulletSprite = bulletSprite;
-        this.currentSpeed = defaultSpeed;
+        this.currentSpeed = 15;
         bullets = new ArrayList<PVector>();
         directions = new ArrayList<Integer>();
         bulletProps = new ArrayList<BulletProperties>();
         currentAmmo = maxAmmo;
-    }
-
-    void setBulletSprite(PImage newSprite)
-    {
-        this.currentBulletSprite = newSprite;
-    }
-
-    void resetBulletSprite()
-    {
-        this.currentBulletSprite = this.defaultBulletSprite;
-    }
-
-    void setBulletDamage(float newDamage)
-    {
-        this.damage = newDamage;
     }
 
     void startReload()
@@ -85,7 +67,7 @@ class Bullet {
     void resetProperties()
     {
         this.currentBulletSprite = this.defaultBulletSprite;
-        this.currentSpeed = this.defaultSpeed;
+        this.currentSpeed = 15;
         this.currentDamage = 1.0f;
         this.currentCooldown = 500;
         this.currentAmmo = this.maxAmmo;
@@ -163,11 +145,6 @@ class Bullet {
             BulletProperties props = bulletProps.get(i);
             image(props.sprite, bullet.x, bullet.y);
         }
-    }
-
-    boolean isActive()
-    {
-        return !bullets.isEmpty();
     }
 
     void reset()

@@ -11,7 +11,6 @@ class Weapon {
     float minDamage;
     float maxDamage;
     int reloadTime;
-    float damage;
     long spawnTime;
     float alpha = 255;
     boolean isFading = false;
