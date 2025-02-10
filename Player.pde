@@ -12,7 +12,7 @@ class Player {
     int jumpCount = 0;
     int maxJumps = 2;
     float jumpForce = -15;
-    int lives = 3;  
+    int lives = 3;
     float damagePercent = 0;
     float knockbackMultiplier = 0.1;
     boolean isInKnockback = false;
@@ -31,7 +31,7 @@ class Player {
     float dashVelocity = 0;
     float distanceDashed = 0;
     int dashTimer = 0;
-  
+
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
         pos = new PVector(x, y);
@@ -53,11 +53,11 @@ class Player {
     {
         if (isCrouching || isDashing || (millis() - lastDashTime < dashCooldown)) 
             return;
-        
+
         float dashSpeed = 25;
         float dashDistance = 300;
         dashTimer = 15;
-        
+
         if (left) {
             dashVelocity = -dashSpeed;
             facing = -1;
@@ -67,7 +67,7 @@ class Player {
         } else {
             dashVelocity = facing * dashSpeed;
         }
-        
+
         isDashing = true;
         distanceDashed = 0;
         lastDashTime = millis();
@@ -103,7 +103,7 @@ class Player {
                 vel.x = dashVelocity;
             }
         }
-        
+
         if (isJumping && !isInKnockback && !isDashing) {
             vel.y += 0.6;
         }
@@ -116,7 +116,7 @@ class Player {
             damagePercent += damage;
             float baseHorizontalKnockback = 5;
             float baseVerticalKnockback = 1;
-            
+
             // Knockback spécial de mort au-dessus de 100%
             if (damagePercent >= 100) {
                 baseHorizontalKnockback = 16;
@@ -128,7 +128,7 @@ class Player {
                 knockbackTimer = 15;
                 isDeathKnockback = false;
             }
-            
+
             if (isDeathKnockback) {
             // Trajectoire plus dramatique pour la mort
                 vel.x = baseHorizontalKnockback * direction;
@@ -161,7 +161,7 @@ class Player {
     {
         shield.deactivate();
     }
-    
+
     void move(float dx)
     {
         if (!isInKnockback) {
@@ -170,7 +170,7 @@ class Player {
             if (dx > 0) facing = 1;
         }
     }
-    
+
     void jump()
     {
         if (jumpCount < maxJumps) {
@@ -180,7 +180,7 @@ class Player {
             jumpCount++;
         }
     }
-    
+
     void equip(Weapon weapon)
     {
         currentWeapon = weapon;
@@ -188,24 +188,24 @@ class Player {
 
     void shoot()
     {
-        if (currentWeapon == null) 
+        if (currentWeapon == null)
             return;
-        
+
         bullet.fire(pos.x + sprite.width/2, pos.y + sprite.height/2, facing);
     }
-    
+
     void handleArenaCollision(Arena arena)
     {
         arena.handlePlayerCollision(this);
         if (arena.checkPlayerDeath(this)) {
             lives--;
-            if (lives <= 0) { 
+            if (lives <= 0) {
                 lives = 0;
             }
             reset();
         }
     }
-    
+
     void draw()
     {
         pushMatrix();
@@ -217,12 +217,12 @@ class Player {
             image(sprite, pos.x, pos.y);
         }
         popMatrix();
-        
+
         // Dessiner l'arme si elle existe
         if (currentWeapon != null) {
             currentWeapon.draw();
         }
-        
+
         float shieldX = pos.x + sprite.width/2;
         float shieldY = pos.y + sprite.height/2;
         shield.draw(shieldX, shieldY);
@@ -238,7 +238,7 @@ class Player {
 
         isCrouchingState = crouching;
         isCrouching = crouching;
-        
+
         if (crouching) {
             sprite = originalSprite.copy();  // Utilise une nouvelle copie
             sprite.resize(sprite.width, int(crouchHeight));
@@ -247,7 +247,7 @@ class Player {
             // Vérifie s'il y a de la place pour se relever
             float newY = pos.y - (normalHeight - crouchHeight);
             boolean canStand = true;
-            
+
             // Vérifie les collisions avec les plateformes
             for (Platform p : arena.platforms) {
                 if (newY < p.y + p.h && newY + normalHeight > p.y &&
@@ -256,7 +256,7 @@ class Player {
                     break;
                 }
             }
-            
+
             if (canStand) {
                 sprite = originalSprite.copy();  // Restaure le sprite original
                 pos.y = newY;

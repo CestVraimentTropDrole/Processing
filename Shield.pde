@@ -7,23 +7,23 @@ class Shield {
     float alpha = 150;
     boolean isActive = false;
     Player owner;
-    
+
     Shield(Player player)
     {
         this.owner = player;
         currentSize = maxSize;
     }
-    
+
     void activate()
     {
         isActive = true;
     }
-    
+
     void deactivate()
     {
         isActive = false;
     }
-    
+
     void update()
     {
         if (isActive) {
@@ -36,7 +36,7 @@ class Shield {
             currentSize = min(maxSize, currentSize + rechargeRate);
         }
     }
-    
+
     void draw(float x, float y)
     {
         if (isActive) {
