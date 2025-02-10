@@ -123,7 +123,7 @@ class Game {
                 long timeAlive = millis() - weapon.spawnTime;
                 if (timeAlive > WEAPON_LIFETIME) {
                     weapon.fadeOut();
-                    if (weapon.alpha <= 0) {
+                    if (weapon.getRenderer().getAlpha() <= 0) {
                         weapons.remove(i);
                     }
                 }
