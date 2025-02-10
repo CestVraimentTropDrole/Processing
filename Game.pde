@@ -31,7 +31,7 @@ class Game {
         // Charge les assets des chiffres pour l'UI
         numbers = new PImage[12];
         for (int i=0; i < 10; i++) {
-            numbers[i] = loadImage("assets/sprites/damage/"+i+".png");
+            numbers[i] = loadImage("assets/sprites/damage/"+i+".png"); // Charge les images pour chaque chiffre
         }
         numbers[10] = loadImage("assets/sprites/damage/percent.png"); //Image du %
         numbers[11] = loadImage("assets/sprites/damage/comma.png"); //Image de la ,
@@ -152,6 +152,7 @@ class Game {
 
     void displayPercent(float playerDamage)
     {
+        playerDamage = Math.round(playerDamage * 10) / 10.0; // Arrondi à 1 décimal
         String damage = str(playerDamage); // Transforme les dégâts du joueur en chaine de caractères
         int[] digits = new int[damage.length()+1]; // Créé le tableau de chiffres
         imageDamage = new PImage[digits.length]; // Initialise le tableau d'images
