@@ -1,74 +1,112 @@
+/**
+* Arena - Gestion de l'environnement de jeu et des collisions
+*
+* Constantes de configuration de l'arène
+**/
 class Arena {
-    float width, height;
-    ArrayList<Platform> platforms;
-    float deathY;
-    PImage background;
+    static final float DEATH_OFFSET = 200;           // Distance sous l'écran pour la zone de mort
+    static final float DEATH_LINE_OFFSET = 50;       // Décalage de la ligne de mort visuelle
+    static final float DEATH_BOUNDARY = 500;         // Limite horizontale de mort
+    static final float MAIN_PLATFORM_HEIGHT = 300;   // Hauteur de la plateforme principale
+    static final float MAIN_PLATFORM_WIDTH = 0.6f;   // Largeur relative de la plateforme principale
+    static final float SIDE_PLATFORM_WIDTH = 0.2f;   // Largeur relative des plateformes secondaires
+    static final color DEATH_LINE_COLOR = #FF0000;   // Couleur de la ligne de mort
+    static final int DEATH_LINE_ALPHA = 100;         // Transparence de la ligne de mort
 
+    /**
+    * Variables d'état de l'arène
+    * @private Accessibles uniquement dans cette classe
+    **/
+    private final float width, height;               // Dimensions de l'arène
+    private final float deathY;                      // Position Y de la zone de mort
+    private final ArrayList<Platform> platforms;      // Liste des plateformes
+    private final PImage background;                 // Image de fond
+
+    /**
+    * Méthodes publiques - Interface externe
+    **/
+
+    /**
+    * Constructeur de l'arène
+    * @param w Largeur de l'arène
+    * @param h Hauteur de l'arène
+    **/
     Arena(float w, float h)
     {
-        width = w;
-        height = h;
-        deathY = height + 200;
-        platforms = new ArrayList<Platform>();
+        this.width = w;
+        this.height = h;
+        this.deathY = height + DEATH_OFFSET;
+        this.platforms = new ArrayList<Platform>();
+
         setupPlatforms();
         background = loadImage("assets/sprites/bg_bg1.png");
-        background.resize((int)width,(int)height);
-    }
-
-    void setupPlatforms()
-    {
-        // Plateforme principale plus large et plus haute
-        float mainPlatformWidth = width * 0.6;
-        platforms.add(new Platform(width/2 - mainPlatformWidth/2, height - 300, mainPlatformWidth, 40, true));
-
-        // Plateformes flottantes plus grandes
-        float smallPlatformWidth = width * 0.2;
-        // Plateformes latérales
-        platforms.add(new Platform(width * 0.2 - smallPlatformWidth/2, height - 500, smallPlatformWidth, 25, false));
-        platforms.add(new Platform(width * 0.8 - smallPlatformWidth/2, height - 500, smallPlatformWidth, 25, false));
-        // Plateforme centrale du haut
-        platforms.add(new Platform(width/2 - smallPlatformWidth/2, height - 700, smallPlatformWidth, 25, false));
+        background.resize((int)width, (int)height);
     }
 
     void draw()
     {
-        // Fond
         background(background);
-        
-        // Plateformes
-        for (Platform p : platforms) {
-            p.draw();
+        for (Platform platform : platforms) {
+            platform.draw();
         }
-
-        // Zone de mort (indicateur visuel)
-        noFill();
-        stroke(255, 0, 0, 100);
-        line(0, deathY - 50, width, deathY - 50);
+        drawDeathLine();
     }
 
     boolean checkPlayerDeath(Player player)
     {
-        // Mort si très loin de l'écran
-        return player.pos.y > deathY + 300 || player.pos.x < -500 || player.pos.x > width + 500;
+        return player.pos.y > deathY + DEATH_OFFSET || player.pos.x < -DEATH_BOUNDARY || player.pos.x > width + DEATH_BOUNDARY;
     }
 
     void handlePlayerCollision(Player player)
     {
         boolean onAnyPlatform = false;
 
-        for (Platform p : platforms) {
-            if (p.isOnPlatform(player.pos.x, player.pos.y, player.sprite.height, player.vel.y)) {
-                player.pos.y = p.y - player.sprite.height;
-                player.vel.y = 0;
-                player.isJumping = false;
-                player.jumpCount = 0;
+        // Vérification des collisions avec chaque plateforme
+        for (Platform platform : platforms) {
+            if (platform.isOnPlatform(player.pos.x, player.pos.y, player.sprite.height, player.vel.y)) {
+                alignPlayerWithPlatform(player, platform);
                 onAnyPlatform = true;
                 break;
             }
         }
-
         if (!onAnyPlatform && !player.isJumping) {
             player.isJumping = true;
         }
+    }
+
+    /**
+    * Méthodes privées - Logique interne
+    * @private Utilisées uniquement par les méthodes de cette classe
+    **/
+    private void createSidePlatform(float xPosition, float yOffset, float width)
+    {
+        platforms.add(new Platform(this.width * xPosition - width/2, this.height - yOffset, width, 25, false));
+    }
+
+    private void setupPlatforms()
+    {
+        // Plateforme principale
+        float mainPlatformWidth = width * MAIN_PLATFORM_WIDTH;
+        float sidePlatformWidth = width * SIDE_PLATFORM_WIDTH;
+
+        platforms.add(new Platform(width/2 - mainPlatformWidth/2, height - MAIN_PLATFORM_HEIGHT, mainPlatformWidth, 40, true));
+        createSidePlatform(0.2f, 500, sidePlatformWidth);
+        createSidePlatform(0.8f, 500, sidePlatformWidth);
+        createSidePlatform(0.5f, 700, sidePlatformWidth);
+    }
+
+    private void drawDeathLine()
+    {
+        noFill();
+        stroke(DEATH_LINE_COLOR, DEATH_LINE_ALPHA);
+        line(0, deathY - DEATH_LINE_OFFSET, width, deathY - DEATH_LINE_OFFSET);
+    }
+
+    private void alignPlayerWithPlatform(Player player, Platform platform)
+    {
+        player.pos.y = platform.y - player.sprite.height;
+        player.vel.y = 0;
+        player.isJumping = false;
+        player.jumpCount = 0;
     }
 }

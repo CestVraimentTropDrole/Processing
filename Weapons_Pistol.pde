@@ -17,12 +17,6 @@ class Pistol extends Weapon {
     * @param y Position Y initiale de l'arme
     * @param sprite Sprite de l'arme
     * @param bulletSprite Sprite des projectiles
-    * @param bulletSpeed Vitesse des projectiles
-    * @param fireRate Délai entre les tirs
-    * @param maxAmmo Capacité en munitions
-    * @param minDamage Dégâts minimum
-    * @param maxDamage Dégâts maximum
-    * @param reloadTime Temps de rechargement
     **/
     Pistol(float x, float y, PImage sprite, PImage bulletSprite)
     {

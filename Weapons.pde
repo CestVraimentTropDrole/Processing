@@ -1,98 +1,62 @@
+/**
+* Weapon - Classe principale de gestion des armes
+**/
 class Weapon {
-    PImage sprite;
-    PImage bulletSprite;
-    float x, y;
-    boolean isPickedUp = false;
-    Player owner = null;
-    float bulletSpeed;
-    float cooldown;
-    int maxAmmo;
-    int currentAmmo;
-    float minDamage;
-    float maxDamage;
-    int reloadTime;
-    long spawnTime;
-    float alpha = 255;
-    boolean isFading = false;
+    /**
+    * Variables d'état de l'arme
+    * @private Accessibles uniquement dans cette classe
+    **/
+    private final WeaponProperties properties;  // Propriétés de l'arme
+    private final WeaponRenderer renderer;      // Gestionnaire de rendu
+    private final PImage bulletSprite;          // Sprite des projectiles
+    private float x, y;                         // Position
+    private boolean isPickedUp;                 // État de ramassage
+    private Player owner;                       // Propriétaire
+    private int currentAmmo;                    // Munitions actuelles
+    private long spawnTime;                     // Temps d'apparition
 
+    /**
+    * Méthodes publiques - Interface externe
+    **/
+
+    /**
+    * Constructeur de l'arme
+    * @param x Position X initiale
+    * @param y Position Y initiale
+    * @param weaponSprite Sprite de l'arme
+    * @param bulletSprite Sprite des projectiles
+    * @param bulletSpeed Vitesse des projectiles
+    * @param cooldown Délai entre les tirs
+    * @param maxAmmo Capacité en munitions
+    * @param minDamage Dégâts minimum
+    * @param maxDamage Dégâts maximum
+    * @param reloadTime Temps de rechargement
+    **/
     Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown, int maxAmmo, float minDamage, float maxDamage, int reloadTime)
     {
         this.x = x;
         this.y = y;
-        this.sprite = weaponSprite;
         this.bulletSprite = bulletSprite;
-        this.bulletSpeed = bulletSpeed;
-        this.cooldown = cooldown;
-        this.maxAmmo = maxAmmo;
-        this.currentAmmo = maxAmmo;
-        this.minDamage = minDamage;
-        this.maxDamage = maxDamage;
-        this.reloadTime = reloadTime;
-    }
-
-    void fadeOut()
-    {
-        isFading = true;
-        alpha -= 5;
-        alpha = max(0, alpha);
+        this.properties = new WeaponProperties(bulletSpeed, cooldown, maxAmmo, minDamage, maxDamage, reloadTime);
+        this.renderer = new WeaponRenderer(weaponSprite);
+        this.currentAmmo = properties.getMaxAmmo();
+        this.isPickedUp = false;
+        this.owner = null;
     }
 
     void draw()
     {
-        if (!isPickedUp) {
-            if (isFading) {
-                tint(255, alpha);
-            }
-            image(sprite, x, y);
-            noTint();
-            return;
-        }
+        renderer.draw(x, y, owner, isPickedUp);
+    }
 
-        if (owner != null) {
-            pushMatrix();
-            if (owner.bullet.isReloading) {
-                float baseX = owner.pos.x + owner.sprite.width * (owner.facing < 0 ? 0.10f : 0.90f);
-                float baseY = owner.pos.y + owner.sprite.height * 0.56f;
-
-                translate(baseX, baseY);
-                if (owner.facing < 0) {
-                    scale(-1, 1); // Ajout du scale pour le côté gauche
-                }
-                rotate(radians(45));
-                tint(128);
-                translate(-sprite.width/2, -sprite.height/2);
-                image(sprite, 0, 0);
-                noTint();
-            } else {
-                // Position normale - inchangée
-                if (owner.facing < 0) {
-                    // Face à gauche
-                    float baseX = owner.pos.x + owner.sprite.width * 0.10f;
-                    float baseY = owner.pos.y + owner.sprite.height * 0.56f;
-                    translate(baseX, baseY);
-                    scale(-1, 1);
-                    image(sprite, -sprite.width/2, -sprite.height/2);
-                } else {
-                    // Face à droite
-                    float baseX = owner.pos.x + owner.sprite.width * 0.90f;
-                    float baseY = owner.pos.y + owner.sprite.height * 0.56f;
-                    translate(baseX, baseY);
-                    image(sprite, -sprite.width/2, -sprite.height/2);
-                }
-            }
-            popMatrix();
-        }
+    void fadeOut()
+    {
+        renderer.fadeOut();
     }
 
     boolean canPickup(Player player)
     {
-        float pickupRadius = 100;
-        return !isPickedUp && abs(player.pos.x - x) < pickupRadius && abs(player.pos.y - y) < pickupRadius;
-    }
-
-    float getRandomDamage()
-    {
-        return random(minDamage, maxDamage);
+        return !isPickedUp && abs(player.pos.x - x) < WeaponProperties.PICKUP_RADIUS && abs(player.pos.y - y) < WeaponProperties.PICKUP_RADIUS;
     }
 
     void pickup(Player player)
@@ -101,36 +65,53 @@ class Weapon {
             isPickedUp = true;
             owner = player;
             player.equip(this);
-            owner.bullet.setBulletProperties(
-                this.bulletSprite,
-                this.bulletSpeed,
-                this.getRandomDamage(),
-                (int)this.cooldown
-            );
-            owner.bullet.maxAmmo = this.maxAmmo;
-            owner.bullet.currentAmmo = this.maxAmmo;
-            owner.bullet.reloadDuration = this.reloadTime;
+            setupBulletProperties();
         }
     }
 
     void shoot()
     {
-        if (owner != null && owner.bullet.canShoot() && currentAmmo > 0) {
-            owner.bullet.setBulletProperties(
-                this.bulletSprite,
-                this.bulletSpeed,
-                this.getRandomDamage(),
-                (int)this.cooldown
-            );
+        if (canShoot()) {
+            owner.bullet.setBulletProperties(bulletSprite, properties.getBulletSpeed(), getRandomDamage(), (int)properties.getCooldown());
             owner.shoot();
             currentAmmo--;
 
             if (currentAmmo <= 0) {
-                owner.bullet.resetProperties();
-                owner.currentWeapon = null;
-                owner = null;
-                isPickedUp = false;
+                dropWeapon();
             }
         }
+    }
+
+    // Getters
+    WeaponRenderer getRenderer() { return renderer; }
+
+    /**
+    * Méthodes privées - Logique interne
+    * @private Utilisées uniquement par les méthodes de cette classe
+    **/
+    private boolean canShoot()
+    {
+        return owner != null && owner.bullet.canShoot() && currentAmmo > 0;
+    }
+
+    private float getRandomDamage()
+    {
+        return random(properties.getMinDamage(), properties.getMaxDamage());
+    }
+
+    private void setupBulletProperties()
+    {
+        owner.bullet.setBulletProperties(bulletSprite, properties.getBulletSpeed(), getRandomDamage(), (int)properties.getCooldown());
+        owner.bullet.maxAmmo = properties.getMaxAmmo();
+        owner.bullet.currentAmmo = properties.getMaxAmmo();
+        owner.bullet.reloadDuration = properties.getReloadTime();
+    }
+
+    private void dropWeapon()
+    {
+        owner.bullet.resetProperties();
+        owner.currentWeapon = null;
+        owner = null;
+        isPickedUp = false;
     }
 }

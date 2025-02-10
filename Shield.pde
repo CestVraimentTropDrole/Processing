@@ -22,6 +22,13 @@ class Shield {
     /**
     * Méthodes publiques - Interface externe
     **/
+
+    /**
+    * Constructeur du shield
+    * @param player Référence au joueur propriétaire du bouclier
+    * @param currentSize Taille actuelle du bouclier initialisée à MAX_SIZE
+    * @param isActive État d'activation initial du bouclier (false par défaut)
+    **/
     Shield(Player player)
     {
         owner = player;
