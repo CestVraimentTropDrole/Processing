@@ -1,5 +1,8 @@
+import ddf.minim.*; // Bibliothèque pour la musique
+
 Game game;
 StartScreen startScreen;
+Minim minim;
 
 boolean leftPressed1 = false;
 boolean rightPressed1 = false;
@@ -9,12 +12,13 @@ boolean rightPressed2 = false;
 void setup()
 {
     fullScreen();
-    game = new Game();
+    minim = new Minim(this);
+    game = new Game(minim);
     startScreen = new StartScreen(game);  // Passer l'instance de game à StartScreen
 }
 
 void draw()
-{
+{  
     if (startScreen.isActive()) {
         startScreen.draw();  // Afficher l'écran d'accueil
     } else {
@@ -42,6 +46,8 @@ void keyPressed()
         if (key == ' ') {
             startScreen.active = false;
             game.startGame();  // Démarre le jeu
+            
+            game.arena.soundManager.startMusic();
         }
     } else {
         if (key == 'r' && game.gameOver) {
