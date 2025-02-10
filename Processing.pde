@@ -1,6 +1,6 @@
 import ddf.minim.*; // Bibliothèque pour la musique
 
-Game game;
+GameManager game;
 StartScreen startScreen;
 Minim minim;
 
@@ -13,12 +13,12 @@ void setup()
 {
     fullScreen();
     minim = new Minim(this);
-    game = new Game(minim);
+    game = new GameManager(minim);
     startScreen = new StartScreen(game);  // Passer l'instance de game à StartScreen
 }
 
 void draw()
-{  
+{
     if (startScreen.isActive()) {
         startScreen.draw();  // Afficher l'écran d'accueil
     } else {
@@ -46,7 +46,7 @@ void keyPressed()
         if (key == ' ') {
             startScreen.active = false;
             game.startGame();  // Démarre le jeu
-            
+
             game.arena.soundManager.startMusic();
         }
     } else {

@@ -1,8 +1,8 @@
 class StartScreen {
   boolean active;
-  Game game;
+  GameManager game;
   
-  StartScreen(Game gameInstance) {
+  StartScreen(GameManager gameInstance) {
     active = true;
     game = gameInstance;
   }
