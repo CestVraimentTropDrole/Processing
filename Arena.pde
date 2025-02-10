@@ -19,10 +19,9 @@ class Arena {
     **/
     private final float width, height;               // Dimensions de l'arène
     private final float deathY;                      // Position Y de la zone de mort
-    private final ArrayList<Platform> platforms;      // Liste des plateformes
+    private final ArrayList<Platform> platforms;     // Liste des plateformes
     private final PImage background;                 // Image de fond
-    
-    SoundManager soundManager;
+    private SoundManager soundManager;               // Son de l'arène
 
     /**
     * Méthodes publiques - Interface externe
