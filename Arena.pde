@@ -39,7 +39,7 @@ class Arena {
         this.platforms = new ArrayList<Platform>();
 
         setupPlatforms();
-        background = loadImage("assets/sprites/bg_bg1.png");
+        background = loadImage("assets/sprites/background/battlefield.png");
         background.resize((int)width, (int)height);
     }
 

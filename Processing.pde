@@ -1,3 +1,7 @@
+import ddf.minim.*; // Bibliothèque pour la musique
+Minim minim;
+AudioPlayer player;
+
 Game game;
 StartScreen startScreen;
 
@@ -11,10 +15,18 @@ void setup()
     fullScreen();
     game = new Game();
     startScreen = new StartScreen(game);  // Passer l'instance de game à StartScreen
+    
+    minim = new Minim(this);
+    player = minim.loadFile("battlefiel.mp3");
 }
 
 void draw()
 {
+  if (!player.isPlaying()) {
+    player.rewind();
+    player.play();
+  }
+  
     if (startScreen.isActive()) {
         startScreen.draw();  // Afficher l'écran d'accueil
     } else {
