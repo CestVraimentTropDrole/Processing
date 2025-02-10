@@ -13,7 +13,7 @@ class Game {
     final int WEAPON_LIFETIME = 5000; // 5 secondes (ms)
     PImage[] numbers, imageDamage;
 
-    Game()
+    Game(Minim minim)
     {
         playerSprite1 = loadImage("assets/sprites/red/player_idle.png");
         playerSprite2 = loadImage("assets/sprites/yellow/player_idle.png");
@@ -44,7 +44,7 @@ class Game {
         bulletArrow.resize(20, 20);
         bulletLong.resize(20, 20);
 
-        arena = new Arena(width, height);
+        arena = new Arena(width, height, minim);
         player1 = new Player(width/4, height - 200, player1Sprite, bulletSimple, color(0, 255, 0), 1);
         player2 = new Player(3*width/4, height - 200, player2Sprite, bulletSimple, color(255, 0, 0), -1);
         player1.arena = arena;

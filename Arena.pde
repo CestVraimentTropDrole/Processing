@@ -21,6 +21,8 @@ class Arena {
     private final float deathY;                      // Position Y de la zone de mort
     private final ArrayList<Platform> platforms;      // Liste des plateformes
     private final PImage background;                 // Image de fond
+    
+    SoundManager soundManager;
 
     /**
     * Méthodes publiques - Interface externe
@@ -31,7 +33,7 @@ class Arena {
     * @param w Largeur de l'arène
     * @param h Hauteur de l'arène
     **/
-    Arena(float w, float h)
+    Arena(float w, float h, Minim minim)
     {
         this.width = w;
         this.height = h;
@@ -41,6 +43,9 @@ class Arena {
         setupPlatforms();
         background = loadImage("assets/sprites/background/battlefield.png");
         background.resize((int)width, (int)height);
+        
+        soundManager = new SoundManager(minim);
+        soundManager.playMusic("assets/musics/battlefield.mp3");
     }
 
     void draw()

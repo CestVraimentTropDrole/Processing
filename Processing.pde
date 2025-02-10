@@ -1,9 +1,8 @@
 import ddf.minim.*; // Bibliothèque pour la musique
-Minim minim;
-AudioPlayer player;
 
 Game game;
 StartScreen startScreen;
+Minim minim;
 
 boolean leftPressed1 = false;
 boolean rightPressed1 = false;
@@ -13,20 +12,13 @@ boolean rightPressed2 = false;
 void setup()
 {
     fullScreen();
-    game = new Game();
-    startScreen = new StartScreen(game);  // Passer l'instance de game à StartScreen
-    
     minim = new Minim(this);
-    player = minim.loadFile("battlefiel.mp3");
+    game = new Game(minim);
+    startScreen = new StartScreen(game);  // Passer l'instance de game à StartScreen
 }
 
 void draw()
-{
-  if (!player.isPlaying()) {
-    player.rewind();
-    player.play();
-  }
-  
+{  
     if (startScreen.isActive()) {
         startScreen.draw();  // Afficher l'écran d'accueil
     } else {
@@ -54,6 +46,8 @@ void keyPressed()
         if (key == ' ') {
             startScreen.active = false;
             game.startGame();  // Démarre le jeu
+            
+            game.arena.soundManager.startMusic();
         }
     } else {
         if (key == 'r' && game.gameOver) {
