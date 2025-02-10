@@ -6,12 +6,12 @@ class Game {
     PImage playerSprite1, playerSprite2;
     PImage bulletSimple, bulletLaser, bulletArrow, bulletLong;
     PImage p1Life, p2Life;
-    Bot bot;
     PImage gunSprite, pistolSprite, blasterSprite, bowSprite;
     ArrayList<Weapon> weapons;
     int weaponSpawnTimer = 0;
     final int WEAPON_SPAWN_DELAY = 100; // 10 secondes (60 frames * 10)
     final int WEAPON_LIFETIME = 5000; // 5 secondes (ms)
+    PImage[] numbers, imageDamage;
 
     Game()
     {
@@ -28,6 +28,13 @@ class Game {
         bulletArrow = loadImage("assets/sprites/bullet_arrow.png");
         bulletLong = loadImage("assets/sprites/bullet_long.png");
 
+        // Charge les assets des chiffres pour l'UI
+        numbers = new PImage[12];
+        for (int i=0; i < 10; i++) {
+            numbers[i] = loadImage("assets/sprites/"+i+".png");
+        }
+        numbers[10] = loadImage("assets/sprites/percent.png"); //Image du %
+        numbers[11] = loadImage("assets/sprites/comma.png"); //Image de la ,
 
         weapons = new ArrayList<Weapon>();
         PImage player1Sprite = playerSprite1.copy();
@@ -143,22 +150,48 @@ class Game {
         }
     }
 
+    void displayPercent(float playerDamage)
+    {
+        String damage = str(playerDamage); // Transforme les dégâts du joueur en chaine de caractères
+        int[] digits = new int[damage.length()+1]; // Créé le tableau de chiffres
+        imageDamage = new PImage[digits.length]; // Initialise le tableau d'images
+
+        for (int i=0; i<damage.length(); i++) {
+            digits[i] = int(damage.charAt(i)) - 48;
+            if (digits[i] >= 0 && digits[i] <= 9) {
+                imageDamage[i] = numbers[digits[i]];
+            } else if (digits[i] == -2) { //La virgule = -2 après le charAt -48
+                imageDamage[i] = numbers[11];
+            }
+        }
+        imageDamage[damage.length()] = numbers[10]; //Puis ajout de l'image du % à la fin
+    }
+
     void displayScore()
     {
-        textSize(32);
+        final int MARGIN = 100;
+        final int SPRITE_SPACING = 40;
+        final int LIVES_VERTICAL_OFFSET = 40;
 
         // Joueur 1 (gauche)
-        fill(0, 255, 0);
-        text(nf(player1.damagePercent, 0, 1) + "%", 50, 50);
+        displayPercent(player1.damagePercent);
+        for (int i = 0; i < imageDamage.length; i++) {
+            image(imageDamage[i], MARGIN + i * SPRITE_SPACING, 50);
+        }
         for (int i = 0; i < player1.lives; i++) {
-            image(p1Life, 50 + i * 40, 70);
+            image(p1Life, MARGIN + i * SPRITE_SPACING, 50 + LIVES_VERTICAL_OFFSET);
         }
 
         // Joueur 2 (droite)
-        fill(255, 0, 0);
-        text(nf(player2.damagePercent, 0, 1) + "%", width - 150, 50);
+        displayPercent(player2.damagePercent);
+        float totalWidth = imageDamage.length * SPRITE_SPACING;
+        float startX = width - MARGIN - totalWidth;
+
+        for (int i = 0; i < imageDamage.length; i++) {
+            image(imageDamage[i], startX + i * SPRITE_SPACING, 50);
+        }
         for (int i = 0; i < player2.lives; i++) {
-            image(p2Life, width - 150 + i * 40, 70);
+            image(p2Life, startX + i * SPRITE_SPACING, 50 + LIVES_VERTICAL_OFFSET);
         }
     }
 
@@ -212,7 +245,12 @@ class Game {
 
     void handleHit(Player attacker, Player target, int bulletIndex)
     {
+        // Utilise les dégâts configurés dans l'arme
         float baseDamage = attacker.bullet.getDamageForBullet(bulletIndex);
+    
+        // Arrondir à un chiffre après la virgule pour l'affichage
+        baseDamage = round(baseDamage * 10) / 10.0;
+    
         float baseKnockback = 5;
 
         // Direction du knockback
