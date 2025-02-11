@@ -1,17 +1,18 @@
 /**
 * BulletManager - Gestionnaire des projectiles actifs
+*
+* Constantes de configuration du gestionnaire
 **/
 class BulletManager {
-    // Constantes de configuration
     static final float BULLET_DESPAWN_DISTANCE = 50;  // Distance à laquelle les projectiles disparaissent de l'écran
 
     /**
     * Variables d'état du gestionnaire
     * @private Accessibles uniquement dans cette classe
     **/
-    private final ArrayList<PVector> positions;      // Liste des positions de tous les projectiles actifs
-    private final ArrayList<Integer> directions;     // Liste des directions de tous les projectiles actifs
-    private final ArrayList<BulletProperties> properties;  // Liste des propriétés de chaque projectile
+    private final ArrayList<PVector> positions;             // Liste des positions de tous les projectiles actifs
+    private final ArrayList<Integer> directions;            // Liste des directions de tous les projectiles actifs
+    private final ArrayList<BulletProperties> properties;   // Liste des propriétés de chaque projectile
 
     /**
     * Méthodes publiques - Interface externe
@@ -93,7 +94,10 @@ class BulletManager {
 
     private boolean isHitting(PVector bulletPos, Player target)
     {
-        return bulletPos.x > target.pos.x && bulletPos.x < target.pos.x + target.sprite.width && bulletPos.y > target.pos.y && bulletPos.y < target.pos.y + target.sprite.height;
+        float spriteWidth = target.animator.getWidth();
+        float spriteHeight = target.animator.getCurrentHeight();
+
+        return bulletPos.x > target.pos.x && bulletPos.x < target.pos.x + spriteWidth && bulletPos.y > target.pos.y && bulletPos.y < target.pos.y + spriteHeight;
     }
 
     private boolean isValidIndex(int index)

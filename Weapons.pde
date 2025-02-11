@@ -1,5 +1,7 @@
 /**
 * Weapon - Classe principale de gestion des armes
+*
+* Constantes de configuration des armes
 **/
 class Weapon {
     /**
@@ -72,7 +74,7 @@ class Weapon {
     void shoot()
     {
         if (canShoot()) {
-            owner.bullet.setBulletProperties(bulletSprite, properties.getBulletSpeed(), getRandomDamage(), (int)properties.getCooldown());
+            owner.combat.bullet.setBulletProperties(bulletSprite, properties.getBulletSpeed(), getRandomDamage(), (int)properties.getCooldown());
             owner.shoot();
             currentAmmo--;
 
@@ -91,7 +93,7 @@ class Weapon {
     **/
     private boolean canShoot()
     {
-        return owner != null && owner.bullet.canShoot() && currentAmmo > 0;
+        return owner != null && owner.combat.bullet.canShoot() && currentAmmo > 0;
     }
 
     private float getRandomDamage()
@@ -101,16 +103,16 @@ class Weapon {
 
     private void setupBulletProperties()
     {
-        owner.bullet.setBulletProperties(bulletSprite, properties.getBulletSpeed(), getRandomDamage(), (int)properties.getCooldown());
-        owner.bullet.maxAmmo = properties.getMaxAmmo();
-        owner.bullet.currentAmmo = properties.getMaxAmmo();
-        owner.bullet.reloadDuration = properties.getReloadTime();
+        owner.combat.bullet.setBulletProperties(bulletSprite, properties.getBulletSpeed(), getRandomDamage(), (int)properties.getCooldown());
+        owner.combat.bullet.maxAmmo = properties.getMaxAmmo();
+        owner.combat.bullet.currentAmmo = properties.getMaxAmmo();
+        owner.combat.bullet.reloadDuration = properties.getReloadTime();
     }
 
     private void dropWeapon()
     {
-        owner.bullet.resetProperties();
-        owner.currentWeapon = null;
+        owner.combat.bullet.resetProperties();
+        owner.combat.equip(null);
         owner = null;
         isPickedUp = false;
     }

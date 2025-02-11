@@ -76,7 +76,7 @@ class WeaponRenderer {
     private void drawEquippedWeapon(Player owner)
     {
         pushMatrix();
-        if (owner.bullet.isReloading) {
+        if (owner.combat.bullet.isReloading) {
             drawReloadingWeapon(owner);
         } else {
             drawNormalWeapon(owner);
@@ -86,11 +86,11 @@ class WeaponRenderer {
 
     private void drawReloadingWeapon(Player owner)
     {
-        float baseX = owner.pos.x + owner.sprite.width * (owner.facing < 0 ? LEFT_OFFSET : RIGHT_OFFSET);
-        float baseY = owner.pos.y + owner.sprite.height * HEIGHT_OFFSET;
+        float baseX = owner.pos.x + owner.animator.getWidth() * (owner.movement.getFacing() < 0 ? LEFT_OFFSET : RIGHT_OFFSET);
+        float baseY = owner.pos.y + owner.animator.getCurrentHeight() * HEIGHT_OFFSET;
 
         translate(baseX, baseY);
-        if (owner.facing < 0) {
+        if (owner.movement.getFacing() < 0) {
             scale(-1, 1);
         }
         rotate(radians(RELOAD_ANGLE));
@@ -102,11 +102,11 @@ class WeaponRenderer {
 
     private void drawNormalWeapon(Player owner)
     {
-        float baseX = owner.pos.x + owner.sprite.width * (owner.facing < 0 ? LEFT_OFFSET : RIGHT_OFFSET);
-        float baseY = owner.pos.y + owner.sprite.height * HEIGHT_OFFSET;
+        float baseX = owner.pos.x + owner.animator.getWidth() * (owner.movement.getFacing() < 0 ? LEFT_OFFSET : RIGHT_OFFSET);
+        float baseY = owner.pos.y + owner.animator.getCurrentHeight() * HEIGHT_OFFSET;
 
         translate(baseX, baseY);
-        if (owner.facing < 0) {
+        if (owner.movement.getFacing() < 0) {
             scale(-1, 1);
             image(sprite, -sprite.width/2, -sprite.height/2);
         } else {

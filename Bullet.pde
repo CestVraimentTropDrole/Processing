@@ -1,5 +1,7 @@
 /**
 * Bullet - Système de tir principal
+*
+* Constantes de configuration du système de tir
 **/
 class Bullet {
     /**

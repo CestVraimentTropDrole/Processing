@@ -71,7 +71,7 @@ class UIManager {
     **/
     private void displayPlayerScore(Player player, boolean isLeftSide)
     {
-        float[] percentDigits = processPercentDigits(player.damagePercent);
+        float[] percentDigits = processPercentDigits(player.combat.damagePercent);
         float startX = calculateStartX(percentDigits.length, isLeftSide);
 
         drawDigits(percentDigits, startX);
