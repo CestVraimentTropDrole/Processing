@@ -64,7 +64,7 @@ class Player {
 
     void crouch(boolean crouching)
     {
-        movement.setCrouching(crouching);
+        movement.setCrouching(crouching, pos, vel);
         animator.crouch(pos, crouching);
     }
 

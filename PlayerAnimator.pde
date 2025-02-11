@@ -74,9 +74,14 @@ class PlayerAnimator {
     **/
     private boolean applyCrouch(PVector pos)
     {
+        float oldHeight = sprite.height;
+
         sprite = originalSprite.copy();
         sprite.resize(sprite.width, int(crouchHeight));
-        pos.y += (normalHeight - crouchHeight);
+
+        if (oldHeight != crouchHeight) {
+            pos.y += (normalHeight - crouchHeight);
+        }
         return true;
     }
 

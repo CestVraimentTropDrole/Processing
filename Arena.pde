@@ -67,10 +67,12 @@ class Arena {
         boolean onAnyPlatform = false;
         float spriteHeight = player.animator.getCurrentHeight();
 
-        // Vérification des collisions avec chaque plateforme
         for (Platform platform : platforms) {
             if (platform.isOnPlatform(player.pos.x, player.pos.y, spriteHeight, player.vel.y)) {
-                alignPlayerWithPlatform(player, platform, spriteHeight);
+                player.pos.y = platform.y - spriteHeight;
+                player.vel.y = 0;
+                player.movement.setJumping(false);
+                player.movement.resetJumpCount();
                 onAnyPlatform = true;
                 break;
             }
