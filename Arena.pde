@@ -42,7 +42,7 @@ class Arena {
         setupPlatforms();
         background = loadImage("assets/sprites/background/battlefield.png");
         background.resize((int)width, (int)height);
-        
+
         soundManager = new SoundManager(minim);
         soundManager.playMusic("assets/musics/battlefield.mp3");
     }
