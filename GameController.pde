@@ -4,7 +4,6 @@
 * Constantes de configuration des contrôles
 **/
 class GameController {
-    // Constantes par défaut
     // Contrôles Joueur 1
     static final char KEY_P1_LEFT = 'q';          // Déplacement gauche J1
     static final char KEY_P1_RIGHT = 'd';         // Déplacement droite J1
@@ -163,7 +162,7 @@ class GameController {
         if (key == KEY_P1_CROUCH) gameManager.player1.crouch(true);
         if (key == KEY_P1_SHOOT) gameManager.player1.shoot();
         if (key == KEY_P1_DASH) gameManager.player1.dash(leftPressed1, rightPressed1);
-        if (key == KEY_P1_RELOAD) gameManager.player1.bullet.startReload();
+        if (key == KEY_P1_RELOAD) gameManager.player1.combat.bullet.startReload();
         if (key == KEY_P1_SHIELD) gameManager.player1.activateShield();
 
         // Actions Joueur 2
@@ -171,7 +170,7 @@ class GameController {
         if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(true);
         if (key == KEY_P2_SHOOT) gameManager.player2.shoot();
         if (key == KEY_P2_DASH) gameManager.player2.dash(leftPressed2, rightPressed2);
-        if (key == KEY_P2_RELOAD) gameManager.player2.bullet.startReload();
+        if (key == KEY_P2_RELOAD) gameManager.player2.combat.bullet.startReload();
         if (key == KEY_P2_SHIELD) gameManager.player2.activateShield();
     }
 

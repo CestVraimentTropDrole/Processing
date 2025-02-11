@@ -1,201 +1,110 @@
+/**
+* Player - Représente un joueur dans le jeu
+*
+* Constantes de configuration du joueur
+**/
 class Player {
-    static final float SPEED = 15;
+    /**
+    * Variables d'état du joueur
+    * @private Accessibles uniquement dans cette classe
+    **/
+    private PlayerMovement movement;
+    private PlayerCombat combat;
+    private PlayerAnimator animator;
+    private ArrayList<Platform> platforms = new ArrayList<>();
+    private PVector pos, vel;
+    private Arena arena;
+    private int lives = 3;
+    public color col;
+    public int score = 0;
 
-    PVector pos, vel;
-    PImage sprite;
-    PImage originalSprite;
-    color col;
-    int direction, score;
-    float normalHeight, crouchHeight;
-    boolean isJumping, isCrouching;
-    Bullet bullet;
-    int facing;
-    int jumpCount = 0;
-    int maxJumps = 2;
-    float jumpForce = -15;
-    int lives = 3;
-    float damagePercent = 0;
-    float knockbackMultiplier = 0.1;
-    boolean isInKnockback = false;
-    int knockbackTimer = 0;
-    boolean isDeathKnockback = false;
-    boolean isCrouchingState;
-    Arena arena;
-    Weapon currentWeapon = null;
-    Shield shield;
+    /**
+    * Méthodes publiques - Interface externe
+    **/
 
-    // Dash properties
-    float dashDistance;
-    boolean isDashing = false;
-    int dashCooldown = 500;
-    long lastDashTime = 0;
-    float dashVelocity = 0;
-    float distanceDashed = 0;
-    int dashTimer = 0;
-
+    /**
+    * Constructeur du joueur
+    * @param x Position X initiale
+    * @param y Position Y initiale
+    * @param playerSprite Sprite du joueur
+    * @param bulletSprite Sprite des projectiles
+    * @param c Couleur du joueur
+    * @param dir Direction initiale
+    **/
     Player(float x, float y, PImage playerSprite, PImage bulletSprite, color c, int dir)
     {
         pos = new PVector(x, y);
         vel = new PVector();
-        originalSprite = playerSprite.copy();
-        sprite = playerSprite;
-        col = c;
-        direction = dir;
-        facing = dir;
-        bullet = new Bullet(bulletSprite);
-        normalHeight = sprite.height;
-        crouchHeight = normalHeight * 0.6;
-        dashDistance = sprite.width * 2;
-        shield = new Shield(this);
-        reset();
-    }
-
-    void dash(boolean left, boolean right)
-    {
-        if (isCrouching || isDashing || (millis() - lastDashTime < dashCooldown)) 
-            return;
-
-        float dashSpeed = 25;
-        float dashDistance = 300;
-        dashTimer = 15;
-
-        if (left) {
-            dashVelocity = -dashSpeed;
-            facing = -1;
-        } else if (right) {
-            dashVelocity = dashSpeed;
-            facing = 1;
-        } else {
-            dashVelocity = facing * dashSpeed;
-        }
-
-        isDashing = true;
-        distanceDashed = 0;
-        lastDashTime = millis();
+        movement = new PlayerMovement(dir);
+        combat = new PlayerCombat(bulletSprite, this);
+        animator = new PlayerAnimator(playerSprite, platforms);
+        this.col = c;
     }
 
     void update()
     {
-        if (isInKnockback) {
-            knockbackTimer--;
-            // Si c'est un knockback de mort, pas de contrôle possible
-            if (!isDeathKnockback && knockbackTimer <= 0) {
-                isInKnockback = false;
-                vel.x = 0;  // Arrête net le knockback horizontal
-                if (vel.y < 0) {  // Si le joueur monte encore
-                    vel.y = 0;    // On arrête la montée
-                }
-            }
-        }
-        shield.update();
-        applyPhysics();
-        bullet.update();
-        bullet.updateReload();
-    }
-
-    void applyPhysics()
-    {
-        if (isDashing) {
-            distanceDashed += abs(dashVelocity);
-            if (distanceDashed >= 300) {
-                isDashing = false;
-                vel.x = 0;
-            } else {
-                vel.x = dashVelocity;
-            }
-        }
-
-        if (isJumping && !isInKnockback && !isDashing) {
-            vel.y += 0.6;
-        }
-        pos.add(vel);
-    }
-
-    void takeDamage(float damage, float knockback, int direction)
-    {
-        if (!shield.isActive) {
-            damagePercent += damage;
-            float baseHorizontalKnockback = 5;
-            float baseVerticalKnockback = 1;
-
-            // Knockback spécial de mort au-dessus de 100%
-            if (damagePercent >= 100) {
-                baseHorizontalKnockback = 16;
-                baseVerticalKnockback = 4;
-                knockbackTimer = 30;
-                isDeathKnockback = true;  // Active le mode "mort"
-            } else {
-                float multiplier = 1 + (damagePercent * knockbackMultiplier);
-                knockbackTimer = 15;
-                isDeathKnockback = false;
-            }
-
-            if (isDeathKnockback) {
-            // Trajectoire plus dramatique pour la mort
-                vel.x = baseHorizontalKnockback * direction;
-                vel.y = -baseVerticalKnockback;
-            } else {
-            // Knockback normal
-                float multiplier = 1 + (damagePercent * knockbackMultiplier);
-                vel.x = baseHorizontalKnockback * multiplier * direction;
-                vel.y = -baseVerticalKnockback * multiplier;
-            }
-            isInKnockback = true;
-            isJumping = true;
-        } else {
-            // Si le shield est actif, il absorbe les dégâts
-            shield.currentSize -= damage * 2;
-            if (shield.currentSize <= shield.MIN_SIZE) {
-                // Shield break
-                shield.deactivate();
-                takeDamage(damage * 1.5f, knockback * 1.5f, direction); // Dégâts et knockback augmentés
-            }
-        }
-    }
-
-    void activateShield()
-    {
-        shield.activate();
-    }
-
-    void deactivateShield()
-    {
-        shield.deactivate();
+        movement.update(pos, vel);
+        combat.update(vel, movement);
     }
 
     void move(float dx)
     {
-        if (!isInKnockback) {
-            pos.x += dx * SPEED;
-            if (dx < 0) facing = -1;
-            if (dx > 0) facing = 1;
-        }
+        movement.move(pos, dx);
     }
 
     void jump()
     {
-        if (jumpCount < maxJumps) {
-            // Fait sauter le joueur et augmenter le nombre de sauts pour pas spam saut et littéralement voler
-            vel.y = jumpForce;
-            isJumping = true;
-            jumpCount++;
-        }
+        movement.jump(vel);
     }
 
-    void equip(Weapon weapon)
+    void dash(boolean left, boolean right)
     {
-        currentWeapon = weapon;
+        movement.dash(left, right);
+    }
+
+    void crouch(boolean crouching)
+    {
+        movement.setCrouching(crouching);
+        animator.crouch(pos, crouching);
+    }
+
+    void takeDamage(float damage, float knockback, int direction)
+    {
+        combat.takeDamage(damage, knockback, direction, vel, movement);
     }
 
     void shoot()
     {
-        if (currentWeapon == null)
-            return;
-
-        bullet.fire(pos.x + sprite.width/2, pos.y + sprite.height/2, facing);
+        combat.shoot(pos, animator.getWidth(), animator.getCurrentHeight(), movement.getFacing());
     }
 
-    void handleArenaCollision(Arena arena)
+    void equip(Weapon weapon)
+    {
+        combat.equip(weapon);
+    }
+
+    void activateShield()
+    {
+        combat.activateShield();
+    }
+
+    void deactivateShield()
+    {
+        combat.deactivateShield();
+    }
+
+    void setArena(Arena arena)
+    {
+        this.arena = arena;
+    }
+
+    void setPlatforms(ArrayList<Platform> platforms)
+    {
+        this.platforms.clear();
+        this.platforms.addAll(platforms);
+    }
+
+    void handleArenaCollision()
     {
         arena.handlePlayerCollision(this);
         if (arena.checkPlayerDeath(this)) {
@@ -209,86 +118,23 @@ class Player {
 
     void draw()
     {
-        pushMatrix();
-        if (facing < 0) {
-            translate(pos.x + sprite.width, pos.y);
-            scale(-1, 1);
-            image(sprite, 0, 0);
-        } else {
-            image(sprite, pos.x, pos.y);
-        }
-        popMatrix();
-
-        // Dessiner l'arme si elle existe
-        if (currentWeapon != null) {
-            currentWeapon.draw();
-        }
-
-        float shieldX = pos.x + sprite.width/2;
-        float shieldY = pos.y + sprite.height/2;
-        shield.draw(shieldX, shieldY);
-
-        bullet.draw();
-    }
-
-    void crouch(boolean crouching)
-    {
-        if (isCrouchingState == crouching) {
-            return;
-        }
-
-        isCrouchingState = crouching;
-        isCrouching = crouching;
-
-        if (crouching) {
-            sprite = originalSprite.copy();  // Utilise une nouvelle copie
-            sprite.resize(sprite.width, int(crouchHeight));
-            pos.y += (normalHeight - crouchHeight);
-        } else {
-            // Vérifie s'il y a de la place pour se relever
-            float newY = pos.y - (normalHeight - crouchHeight);
-            boolean canStand = true;
-
-            // Vérifie les collisions avec les plateformes
-            for (Platform p : arena.platforms) {
-                if (newY < p.y + p.h && newY + normalHeight > p.y &&
-                    pos.x + sprite.width > p.x && pos.x < p.x + p.w) {
-                    canStand = false;
-                    break;
-                }
-            }
-
-            if (canStand) {
-                sprite = originalSprite.copy();  // Restaure le sprite original
-                pos.y = newY;
-            } else {
-                // Si on ne peut pas se relever, on reste accroupi
-                isCrouchingState = true;
-                isCrouching = true;
-            }
-        }
+        animator.draw(pos, movement.getFacing());
+        combat.draw(pos, animator.getSprite());
     }
 
     void reset()
     {
-        // Ca reset tout ses stats en gros
         pos.y = height - 500;
-        pos.x = direction == 1 ? width/4 : 3*width/4;
+        pos.x = movement.getFacing() == 1 ? width/4 : 3*width/4;
+        movement.reset();
+        combat.reset();
+        animator.reset();
         vel.set(0, 0);
-        isJumping = false;
-        jumpCount = 0;
-        isCrouching = false;
-        sprite = originalSprite.copy();
-        normalHeight = sprite.height;
-        crouchHeight = normalHeight * 0.6;
-        bullet.reset();
-        facing = direction;
-        damagePercent = 0;
-        isInKnockback = false;
-        knockbackTimer = 0;
-        isDeathKnockback = false;
-        isCrouchingState = false;
-        shield.currentSize = shield.MAX_SIZE; // Reset shield size
-        shield.deactivate();
     }
+
+    // Getters
+    float getDamagePercent() { return combat.getDamagePercent(); }
+    boolean isJumping() { return movement.isJumping(); }
+    boolean isCrouching() { return movement.isCrouching(); }
+    boolean isInKnockback() { return movement.isInKnockback(); }
 }

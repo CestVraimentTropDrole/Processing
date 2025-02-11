@@ -31,6 +31,7 @@ class Arena {
     * Constructeur de l'arène
     * @param w Largeur de l'arène
     * @param h Hauteur de l'arène
+    * @param minim Gestionnaire audio pour la musique et les sons
     **/
     Arena(float w, float h, Minim minim)
     {
@@ -64,17 +65,18 @@ class Arena {
     void handlePlayerCollision(Player player)
     {
         boolean onAnyPlatform = false;
+        float spriteHeight = player.animator.getCurrentHeight();
 
         // Vérification des collisions avec chaque plateforme
         for (Platform platform : platforms) {
-            if (platform.isOnPlatform(player.pos.x, player.pos.y, player.sprite.height, player.vel.y)) {
-                alignPlayerWithPlatform(player, platform);
+            if (platform.isOnPlatform(player.pos.x, player.pos.y, spriteHeight, player.vel.y)) {
+                alignPlayerWithPlatform(player, platform, spriteHeight);
                 onAnyPlatform = true;
                 break;
             }
         }
-        if (!onAnyPlatform && !player.isJumping) {
-            player.isJumping = true;
+        if (!onAnyPlatform && !player.movement.isJumping()) {
+            player.movement.setJumping(true);
         }
     }
 
@@ -106,11 +108,11 @@ class Arena {
         line(0, deathY - DEATH_LINE_OFFSET, width, deathY - DEATH_LINE_OFFSET);
     }
 
-    private void alignPlayerWithPlatform(Player player, Platform platform)
+    private void alignPlayerWithPlatform(Player player, Platform platform, float spriteHeight)
     {
-        player.pos.y = platform.y - player.sprite.height;
+        player.pos.y = platform.y - spriteHeight;
         player.vel.y = 0;
-        player.isJumping = false;
-        player.jumpCount = 0;
+        player.movement.setJumping(false);
+        player.movement.resetJumpCount();
     }
 }

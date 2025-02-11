@@ -1,8 +1,9 @@
 /**
 * BulletProperties - Configuration des propriétés d'un projectile
+*
+* Constantes de configuration des projectiles
 **/
 class BulletProperties {
-    // Constantes par défaut
     static final float DEFAULT_SPEED = 15.0f;        // Vitesse par défaut des projectiles
     static final float DEFAULT_DAMAGE = 1.0f;        // Dégâts par défaut des projectiles
     static final int DEFAULT_COOLDOWN = 500;         // Temps de recharge par défaut entre les tirs (ms)

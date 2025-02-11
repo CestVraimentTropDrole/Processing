@@ -22,7 +22,7 @@ class GameManager {
     private boolean gameOver;                    // État de fin de partie
     private ArrayList<Weapon> weapons;           // Liste des armes en jeu
     private AssetManager assets;                 // Gestionnaire des ressources
-    private WeaponSpawner weaponSpawner;        // Gestionnaire d'apparition des armes
+    private WeaponSpawner weaponSpawner;         // Gestionnaire d'apparition des armes
     private UIManager uiManager;                 // Gestionnaire de l'interface
 
     /**
@@ -95,13 +95,14 @@ class GameManager {
     {
         player1 = new Player(width * P1_START_X, height - PLAYER_START_Y, assets.getPlayerSprite1(), assets.getBulletSimple(), P1_COLOR, 1);
         player2 = new Player(width * P2_START_X, height - PLAYER_START_Y, assets.getPlayerSprite2(), assets.getBulletSimple(), P2_COLOR, -1);
+
+        player1.setPlatforms(arena.platforms);
+        player2.setPlatforms(arena.platforms);
     }
 
     private void setupArena(Minim minim)
     {
         arena = new Arena(width, height, minim);
-        if (player1 != null) player1.arena = arena;
-        if (player2 != null) player2.arena = arena;
     }
 
     private void updatePlayers()
@@ -156,11 +157,11 @@ class GameManager {
 
     private void checkPlayerBulletCollision(Player shooter, Player target)
     {
-        int hitIndex = shooter.bullet.checkHit(target);
+        int hitIndex = shooter.combat.bullet.checkHit(target);
 
         if (hitIndex >= 0) {
             handleHit(shooter, target, hitIndex);
-            shooter.bullet.removeBullet(hitIndex);
+            shooter.combat.bullet.removeBullet(hitIndex);
         }
     }
 
@@ -172,13 +173,15 @@ class GameManager {
 
     private void checkArenaCollisions()
     {
-        player1.handleArenaCollision(arena);
-        player2.handleArenaCollision(arena);
+        player1.setArena(arena);
+        player2.setArena(arena);
+        player1.handleArenaCollision();
+        player2.handleArenaCollision();
     }
 
     private void handleHit(Player attacker, Player target, int bulletIndex)
     {
-        float baseDamage = attacker.bullet.getDamageForBullet(bulletIndex);
+        float baseDamage = attacker.combat.bullet.getDamageForBullet(bulletIndex);
         float baseKnockback = 5;
         int knockbackDirection = (attacker.pos.x < target.pos.x) ? 1 : -1;
 
