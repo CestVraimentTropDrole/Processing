@@ -11,6 +11,7 @@ class PlayerMovement {
     static final float DASH_SPEED = 25;       // Vitesse du dash
     static final float DASH_DISTANCE = 300;   // Distance du dash
     static final int DASH_COOLDOWN = 500;     // Temps de recharge du dash
+    static final float MAX_FALL_SPEED = 20;   // Vitesse maximale de chute
 
     /**
     * Variables d'état de mouvement
@@ -43,7 +44,9 @@ class PlayerMovement {
     void update(PVector pos, PVector vel)
     {
         updateDash(pos, vel);
-        applyPhysics(pos, vel);
+        if (!isCrouching || isJumping) {
+            applyPhysics(pos, vel);
+        }
     }
 
     void move(PVector pos, float dx)
@@ -70,9 +73,12 @@ class PlayerMovement {
         }
     }
 
-    void setCrouching(boolean state)
+    void setCrouching(boolean state, PVector pos, PVector vel)
     {
         isCrouching = state;
+        if (state && !isJumping) {
+            vel.y = 0;
+        }
     }
 
     void reset()
@@ -138,8 +144,8 @@ class PlayerMovement {
 
     private void applyPhysics(PVector pos, PVector vel)
     {
-        if (isJumping && !isInKnockback && !isDashing) {
-            vel.y += GRAVITY;
+        if (!isDashing) {
+            vel.y = min(vel.y + GRAVITY, MAX_FALL_SPEED);
         }
         pos.add(vel);
     }
