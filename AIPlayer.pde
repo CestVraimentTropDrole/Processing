@@ -4,11 +4,12 @@
 * Constantes de comportement de l'IA
 **/
 class AIPlayer extends Player {
-    static final float DECISION_INTERVAL = 30;     // Temps entre les décisions
-    static final float SHOOT_DISTANCE = 400;       // Distance optimale de tir
-    static final float DODGE_DISTANCE = 300;       // Distance de détection du danger
-    static final float MIN_SAFE_DISTANCE = 150;    // Distance minimale de sécurité
-    static final float PLATFORM_EDGE_MARGIN = 50;  // Marge de sécurité des plateformes
+    static final float DECISION_INTERVAL = 30;          // Temps entre les décisions
+    static final float SHOOT_DISTANCE = 400;            // Distance optimale de tir
+    static final float DODGE_DISTANCE = 300;            // Distance de détection du danger
+    static final float MIN_SAFE_DISTANCE = 150;         // Distance minimale de sécurité
+    static final float PLATFORM_EDGE_MARGIN = 50;       // Marge de sécurité des plateformes
+    static final long WEAPON_ATTEMPT_TIMEOUT = 3000;    // Temps maximum pour tenter d'atteindre une arme
 
     /**
     * Variables d'état internes
@@ -24,9 +25,28 @@ class AIPlayer extends Player {
     private boolean isRepositioning;
     private int moveDirection;
 
-    /**
-    * Méthodes publiques - Interface externe
-    **/
+    // Classe interne pour l'analyse des armes
+    private class WeaponTarget {
+        Weapon weapon;
+        float distance;
+        float heightDiff;
+        boolean requiresDoubleJump;
+
+        /**
+        * Constructeur de l'analyse des armes
+        * @param w Arme à analyser
+        * @param d Distance à l'arme
+        * @param h Différence de hauteur à l'arme
+        * @param dj Nécessite un double saut
+        */
+        WeaponTarget(Weapon w, float d, float h, boolean dj)
+        {
+            weapon = w;
+            distance = d;
+            heightDiff = h;
+            requiresDoubleJump = dj;
+        }
+    }
 
     /**
     * Constructeur de l'IA
@@ -72,6 +92,83 @@ class AIPlayer extends Player {
     * Méthodes privées - Logique interne
     * @private Utilisées uniquement par les méthodes de cette classe
     **/
+    private WeaponTarget analyzeWeaponAccessibility(Weapon weapon)
+    {
+        float distance = abs(weapon.x - pos.x);
+        float heightDiff = pos.y - weapon.y;
+        boolean needsDoubleJump = heightDiff > 150;
+        return new WeaponTarget(weapon, distance, heightDiff, needsDoubleJump);
+    }
+
+    private int getWeaponPriority(Weapon weapon)
+    {
+        if (weapon instanceof Blaster)
+            return 4;
+        if (weapon instanceof Gun)
+            return 3;
+        if (weapon instanceof Pistol)
+            return 2;
+        if (weapon instanceof Bow)
+            return 1;
+        return 0;
+    }
+
+    private boolean shouldSwitchWeapon(Weapon newWeapon)
+    {
+        if (combat.currentWeapon == null)
+            return true;
+        return getWeaponPriority(newWeapon) > getWeaponPriority(combat.currentWeapon);
+    }
+
+    private void findAndGetWeapon()
+    {
+        if (availableWeapons == null)
+            return;
+        WeaponTarget bestTarget = null;
+        long currentTime = millis();
+        int currentPriority = combat.currentWeapon != null ? getWeaponPriority(combat.currentWeapon) : 0;
+        if (currentTime - lastPositionChangeTime > WEAPON_ATTEMPT_TIMEOUT) {
+            isRepositioning = true;
+            lastPositionChangeTime = currentTime;
+            return;
+        }
+        for (Weapon weapon : availableWeapons) {
+            if (!weapon.isPickedUp) {
+                int weaponPriority = getWeaponPriority(weapon);
+                if (weaponPriority > currentPriority) {
+                    WeaponTarget target = analyzeWeaponAccessibility(weapon);
+                    if (bestTarget == null || weaponPriority > getWeaponPriority(bestTarget.weapon) || (weaponPriority == getWeaponPriority(bestTarget.weapon) && target.distance < bestTarget.distance)) {
+                        bestTarget = target;
+                    }
+                }
+            }
+        }
+
+        if (bestTarget != null) {
+            move(bestTarget.weapon.x > pos.x ? 1 : -1);
+            if (bestTarget.heightDiff > 0) {
+                if (bestTarget.requiresDoubleJump) {
+                    if (movement.isJumping() && millis() - lastJumpTime > 200) {
+                        jump();
+                        lastJumpTime = millis();
+                    }
+                    else if (!movement.isJumping() && millis() - lastJumpTime > 1000) {
+                        jump();
+                        lastJumpTime = millis();
+                    }
+                }
+                else if (millis() - lastJumpTime > 1000) {
+                    jump();
+                    lastJumpTime = millis();
+                }
+            }
+            if (bestTarget.weapon.canPickup(this)) {
+                bestTarget.weapon.pickup(this);
+                lastPositionChangeTime = millis();
+            }
+        }
+    }
+
     private void checkForDanger()
     {
         if (target.combat.bullet == null || target.combat.bullet.manager == null)
@@ -123,7 +220,6 @@ class AIPlayer extends Player {
                 dash(moveDirection < 0, moveDirection > 0);
             }
         }
-
         isDodging = true;
     }
 
@@ -131,43 +227,14 @@ class AIPlayer extends Player {
     {
         if (isDodging)
             return;
-        if (combat.currentWeapon == null) {
-            findAndGetWeapon();
-            return;
-        }
+        findAndGetWeapon();
         if (millis() - lastPositionChangeTime > 2000) {
             isRepositioning = true;
             moveDirection = (random(1) > 0.5) ? 1 : -1;
             lastPositionChangeTime = millis();
         }
-        fight();
-    }
-
-    private void findAndGetWeapon()
-    {
-        if (availableWeapons == null)
-            return;
-
-        Weapon closestWeapon = null;
-        float minDistance = Float.MAX_VALUE;
-        for (Weapon weapon : availableWeapons) {
-            if (!weapon.isPickedUp) {
-                float distance = abs(weapon.x - pos.x);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestWeapon = weapon;
-                }
-            }
-        }
-        if (closestWeapon != null) {
-            move(closestWeapon.x > pos.x ? 1 : -1);
-            if (closestWeapon.y < pos.y && millis() - lastJumpTime > 1000) {
-                jump();
-                lastJumpTime = millis();
-            }
-            if (closestWeapon.canPickup(this)) {
-                closestWeapon.pickup(this);
-            }
+        if (combat.currentWeapon != null) {
+            fight();
         }
     }
 
@@ -187,8 +254,10 @@ class AIPlayer extends Player {
             float idealDistance = (SHOOT_DISTANCE + MIN_SAFE_DISTANCE) / 2;
             move(abs(distanceToTarget) > idealDistance ? (distanceToTarget > 0 ? 1 : -1) : (distanceToTarget > 0 ? -1 : 1));
         }
-        if (abs(distanceToTarget) < SHOOT_DISTANCE && !isDodging) {
-            shoot();
+        if (!isDodging && combat.currentWeapon != null) {
+            if (abs(verticalDistance) < SHOOT_DISTANCE / 2) {
+                shoot();
+            }
         }
         if (!movement.isJumping() && millis() - lastJumpTime > 1500 && random(1) < 0.2) {
             jump();
