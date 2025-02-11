@@ -8,13 +8,13 @@ class Player {
     * Variables d'état du joueur
     * @private Accessibles uniquement dans cette classe
     **/
-    private PlayerMovement movement;
-    private PlayerCombat combat;
-    private PlayerAnimator animator;
-    private ArrayList<Platform> platforms = new ArrayList<>();
-    private PVector pos, vel;
-    private Arena arena;
-    private int lives = 3;
+    protected PlayerMovement movement;
+    protected PlayerCombat combat;
+    protected PlayerAnimator animator;
+    protected ArrayList<Platform> platforms = new ArrayList<>();
+    protected PVector pos, vel;
+    protected Arena arena;
+    protected int lives = 3;
     public color col;
     public int score = 0;
 

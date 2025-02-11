@@ -11,6 +11,7 @@ class GameManager {
     static final float PLAYER_START_Y = 200.0f;   // Distance du bas de l'écran pour le spawn
     static final color P1_COLOR = #00FF00;        // Couleur du joueur 1 (vert)
     static final color P2_COLOR = #FF0000;        // Couleur du joueur 2 (rouge)
+    static final boolean SINGLE_PLAYER_MODE = true;    // Mode de jeu solo
 
     /**
     * Variables d'état internes
@@ -24,6 +25,7 @@ class GameManager {
     private AssetManager assets;                 // Gestionnaire des ressources
     private WeaponSpawner weaponSpawner;         // Gestionnaire d'apparition des armes
     private UIManager uiManager;                 // Gestionnaire de l'interface
+    private boolean isSinglePlayer;              // Mode de jeu solo
 
     /**
     * Méthodes publiques - Interface externe
@@ -36,8 +38,9 @@ class GameManager {
     GameManager(Minim minim)
     {
         initializeManagers(minim);
-        initializePlayers();
         setupArena(minim);
+        weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
+        initializePlayers();
         gameOver = false;
     }
 
@@ -86,15 +89,20 @@ class GameManager {
     {
         assets = new AssetManager();
         weapons = new ArrayList<Weapon>();
-        setupArena(minim);
-        weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
         uiManager = new UIManager(assets.getNumbers(), assets.getP1Life(), assets.getP2Life());
     }
 
     private void initializePlayers()
     {
         player1 = new Player(width * P1_START_X, height - PLAYER_START_Y, assets.getPlayerSprite1(), assets.getBulletSimple(), P1_COLOR, 1);
-        player2 = new Player(width * P2_START_X, height - PLAYER_START_Y, assets.getPlayerSprite2(), assets.getBulletSimple(), P2_COLOR, -1);
+
+        if (SINGLE_PLAYER_MODE) {
+            AIPlayer aiPlayer = new AIPlayer(width * P2_START_X, height - PLAYER_START_Y, assets.getPlayerSprite2(), assets.getBulletSimple(),P2_COLOR, -1, player1);
+            aiPlayer.setAvailableWeapons(weapons);
+            player2 = aiPlayer;
+        } else {
+            player2 = new Player(width * P2_START_X, height - PLAYER_START_Y, assets.getPlayerSprite2(), assets.getBulletSimple(), P2_COLOR, -1);
+        }
 
         player1.setPlatforms(arena.platforms);
         player2.setPlatforms(arena.platforms);
