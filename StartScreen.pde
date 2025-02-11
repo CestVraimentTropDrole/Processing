@@ -1,40 +1,100 @@
+/**
+* StartScreen - Gestion de l'écran de démarrage du jeu
+*
+* Constantes de configuration de l'interface
+**/
 class StartScreen {
-  boolean active;
-  GameManager game;
-  
-  StartScreen(GameManager gameInstance) {
-    active = true;
-    game = gameInstance;
-  }
-  
-  boolean isActive() {
-    return active;
-  }
+    static final color BACKGROUND_COLOR = #000000;                            // Couleur de fond
+    static final color TEXT_COLOR = #FFFFFF;                                  // Couleur du texte
+    static final color BUTTON_COLOR = #00FF00;                                // Couleur du bouton
+    static final int TITLE_SIZE = 48;                                         // Taille du titre
+    static final int SUBTITLE_SIZE = 32;                                      // Taille du sous-titre
+    static final int BUTTON_TEXT_SIZE = 24;                                   // Taille du texte du bouton
+    static final float TITLE_Y_RATIO = 1.0/3.0;                               // Position Y relative du titre
+    static final float BUTTON_WIDTH = 200;                                    // Largeur du bouton
+    static final float BUTTON_HEIGHT = 50;                                    // Hauteur du bouton
+    static final String TITLE_TEXT = "Hey Man";                               // Texte du titre
+    static final String SUBTITLE_TEXT = "Appuyez sur Espace pour jouer";      // Texte du sous-titre
+    static final String BUTTON_TEXT = "START";                                // Texte du bouton
 
-  void draw() {
-    background(0);
-    fill(255);
-    textSize(48);
-    textAlign(CENTER, CENTER);
-    text("Hey Man ", width / 2, height / 3);
-    textSize(32);
-    text("Appuyez sur Espace pour jouer", width / 2, height / 2);
-    drawStartButton();
-  }
+    /**
+    * Variables d'état de l'écran
+    * @private Accessibles uniquement dans cette classe
+    **/
+    private boolean active;                            // État d'activation de l'écran
+    private final GameManager game;                    // Référence au gestionnaire de jeu
 
-  void drawStartButton() {
-    fill(0, 255, 0);
-    rect(width / 2 - 100, height / 2 + 50, 200, 50);
-    fill(0);
-    textSize(24);
-    text("START", width / 2, height / 2 + 75);
-  }
+    /**
+    * Méthodes publiques - Interface externe
+    **/
 
-  void mousePressed() {
-    if (mouseX > width / 2 - 100 && mouseX < width / 2 + 100 &&
-        mouseY > height / 2 + 50 && mouseY < height / 2 + 100) {
-      active = false;  // Passe à l'écran de jeu
-      game.startGame(); // Lance le jeu en appelant une méthode start dans Game
+    /**
+    * Constructeur de l'écran de démarrage
+    * @param gameInstance Référence au gestionnaire de jeu
+    **/
+    StartScreen(GameManager gameInstance)
+    {
+        this.active = true;
+        this.game = gameInstance;
     }
-  }
+
+    boolean isActive()
+    {
+        return active;
+    }
+
+    void draw()
+    {
+        background(BACKGROUND_COLOR);
+        drawTexts();
+        drawStartButton();
+    }
+
+    void mousePressed()
+    {
+        checkButtonClick();
+    }
+
+    /**
+    * Méthodes privées - Logique interne
+    * @private Utilisées uniquement dans cette classe
+    **/
+    private void drawTexts()
+    {
+        fill(TEXT_COLOR);
+        textAlign(CENTER, CENTER);
+        textSize(TITLE_SIZE);
+        text(TITLE_TEXT, width/2, height * TITLE_Y_RATIO);
+        textSize(SUBTITLE_SIZE);
+        text(SUBTITLE_TEXT, width/2, height/2);
+    }
+
+    private void drawStartButton()
+    {
+        float buttonX = width/2 - BUTTON_WIDTH/2;
+        float buttonY = height/2 + 50;
+
+        fill(BUTTON_COLOR);
+        rect(buttonX, buttonY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        fill(BACKGROUND_COLOR);
+        textSize(BUTTON_TEXT_SIZE);
+        text(BUTTON_TEXT, width/2, buttonY + BUTTON_HEIGHT/2);
+    }
+
+    private void checkButtonClick()
+    {
+        float buttonX = width/2 - BUTTON_WIDTH/2;
+        float buttonY = height/2 + 50;
+
+        if (mouseX > buttonX && mouseX < buttonX + BUTTON_WIDTH &&
+            mouseY > buttonY && mouseY < buttonY + BUTTON_HEIGHT) {
+            startGame();
+        }
+    }
+
+    private void startGame()
+    {
+        active = false;
+        game.startGame();
+    }
 }

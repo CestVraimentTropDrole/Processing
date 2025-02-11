@@ -113,7 +113,7 @@ class GameController {
     private void updatePlayer2Movement()
     {
         if (leftPressed2 && !rightPressed2) gameManager.player2.move(-1);
-        if (rightPressed2 && !rightPressed2) gameManager.player2.move(1);
+        if (rightPressed2 && !leftPressed2) gameManager.player2.move(1);
     }
 
     private void handleStartScreenInput(char key)
