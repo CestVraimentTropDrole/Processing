@@ -124,10 +124,6 @@ class GameManager {
             case 2:
                 events.add(new Laser(player1, player2));
                 break;
-            
-            case 3:
-                events.add(new GravityEvent());
-                break;
         }
     }
         
