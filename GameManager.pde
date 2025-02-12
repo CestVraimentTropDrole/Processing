@@ -97,7 +97,8 @@ class GameManager {
         player1 = new Player(width * P1_START_X, height - PLAYER_START_Y, assets.getPlayerSprite1(), assets.getBulletSimple(), P1_COLOR, 1);
 
         if (SINGLE_PLAYER_MODE) {
-            AIPlayer aiPlayer = new AIPlayer(width * P2_START_X, height - PLAYER_START_Y, assets.getPlayerSprite2(), assets.getBulletSimple(),P2_COLOR, -1, player1);
+            AIPlayer aiPlayer = new AIPlayer(width * P2_START_X, height - PLAYER_START_Y, assets.getPlayerSprite2(), assets.getBulletSimple(), P2_COLOR, -1, player1);
+            aiPlayer.setDifficulty("hard");
             aiPlayer.setAvailableWeapons(weapons);
             player2 = aiPlayer;
         } else {

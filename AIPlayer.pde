@@ -4,7 +4,6 @@
 * Constantes de comportement de l'IA
 **/
 class AIPlayer extends Player {
-    static final float DECISION_INTERVAL = 30;          // Temps entre les décisions
     static final float SHOOT_DISTANCE = 400;            // Distance optimale de tir
     static final float DODGE_DISTANCE = 300;            // Distance de détection du danger
     static final float MIN_SAFE_DISTANCE = 150;         // Distance minimale de sécurité
@@ -24,6 +23,11 @@ class AIPlayer extends Player {
     private boolean isDodging;
     private boolean isRepositioning;
     private int moveDirection;
+    private AIConfiguration config;
+
+    /**
+    * Méthodes publiques - Interface externe
+    **/
 
     // Classe interne pour l'analyse des armes
     private class WeaponTarget {
@@ -69,6 +73,26 @@ class AIPlayer extends Player {
         this.isDodging = false;
         this.isRepositioning = false;
         this.moveDirection = 1;
+
+        // Initialiser avec une configuration par défaut (niveau moyen)
+        this.config = new AIConfiguration();
+    }
+
+    void setDifficulty(String level)
+    {
+        switch(level.toLowerCase()) {
+            case "easy":
+                config.setEasyDifficulty();
+                break;
+            case "medium":
+                config.setMediumDifficulty();
+                break;
+            case "hard":
+                config.setHardDifficulty();
+                break;
+            default:
+                config.setMediumDifficulty();
+        }
     }
 
     public void setAvailableWeapons(ArrayList<Weapon> weapons)
@@ -81,7 +105,7 @@ class AIPlayer extends Player {
     {
         super.update();
         checkForDanger();
-        if (millis() - lastDecisionTime > DECISION_INTERVAL) {
+        if (millis() - lastDecisionTime > config.decisionInterval) {
             updateBehavior();
             lastDecisionTime = millis();
         }
@@ -173,7 +197,10 @@ class AIPlayer extends Player {
     {
         if (target.combat.bullet == null || target.combat.bullet.manager == null)
             return;
-
+        if (random(1) > config.dodgeProbability)
+            return;
+        if (random(1) < config.reactionDelay)
+            return;
         boolean dangerDetected = false;
         float botHeight = animator.getCurrentHeight();
 
@@ -183,7 +210,7 @@ class AIPlayer extends Player {
             float bulletDistY = abs(bulletPos.y - (pos.y + botHeight/2));
             if (bulletDistX < DODGE_DISTANCE && bulletDistY < botHeight * 1.5) {
                 dangerDetected = true;
-                handleDodge(bulletPos);
+                    handleDodge(bulletPos);
                 break;
             }
         }
@@ -208,8 +235,7 @@ class AIPlayer extends Player {
             if (pos.x < currentPlatform.x + currentPlatform.w * 0.3 || pos.x > currentPlatform.x + currentPlatform.w * 0.7) {
                 moveDirection = (pos.x < platformCenter) ? 1 : -1;
                 dash(moveDirection < 0, moveDirection > 0);
-            }
-            else {
+            } else {
                 activateShield();
             }
         } else {
@@ -217,7 +243,7 @@ class AIPlayer extends Player {
             if (nearest != null) {
                 float platformCenter = nearest.x + (nearest.w / 2);
                 moveDirection = (pos.x < platformCenter) ? 1 : -1;
-                dash(moveDirection < 0, moveDirection > 0);
+                    dash(moveDirection < 0, moveDirection > 0);
             }
         }
         isDodging = true;
@@ -243,19 +269,12 @@ class AIPlayer extends Player {
         float distanceToTarget = target.pos.x - pos.x;
         float verticalDistance = target.pos.y - pos.y;
 
-        if (isRepositioning) {
-            move(moveDirection);
-            if (millis() - lastPositionChangeTime > 500) {
-                isRepositioning = false;
-            }
-            return;
-        }
         if (abs(distanceToTarget) > SHOOT_DISTANCE || abs(distanceToTarget) < MIN_SAFE_DISTANCE) {
             float idealDistance = (SHOOT_DISTANCE + MIN_SAFE_DISTANCE) / 2;
             move(abs(distanceToTarget) > idealDistance ? (distanceToTarget > 0 ? 1 : -1) : (distanceToTarget > 0 ? -1 : 1));
         }
         if (!isDodging && combat.currentWeapon != null) {
-            if (abs(verticalDistance) < SHOOT_DISTANCE / 2) {
+            if (abs(verticalDistance) < SHOOT_DISTANCE / 2 && random(1) < config.accuracy) {
                 shoot();
             }
         }
@@ -263,9 +282,11 @@ class AIPlayer extends Player {
             jump();
             lastJumpTime = millis();
         }
-        if (combat.bullet != null && combat.bullet.currentAmmo == 0) {
+        if (combat.bullet != null && combat.bullet.currentAmmo < (combat.bullet.maxAmmo * config.reloadThreshold)) {
             combat.bullet.startReload();
-            activateShield();
+            if (random(1) < config.shieldUseProbability) {
+                activateShield();
+            }
         }
         lastTargetX = target.pos.x;
     }
