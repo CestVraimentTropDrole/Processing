@@ -1,9 +1,8 @@
 /**
- * Bomb - Gestion de l'événement bombe, de sa chute, de l'explosion et de ses effets.
- * Cette classe gère la chute de la bombe, l'explosion et l'application des dégâts et knockback aux joueurs.
- *
- * Variables d'état et méthodes de gestion de l'événement de bombe.
- */
+* Bomb - Gestion de l'événement bombe, de sa chute, de l'explosion et de ses effets.
+*
+* Constantes de configuration de la bombe
+*/
 class Bomb extends Event {
     /** Position de la bombe */
     float x, y;                    // Position actuelle de la bombe
@@ -24,13 +23,18 @@ class Bomb extends Event {
     Player p1, p2;                // Joueurs 1 et 2 pour vérifier si ils sont affectés par l'explosion
 
     /**
-     * Constructeur de la bombe.
-     * @param x La position X de la bombe
-     * @param targetY La position Y où la bombe doit toucher le sol (plateforme)
-     * @param p1 Référence au joueur 1
-     * @param p2 Référence au joueur 2
-     */
-    Bomb(float x, float targetY, Player p1, Player p2) {
+    * Méthodes publiques - Interface externe
+    **/
+
+    /**
+    * Constructeur de la bombe.
+    * @param x La position X de la bombe
+    * @param targetY La position Y où la bombe doit toucher le sol (plateforme)
+    * @param p1 Référence au joueur 1
+    * @param p2 Référence au joueur 2
+    */
+    Bomb(float x, float targetY, Player p1, Player p2)
+    {
         this.x = x;
         this.y = -50; // La bombe spawn juste au-dessus de l'écran
         this.targetY = targetY;
@@ -38,11 +42,8 @@ class Bomb extends Event {
         this.p2 = p2;
     }
 
-    /**
-     * Met à jour l'état de la bombe.
-     * Gère la chute de la bombe et son explosion après un certain délai.
-     */
-    void update() {
+    void update()
+    {
         if (!landed) {
             y += speed;  // La bombe chute à une certaine vitesse
             if (y >= targetY) {  // Si elle atteint la plateforme
@@ -57,15 +58,11 @@ class Bomb extends Event {
         }
     }
 
-    /**
-     * Déclenche l'explosion de la bombe.
-     * Applique les dégâts et le knockback aux joueurs dans la zone d'explosion.
-     */
-    void explode() {
+    void explode()
+    {
         exploded = true;  // Marquer la bombe comme ayant explosé
-    
         float explosionY = y - 30;  // Ajuste la hauteur de l'explosion
-    
+
         // Vérifie si les joueurs sont dans la zone d'effet de l'explosion
         if (abs(p1.pos.x - x) < explosionRadius && abs(p1.pos.y - explosionY) < explosionRadius * 1.5) {
             p1.takeDamage(explosionDamage, explosionKnockback, (p1.pos.x < x) ? -1 : 1);  // Dégâts à p1
@@ -73,15 +70,11 @@ class Bomb extends Event {
         if (abs(p2.pos.x - x) < explosionRadius && abs(p2.pos.y - explosionY) < explosionRadius * 1.5) {
             p2.takeDamage(explosionDamage, explosionKnockback, (p2.pos.x < x) ? -1 : 1);  // Dégâts à p2
         }
-    
         finished = true;  // Marquer l'événement comme terminé
     }
 
-    /**
-     * Affiche l'état de la bombe à l'écran.
-     * Affiche la bombe tombante avant l'explosion et l'explosion après l'impact.
-     */
-    void display() {
+    void display()
+    {
         if (!exploded) {
             fill(frameCount % 10 < 5 ? color(255, 0, 0) : color(255, 150, 0));
             ellipse(x, y, 40, 40);

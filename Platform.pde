@@ -35,7 +35,7 @@ class Platform {
         this.w = w;
         this.h = h;
         this.isMain = isMain;
-        
+
         String type = (isMain ? "main" : "simple");
         platform = loadImage("assets/sprites/background/platform_" +type+ ".png"); // Charge l'image de la plateforme
         platform.resize((int)this.w, (int)this.h); // Redimensionne l'image à la taille de la plateforme
