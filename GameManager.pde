@@ -96,7 +96,7 @@ class GameManager {
     
     void triggerRandomEvent() {
     
-        int rand = int(random(3));
+        int rand = int(random(4));
         switch (rand) {
             case 0:
                 for (int i=0; i<= 10; i++) {
@@ -123,6 +123,10 @@ class GameManager {
             
             case 2:
                 events.add(new Laser(player1, player2));
+                break;
+            
+            case 3:
+                events.add(new GravityEvent());
                 break;
         }
     }
