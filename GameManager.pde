@@ -24,6 +24,10 @@ class GameManager {
     private AssetManager assets;                 // Gestionnaire des ressources
     private WeaponSpawner weaponSpawner;         // Gestionnaire d'apparition des armes
     private UIManager uiManager;                 // Gestionnaire de l'interface
+    
+    int eventTimer = 0;
+    int eventInterval = 300;
+    ArrayList<Event> events = new ArrayList<Event>();
 
     /**
     * Méthodes publiques - Interface externe
@@ -69,6 +73,35 @@ class GameManager {
             player2.draw();
         } else {
             uiManager.displayGameOver(player1, player2);
+        }
+        
+        eventTimer++;
+      
+         if (eventTimer > eventInterval) {
+             triggerRandomEvent();
+             eventTimer = 0;
+        }
+    
+        for (int i = events.size() - 1; i >= 0; i--) {
+            Event e = events.get(i);
+            e.update();
+            e.display();
+            if (e.finished) {
+                events.remove(i);
+            }
+        }
+    }
+    
+    void triggerRandomEvent() {
+        Platform platform = arena.platforms.get((int)random(arena.platforms.size())); // Choisit une plateforme
+        float bombX = random(platform.x + 20, platform.x + platform.w - 20);
+        float bombTargetY = platform.y -10;
+        
+        int rand = int(random(1));
+        switch (rand) {
+            case 0:
+                events.add(new Bomb(bombX, bombTargetY, player1, player2));
+            break;
         }
     }
 
