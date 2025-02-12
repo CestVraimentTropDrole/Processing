@@ -24,6 +24,12 @@ class GameManager {
     private AssetManager assets;                 // Gestionnaire des ressources
     private WeaponSpawner weaponSpawner;         // Gestionnaire d'apparition des armes
     private UIManager uiManager;                 // Gestionnaire de l'interface
+    
+    int eventTimer = 0;
+    int eventInterval = 900;
+    ArrayList<Event> events = new ArrayList<Event>();
+    int bombTimer = 0;
+    int bombInterval = 1;
 
     /**
     * Méthodes publiques - Interface externe
@@ -70,8 +76,57 @@ class GameManager {
         } else {
             uiManager.displayGameOver(player1, player2);
         }
+        
+        eventTimer++;
+      
+         if (eventTimer > eventInterval) {
+             triggerRandomEvent();
+             eventTimer = 0;
+        }
+    
+        for (int i = events.size() - 1; i >= 0; i--) {
+            Event e = events.get(i);
+            e.update();
+            e.display();
+            if (e.finished) {
+                events.remove(i);
+            }
+        }
     }
-
+    
+    void triggerRandomEvent() {
+    
+        int rand = int(random(3));
+        switch (rand) {
+            case 0:
+                for (int i=0; i<= 10; i++) {
+                    bombTimer++;
+                    Platform platform = arena.platforms.get((int)random(arena.platforms.size()));
+                    float bombX = random(platform.x + 20, platform.x + platform.w - 20);
+                    float bombTargetY = platform.y - 10;
+                    if (bombTimer >= bombInterval) {
+                         events.add(new Bomb(bombX, bombTargetY, player1, player2));
+                         bombTimer = 0;
+                    }
+                }  
+                break;
+    
+            case 1:
+                if (!arena.platforms.isEmpty()) {
+                    int index = (int)random(arena.platforms.size());
+                    Platform platformToDestroy = arena.platforms.get(index);
+                    if (platformToDestroy == null) return; {
+                      events.add(new DestroyPlateform(arena, platformToDestroy));
+                    }
+                }
+                break;
+            
+            case 2:
+                events.add(new Laser(player1, player2));
+                break;
+        }
+    }
+        
     void reset()
     {
         resetPlayers();
