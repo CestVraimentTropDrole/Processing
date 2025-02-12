@@ -41,7 +41,7 @@ class Bomb extends Event {
         println("💥 BOOM !");
     
         // Correction : déplace légèrement l'explosion vers le haut
-        float explosionY = y - 30; // Ajuste la hauteur d'explosion
+        float explosionY = y-30; // Ajuste la hauteur d'explosion
     
         // Vérifie si les joueurs sont dans la zone d'explosion
         if (abs(p1.pos.x - x) < explosionRadius && abs(p1.pos.y - explosionY) < explosionRadius * 1.5) {

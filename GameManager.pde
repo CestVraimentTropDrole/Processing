@@ -26,8 +26,10 @@ class GameManager {
     private UIManager uiManager;                 // Gestionnaire de l'interface
     
     int eventTimer = 0;
-    int eventInterval = 300;
+    int eventInterval = 600;
     ArrayList<Event> events = new ArrayList<Event>();
+    int bombTimer = 0;
+    int bombInterval = 2;
 
     /**
     * Méthodes publiques - Interface externe
@@ -93,18 +95,34 @@ class GameManager {
     }
     
     void triggerRandomEvent() {
-        Platform platform = arena.platforms.get((int)random(arena.platforms.size())); // Choisit une plateforme
-        float bombX = random(platform.x + 20, platform.x + platform.w - 20);
-        float bombTargetY = platform.y -10;
-        
-        int rand = int(random(1));
+    
+        int rand = int(random(2));
         switch (rand) {
             case 0:
-                events.add(new Bomb(bombX, bombTargetY, player1, player2));
-            break;
+                for (int i=0; i<= 10; i++) {
+                    bombTimer++;
+                    Platform platform = arena.platforms.get((int)random(arena.platforms.size()));
+                    float bombX = random(platform.x + 20, platform.x + platform.w - 20);
+                    float bombTargetY = platform.y - 10;
+                    if (bombTimer > bombInterval) {
+                         events.add(new Bomb(bombX, bombTargetY, player1, player2));
+                         bombTimer = 0;
+                    }
+                }  
+                break;
+    
+            case 1:
+                if (!arena.platforms.isEmpty()) {
+                    int index = (int)random(arena.platforms.size());
+                    Platform platformToDestroy = arena.platforms.get(index);
+                    if (platformToDestroy == null) return; {
+                      events.add(new DestroyPlateform(arena, platformToDestroy));
+                    }
+                }
+                break;
         }
     }
-
+        
     void reset()
     {
         resetPlayers();
