@@ -13,8 +13,8 @@ class DestroyPlateform extends Event {
     }
 
     void update() {
+        // Temps avant destruction de la plateforme
         if (!destroyed) {
-            // Temps avant destruction de la plateforme
             timer--;
             if (timer <= 0) {
                 destroy();
@@ -39,7 +39,7 @@ class DestroyPlateform extends Event {
         arena.platforms.remove(platform); // Supprimer la plateforme de l'arène
         destroyed = true; // Marquer la plateforme comme détruite
         respawnerTime = 0; // Réinitialiser le timer de respawn
-        warning = false;
+        warning = false; // Cacher l'avertissement une fois la plateforme détruite
     }
 
     void respawn() {
