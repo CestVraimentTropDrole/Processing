@@ -1,10 +1,13 @@
 /**
- * Laser - Gestion de l'événement laser, son déplacement, ses collisions
- *
- * Constantes de configuration du Laser
- */
+* Laser - Gestion de l'événement laser, son déplacement, ses collisions
+*
+* Constantes de configuration du Laser
+*/
 class Laser extends Event {
-    /** Variables d'état du laser */
+    /**
+    * Variables d'état internes
+    * @private Accessibles uniquement dans cette classe
+    **/
     private float x;                      // Position x du laser
     private float widthLaser = 30;        // Largeur du laser
     private float speed;                  // Vitesse aléatoire du laser
@@ -16,22 +19,26 @@ class Laser extends Event {
     private Player p1, p2;                // Références aux joueurs 1 et 2
 
     /**
-     * Constructeur pour initialiser un laser
-     * @param p1 Référence au joueur 1
-     * @param p2 Référence au joueur 2
-     */
-    Laser(Player p1, Player p2) {
-        this.p1 = p1;
-        this.p2 = p2;
-        this.x = random(width * 0.2, width * 0.8);   // Spawn aléatoire du laser
-        this.movingRight = random(1) > 0.5;            // Départ aléatoire à gauche ou à droite
-        this.speed = random(3, 6);                     // Vitesse aléatoire du laser
-    }
+    * Méthodes publiques - Interface externe
+    **/
 
     /**
-     * Mise à jour de l'état du laser (déplacement, vérification des collisions, etc.)
-     */
-    void update() {
+    * Constructeur pour initialiser un laser
+    * @param p1 Référence au joueur 1
+    * @param p2 Référence au joueur 2
+    */
+    Laser(Player p1, Player p2)
+    {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.x = random(width * 0.2, width * 0.8);      // Spawn aléatoire du laser
+        this.movingRight = random(1) > 0.5;             // Départ aléatoire à gauche ou à droite
+        this.speed = random(3, 6);                      // Vitesse aléatoire du laser
+    }
+
+
+    void update()
+    {
         if (warning) {
             warningTime--;   // Décrémenter le temps d'avertissement
             if (warningTime <= 0) {
@@ -43,23 +50,18 @@ class Laser extends Event {
             if (duration <= 0) {
                 finished = true;  // Fin du laser après sa durée
             }
-
             // Déplacement horizontal du laser
             x += movingRight ? speed : -speed;
-            
             // Rebond du laser aux bords de l'écran
             if (x <= 200 || x >= width - (widthLaser + 200)) {
                 movingRight = !movingRight;
             }
-
             checkHit();  // Vérification des collisions avec les joueurs
         }
     }
 
-    /**
-     * Vérifie les collisions du laser avec les joueurs
-     */
-    void checkHit() {
+    void checkHit()
+    {
         if (active) {
             // Vérification des collisions pour le joueur 1
             if (abs(p1.pos.x - x) < widthLaser / 2) {
@@ -73,7 +75,8 @@ class Laser extends Event {
     }
 
 
-    void display() {
+    void display()
+    {
         if (warning) {
             stroke(255, 255, 0, 200);
             strokeWeight(3);
