@@ -70,6 +70,9 @@ class GameController {
     {
         if (startScreen.isActive()) {
             startScreen.handleKeyPressed(key, keyCode);
+            if (!startScreen.isActive()) {
+                gameManager.arena.soundManager.startMusic();
+            }
         } else {
             handleGameInput(key, keyCode);
         }
@@ -116,15 +119,6 @@ class GameController {
     {
         if (leftPressed2 && !rightPressed2) gameManager.player2.move(-1);
         if (rightPressed2 && !leftPressed2) gameManager.player2.move(1);
-    }
-
-    private void handleStartScreenInput(char key)
-    {
-        if (key == KEY_START) {
-            startScreen.active = false;
-            gameManager.startGame();
-            gameManager.arena.soundManager.startMusic();
-        }
     }
 
     private void handleGameInput(char key, int keyCode)
