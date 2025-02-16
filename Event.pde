@@ -5,7 +5,7 @@
 */
 abstract class Event {
     /** Variables d'état de l'événement */
-    protected boolean finished = false;  // Indique si l'événement est terminé
+    protected boolean finished = false;
 
     abstract void update();
 

@@ -69,7 +69,7 @@ class GameController {
     void handleKeyPressed(char key, int keyCode)
     {
         if (startScreen.isActive()) {
-            handleStartScreenInput(key);
+            startScreen.handleKeyPressed(key, keyCode);
         } else {
             handleGameInput(key, keyCode);
         }

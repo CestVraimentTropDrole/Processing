@@ -35,7 +35,6 @@ class WeaponRenderer {
         this.isFading = false;
     }
 
-    // Contrôles externes du rendu
     void fadeOut()
     {
         isFading = true;
@@ -43,7 +42,6 @@ class WeaponRenderer {
         alpha = max(0, alpha);
     }
 
-    // Méthodes de rendu principales
     void draw(float x, float y, Player owner, boolean isPickedUp)
     {
         if (!isPickedUp) {

@@ -36,7 +36,6 @@ class Shield {
         isActive = false;
     }
 
-    // Contrôles externes du bouclier
     void activate()
     {
         isActive = true;
@@ -47,7 +46,6 @@ class Shield {
         isActive = false;
     }
 
-    // Mise à jour et affichage
     void update()
     {
         if (isActive) {
