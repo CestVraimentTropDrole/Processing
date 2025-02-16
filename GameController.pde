@@ -100,8 +100,10 @@ class GameController {
 
     private void updatePlayerMovements()
     {
-        updatePlayer1Movement();
-        updatePlayer2Movement();
+        if (!gameManager.isCountingDown() && gameManager.hasGameStarted()) {
+            updatePlayer1Movement();
+            updatePlayer2Movement();
+        }
     }
 
     private void updatePlayer1Movement()
@@ -157,21 +159,23 @@ class GameController {
 
     private void handleActionKeyPressed(char key, int keyCode)
     {
-        // Actions Joueur 1
-        if (key == KEY_P1_JUMP) gameManager.player1.jump();
-        if (key == KEY_P1_CROUCH) gameManager.player1.crouch(true);
-        if (key == KEY_P1_SHOOT) gameManager.player1.shoot();
-        if (key == KEY_P1_DASH) gameManager.player1.dash(leftPressed1, rightPressed1);
-        if (key == KEY_P1_RELOAD) gameManager.player1.combat.bullet.startReload();
-        if (key == KEY_P1_SHIELD) gameManager.player1.activateShield();
+        if (!gameManager.isCountingDown() && gameManager.hasGameStarted()) {
+            // Actions Joueur 1
+            if (key == KEY_P1_JUMP) gameManager.player1.jump();
+            if (key == KEY_P1_CROUCH) gameManager.player1.crouch(true);
+            if (key == KEY_P1_SHOOT) gameManager.player1.shoot();
+            if (key == KEY_P1_DASH) gameManager.player1.dash(leftPressed1, rightPressed1);
+            if (key == KEY_P1_RELOAD) gameManager.player1.combat.bullet.startReload();
+            if (key == KEY_P1_SHIELD) gameManager.player1.activateShield();
 
-        // Actions Joueur 2
-        if (keyCode == KEY_P2_JUMP) gameManager.player2.jump();
-        if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(true);
-        if (key == KEY_P2_SHOOT) gameManager.player2.shoot();
-        if (key == KEY_P2_DASH) gameManager.player2.dash(leftPressed2, rightPressed2);
-        if (key == KEY_P2_RELOAD) gameManager.player2.combat.bullet.startReload();
-        if (key == KEY_P2_SHIELD) gameManager.player2.activateShield();
+            // Actions Joueur 2
+            if (keyCode == KEY_P2_JUMP) gameManager.player2.jump();
+            if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(true);
+            if (key == KEY_P2_SHOOT) gameManager.player2.shoot();
+            if (key == KEY_P2_DASH) gameManager.player2.dash(leftPressed2, rightPressed2);
+            if (key == KEY_P2_RELOAD) gameManager.player2.combat.bullet.startReload();
+            if (key == KEY_P2_SHIELD) gameManager.player2.activateShield();
+        }
     }
 
     private void handleMovementKeyReleased(char key, int keyCode)

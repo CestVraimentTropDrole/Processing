@@ -4,32 +4,38 @@
 * Constantes de configuration du jeu
 **/
 class GameManager {
-    static final int DEFAULT_LIVES = 3;           // Nombre de vies initiales
-    static final int WIN_SCORE = 3;               // Score nécessaire pour gagner
-    static final float P1_START_X = 0.25f;        // Position X relative du joueur 1
-    static final float P2_START_X = 0.75f;        // Position X relative du joueur 2
-    static final float PLAYER_START_Y = 200.0f;   // Distance du bas de l'écran pour le spawn
-    static final color P1_COLOR = #00FF00;        // Couleur du joueur 1 (vert)
-    static final color P2_COLOR = #FF0000;        // Couleur du joueur 2 (rouge)
+    static final int DEFAULT_LIVES = 3;             // Nombre de vies initiales
+    static final int WIN_SCORE = 3;                 // Score nécessaire pour gagner
+    static final float P1_START_X = 0.25f;          // Position X relative du joueur 1
+    static final float P2_START_X = 0.75f;          // Position X relative du joueur 2
+    static final float PLAYER_START_Y = 200.0f;     // Distance du bas de l'écran pour le spawn
+    static final color P1_COLOR = #00FF00;          // Couleur du joueur 1 (vert)
+    static final color P2_COLOR = #FF0000;          // Couleur du joueur 2 (rouge)
+    static final int COUNTDOWN_START = 3;           // Compte à rebours initial
+    static final int COUNTDOWN_FRAME_DURATION = 60; // Durée d'un frame du compte à rebours
+    static final float COUNTDOWN_SCALE = 3.0f;      // Échelle du texte du compte à rebours
 
     /**
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private Player player1;                      // Joueur 1
-    private Player player2;                      // Joueur 2
-    private Arena arena;                         // Arène de jeu
-    private boolean gameOver;                    // État de fin de partie
-    private ArrayList<Weapon> weapons;           // Liste des armes en jeu
-    private AssetManager assets;                 // Gestionnaire des ressources
-    private WeaponSpawner weaponSpawner;         // Gestionnaire d'apparition des armes
-    private UIManager uiManager;                 // Gestionnaire de l'interface
-
-    int eventTimer = 0;
-    int eventInterval = 900;
-    ArrayList<Event> events = new ArrayList<Event>();
-    int bombTimer = 0;
-    int bombInterval = 1;
+    private Player player1;                                     // Joueur 1
+    private Player player2;                                     // Joueur 2
+    private Arena arena;                                        // Arène de jeu
+    private boolean gameOver;                                   // État de fin de partie
+    private ArrayList<Weapon> weapons;                          // Liste des armes en jeu
+    private AssetManager assets;                                // Gestionnaire des ressources
+    private WeaponSpawner weaponSpawner;                        // Gestionnaire d'apparition des armes
+    private UIManager uiManager;                                // Gestionnaire de l'interface
+    private int countdownValue;
+    private int countdownTimer;
+    private boolean isCountingDown;
+    private boolean gameStarted;
+    private int eventTimer = 0;                                 // Compteur pour les événements
+    private int eventInterval = 900;                            // Intervalle entre les événements
+    private ArrayList<Event> events = new ArrayList<Event>();   // Liste des événements
+    private int bombTimer = 0;                                  // Compteur pour les bombes
+    private int bombInterval = 1;                               // Intervalle entre les bombes
 
     /**
     * Méthodes publiques - Interface externe
@@ -51,15 +57,24 @@ class GameManager {
     {
         gameOver = false;
         resetPlayers();
+
+        countdownValue = COUNTDOWN_START;
+        countdownTimer = COUNTDOWN_FRAME_DURATION;
+        isCountingDown = true;
+        gameStarted = false;
     }
 
     void update()
     {
         if (!gameOver) {
-            updatePlayers();
-            checkCollisions();
-            weaponSpawner.update();
-            handleWeaponPickups();
+            if (isCountingDown) {
+                updateCountdown();
+            } else if (gameStarted) {
+                updatePlayers();
+                checkCollisions();
+                weaponSpawner.update();
+                handleWeaponPickups();
+            }
         }
     }
 
@@ -73,6 +88,15 @@ class GameManager {
             drawWeapons();
             player1.draw();
             player2.draw();
+            if (isCountingDown && countdownValue > 0) {
+                pushMatrix();
+                imageMode(CENTER);
+                translate(width/2, height/2);
+                scale(COUNTDOWN_SCALE);
+                image(assets.getNumbers()[countdownValue], 0, 0);
+                imageMode(CORNER);
+                popMatrix();
+            }
         } else {
             uiManager.displayGameOver(player1, player2);
         }
@@ -130,6 +154,10 @@ class GameManager {
         gameOver = false;
     }
 
+    // Getters
+    boolean hasGameStarted() { return gameStarted; }
+    boolean isCountingDown() { return isCountingDown; }
+
     /**
     * Méthodes privées - Logique interne
     * @private Utilisées uniquement par les méthodes de cette classe
@@ -171,6 +199,19 @@ class GameManager {
         player2.lives = DEFAULT_LIVES;
         player1.reset();
         player2.reset();
+    }
+
+    private void updateCountdown()
+    {
+        countdownTimer--;
+        if (countdownTimer <= 0) {
+            countdownValue--;
+            countdownTimer = COUNTDOWN_FRAME_DURATION;
+            if (countdownValue < 1) {
+                isCountingDown = false;
+                gameStarted = true;
+            }
+        }
     }
 
     private void drawWeapons()
