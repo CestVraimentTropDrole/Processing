@@ -6,9 +6,9 @@
 class GameManager {
     static final int DEFAULT_LIVES = 3;             // Nombre de vies initiales
     static final int WIN_SCORE = 3;                 // Score nécessaire pour gagner
-    static final float P1_START_X = 0.25f;          // Position X relative du joueur 1
-    static final float P2_START_X = 0.75f;          // Position X relative du joueur 2
-    static final float PLAYER_START_Y = 200.0f;     // Distance du bas de l'écran pour le spawn
+    static final float P1_START_X = 0.19f;          // Position X relative du joueur 1
+    static final float P2_START_X = 0.77f;          // Position X relative du joueur 2
+    static final float PLAYER_START_Y = 700.0f;     // Distance du bas de l'écran pour le spawn
     static final color P1_COLOR = #00FF00;          // Couleur du joueur 1 (vert)
     static final color P2_COLOR = #FF0000;          // Couleur du joueur 2 (rouge)
     static final int COUNTDOWN_START = 3;           // Compte à rebours initial

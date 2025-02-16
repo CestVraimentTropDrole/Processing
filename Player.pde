@@ -124,8 +124,8 @@ class Player {
 
     void reset()
     {
-        pos.y = height - 500;
-        pos.x = movement.getFacing() == 1 ? width/4 : 3*width/4;
+        pos.y = height - 700;
+        pos.x = movement.getFacing() == 1 ? width * 0.19 : width * 0.77;
         movement.reset();
         combat.reset();
         animator.reset();
