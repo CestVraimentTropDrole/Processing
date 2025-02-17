@@ -31,6 +31,7 @@ class GameManager {
     private int countdownTimer;
     private boolean isCountingDown;
     private boolean gameStarted;
+    private VictoryScreen victoryScreen;
     private int eventTimer = 0;                                 // Compteur pour les événements
     private int eventInterval = 900;                            // Intervalle entre les événements
     private ArrayList<Event> events = new ArrayList<Event>();   // Liste des événements
@@ -50,18 +51,16 @@ class GameManager {
         initializeManagers(minim);
         initializePlayers();
         setupArena(minim);
+        victoryScreen = new VictoryScreen();
         gameOver = false;
     }
 
     void startGame()
     {
-        gameOver = false;
-        resetPlayers();
-
+        reset();
         countdownValue = COUNTDOWN_START;
         countdownTimer = COUNTDOWN_FRAME_DURATION;
         isCountingDown = true;
-        gameStarted = false;
     }
 
     void update()
@@ -74,16 +73,29 @@ class GameManager {
                 checkCollisions();
                 weaponSpawner.update();
                 handleWeaponPickups();
+                eventTimer++;
+                if (eventTimer > eventInterval) {
+                    triggerRandomEvent();
+                    eventTimer = 0;
+                }
+                for (int i = events.size() - 1; i >= 0; i--) {
+                    Event e = events.get(i);
+                    e.update();
+                    if (e.finished) {
+                        events.remove(i);
+                    }
+                }
             }
+        } else {
+            victoryScreen.update();
         }
     }
 
     void draw()
     {
-        background(200);
-        arena.draw();
-
         if (!gameOver) {
+            background(200);
+            arena.draw();
             uiManager.displayScore(player1, player2);
             drawWeapons();
             player1.draw();
@@ -97,22 +109,11 @@ class GameManager {
                 imageMode(CORNER);
                 popMatrix();
             }
-        } else {
-            uiManager.displayGameOver(player1, player2);
-        }
-        eventTimer++;
-
-        if (eventTimer > eventInterval) {
-            triggerRandomEvent();
-            eventTimer = 0;
-        }
-        for (int i = events.size() - 1; i >= 0; i--) {
-            Event e = events.get(i);
-            e.update();
-            e.display();
-            if (e.finished) {
-                events.remove(i);
+            for (Event e : events) {
+                e.display();
             }
+        } else {
+            victoryScreen.draw();
         }
     }
 
@@ -151,7 +152,14 @@ class GameManager {
     void reset()
     {
         resetPlayers();
+        weapons.clear();
+        events.clear();
+        eventTimer = 0;
+        bombTimer = 0;
         gameOver = false;
+        isCountingDown = false;
+        gameStarted = false;
+        victoryScreen.reset();
     }
 
     // Getters
@@ -290,6 +298,7 @@ class GameManager {
 
         if (deadPlayer.lives <= 0 || winner.score >= WIN_SCORE) {
             gameOver = true;
+            victoryScreen.startAnimation(winner, deadPlayer);
         }
     }
 }
