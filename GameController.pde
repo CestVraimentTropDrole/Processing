@@ -25,7 +25,6 @@ class GameController {
     static final char KEY_P2_SHIELD = 'm';        // Bouclier J2
 
     // Contrôles globaux
-    static final char KEY_RESTART = 'r';          // Redémarrer la partie
     static final char KEY_HOME = 'h';             // Retour au menu
     static final char KEY_START = ' ';            // Démarrer la partie
 
@@ -130,13 +129,9 @@ class GameController {
 
     private void handleGameStateKeys(char key)
     {
-        if (gameManager.gameOver) {
-            if (key == KEY_RESTART) {
-                gameManager.reset();
-            } else if (key == KEY_HOME) {
-                startScreen.active = true;
-                gameManager.reset();
-            }
+        if (gameManager.gameOver && key == KEY_HOME) {
+            startScreen.active = true;
+            gameManager.reset();
         }
     }
 

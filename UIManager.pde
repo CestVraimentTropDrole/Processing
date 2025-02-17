@@ -4,24 +4,18 @@
 * Constantes de configuration de l'interface
 **/
 class UIManager {
-    static final int MARGIN = 100;                                              // Marge horizontale pour les scores
-    static final int SPRITE_SPACING = 40;                                       // Espacement entre les sprites
-    static final int LIVES_VERTICAL_OFFSET = 40;                                // Décalage vertical des vies
-    static final int SCORE_Y = 50;                                              // Position Y des scores
-    static final int GAMEOVER_TEXT_SIZE = 32;                                   // Taille du texte de fin de partie
-    static final int INSTRUCTION_TEXT_SIZE = 16;                                // Taille du texte d'instruction
-    static final String VICTORY_TEXT = " gagne!";                               // Texte de victoire
-    static final String RESTART_TEXT = "'R' pour relancer, 'H' pour retour";    // Instructions
-    static final color TEXT_COLOR = #000000;                                    // Couleur du texte
-    static final int DECIMAL_CODE = -2;                                         // Code pour la virgule décimale
+    static final int MARGIN = 100;              // Marge horizontale pour les scores
+    static final int SPRITE_SPACING = 40;       // Espacement entre les sprites
+    static final int LIVES_VERTICAL_OFFSET = 40; // Décalage vertical des vies
+    static final int SCORE_Y = 50;              // Position Y des scores
+    static final int DECIMAL_CODE = -2;         // Code pour la virgule décimale
 
     /**
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private PImage[] numbers;         // Chiffres pour l'affichage des scores
-    private PImage[] imageDamage;     // Cache pour les images de dégâts
-    private PImage p1Life, p2Life;    // Icônes de vie des joueurs
+    private PImage[] numbers;      // Chiffres pour l'affichage des scores
+    private PImage p1Life, p2Life; // Icônes de vie des joueurs
 
     /**
     * Méthodes publiques - Interface externe
@@ -51,18 +45,6 @@ class UIManager {
 
         displayPlayerScore(player1, true);
         displayPlayerScore(player2, false);
-    }
-
-    void displayGameOver(Player player1, Player player2)
-    {
-        if (player1 == null || player2 == null)
-            return;
-
-        configureText(GAMEOVER_TEXT_SIZE, TEXT_COLOR);
-        String winner = determineWinner(player1);
-        drawCenteredText(winner + VICTORY_TEXT, width/2 - 100, height/2);
-        configureText(INSTRUCTION_TEXT_SIZE, TEXT_COLOR);
-        drawCenteredText(RESTART_TEXT, width/2 - 90, height/2 + 50);
     }
 
     /**
@@ -123,22 +105,5 @@ class UIManager {
         for (int i = 0; i < player.lives; i++) {
             image(lifeSprite, startX + i * SPRITE_SPACING, y);
         }
-    }
-
-    private void configureText(int size, color col)
-    {
-        textSize(size);
-        fill(col);
-    }
-
-    private void drawCenteredText(String text, float x, float y)
-    {
-        textAlign(CENTER, CENTER);
-        text(text, x, y);
-    }
-
-    private String determineWinner(Player player1)
-    {
-        return (player1.lives <= 0) ? "J2" : "J1";
     }
 }
