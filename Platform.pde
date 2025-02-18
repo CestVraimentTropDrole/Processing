@@ -37,7 +37,7 @@ class Platform {
         this.isMain = isMain;
 
         String type = (isMain ? "main" : "simple");
-        platform = loadImage("assets/sprites/background/platform_" +type+ ".png");
+        platform = loadImage("assets/sprites/background/battlefield/platform_" +type+ ".png");
         platform.resize((int)this.w, (int)this.h);
     }
 

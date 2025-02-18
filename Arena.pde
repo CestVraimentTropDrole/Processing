@@ -41,7 +41,7 @@ class Arena {
         this.platforms = new ArrayList<Platform>();
 
         setupPlatforms();
-        background = loadImage("assets/sprites/background/battlefield.png");
+        background = loadImage("assets/sprites/background/battlefield/battlefield.png");
         background.resize((int)width, (int)height);
 
         soundManager = new SoundManager(minim);
