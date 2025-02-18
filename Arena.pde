@@ -93,7 +93,6 @@ class Arena {
 
     private void setupPlatforms()
     {
-        // Plateforme principale
         float mainPlatformWidth = width * MAIN_PLATFORM_WIDTH;
         float sidePlatformWidth = width * SIDE_PLATFORM_WIDTH;
 

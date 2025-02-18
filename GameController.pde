@@ -25,7 +25,6 @@ class GameController {
     static final char KEY_P2_SHIELD = 'm';        // Bouclier J2
 
     // Contrôles globaux
-    static final char KEY_RESTART = 'r';          // Redémarrer la partie
     static final char KEY_HOME = 'h';             // Retour au menu
     static final char KEY_START = ' ';            // Démarrer la partie
 
@@ -69,7 +68,10 @@ class GameController {
     void handleKeyPressed(char key, int keyCode)
     {
         if (startScreen.isActive()) {
-            handleStartScreenInput(key);
+            startScreen.handleKeyPressed(key, keyCode);
+            if (!startScreen.isActive()) {
+                gameManager.arena.soundManager.startMusic();
+            }
         } else {
             handleGameInput(key, keyCode);
         }
@@ -100,8 +102,10 @@ class GameController {
 
     private void updatePlayerMovements()
     {
-        updatePlayer1Movement();
-        updatePlayer2Movement();
+        if (!gameManager.isCountingDown() && gameManager.hasGameStarted()) {
+            updatePlayer1Movement();
+            updatePlayer2Movement();
+        }
     }
 
     private void updatePlayer1Movement()
@@ -116,15 +120,6 @@ class GameController {
         if (rightPressed2 && !leftPressed2) gameManager.player2.move(1);
     }
 
-    private void handleStartScreenInput(char key)
-    {
-        if (key == KEY_START) {
-            startScreen.active = false;
-            gameManager.startGame();
-            gameManager.arena.soundManager.startMusic();
-        }
-    }
-
     private void handleGameInput(char key, int keyCode)
     {
         handleGameStateKeys(key);
@@ -134,13 +129,9 @@ class GameController {
 
     private void handleGameStateKeys(char key)
     {
-        if (gameManager.gameOver) {
-            if (key == KEY_RESTART) {
-                gameManager.reset();
-            } else if (key == KEY_HOME) {
-                startScreen.active = true;
-                gameManager.reset();
-            }
+        if (gameManager.gameOver && key == KEY_HOME) {
+            startScreen.active = true;
+            gameManager.reset();
         }
     }
 
@@ -157,6 +148,10 @@ class GameController {
 
     private void handleActionKeyPressed(char key, int keyCode)
     {
+        if (gameManager.isCountingDown() || !gameManager.hasGameStarted()) {
+            return;
+        }
+
         // Actions Joueur 1
         if (key == KEY_P1_JUMP) gameManager.player1.jump();
         if (key == KEY_P1_CROUCH) gameManager.player1.crouch(true);
@@ -187,6 +182,10 @@ class GameController {
 
     private void handleActionKeyReleased(char key, int keyCode)
     {
+        if (gameManager.isCountingDown() || !gameManager.hasGameStarted()) {
+            return;
+        }
+
         // Joueur 1
         if (key == KEY_P1_CROUCH) gameManager.player1.crouch(false);
         if (key == KEY_P1_SHIELD) gameManager.player1.deactivateShield();

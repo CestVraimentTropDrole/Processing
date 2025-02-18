@@ -6,7 +6,6 @@
 class Platform {
     static final color MAIN_PLATFORM_COLOR = #8B4513;    // Couleur plateforme principale
     static final color SIDE_PLATFORM_COLOR = #A0522D;    // Couleur plateformes secondaires
-    private final PImage platform;                        //Image de la plateforme
 
     /**
     * Variables d'état de la plateforme
@@ -15,6 +14,7 @@ class Platform {
     private final float x, y;          // Position de la plateforme
     private final float w, h;          // Dimensions de la plateforme
     private final boolean isMain;      // Type de plateforme
+    private final PImage platform;     //Image de la plateforme
 
     /**
     * Méthodes publiques - Interface externe
@@ -37,13 +37,13 @@ class Platform {
         this.isMain = isMain;
 
         String type = (isMain ? "main" : "simple");
-        platform = loadImage("assets/sprites/background/platform_" +type+ ".png"); // Charge l'image de la plateforme
-        platform.resize((int)this.w, (int)this.h); // Redimensionne l'image à la taille de la plateforme
+        platform = loadImage("assets/sprites/background/platform_" +type+ ".png");
+        platform.resize((int)this.w, (int)this.h);
     }
 
     void draw()
     {
-        image(platform,x,y); // Affiche la plateforme
+        image(platform,x,y);
     }
 
     boolean isOnPlatform(float px, float py, float ph, float vy)

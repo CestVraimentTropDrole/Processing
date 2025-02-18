@@ -26,6 +26,7 @@ class PlayerMovement {
     private float distanceDashed;             // Distance parcourue en dash
     private float dashVelocity;               // Vitesse actuelle du dash
     private long lastDashTime;                // Dernier dash effectué
+    private final int initialFacing;          // Direction initiale du regard
 
     /**
     * Méthodes publiques - Interface externe
@@ -37,7 +38,8 @@ class PlayerMovement {
     **/
     PlayerMovement(int initialFacing)
     {
-        facing = initialFacing;
+        this.initialFacing = initialFacing;
+        this.facing = initialFacing;
         reset();
     }
 
@@ -98,6 +100,7 @@ class PlayerMovement {
     boolean isJumping() { return isJumping; }
     boolean isCrouching() { return isCrouching; }
     boolean isInKnockback() { return isInKnockback; }
+    int getInitialFacing() { return initialFacing; }
 
     // Setters
     void setJumping(boolean state) { isJumping = state; }
