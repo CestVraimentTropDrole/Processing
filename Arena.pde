@@ -94,7 +94,7 @@ class Arena {
         background.resize((int)width, (int)height);
 
         String musicPath = "assets/musics/" + mapName + ".mp3";
-        soundManager.playMusic(musicPath);
+        soundManager.loadMusic(musicPath);
     }
 
     private void createSidePlatform(float xPosition, float yOffset, float width)
