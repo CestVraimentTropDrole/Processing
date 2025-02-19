@@ -93,7 +93,7 @@ class Arena {
         background = loadImage(basePath + mapName + ".png");
         background.resize((int)width, (int)height);
 
-        String musicPath = "assets/musics/battlefield.mp3";
+        String musicPath = "assets/musics/" + mapName + ".mp3";
         soundManager.playMusic(musicPath);
     }
 
