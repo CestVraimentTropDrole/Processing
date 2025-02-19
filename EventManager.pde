@@ -17,7 +17,6 @@ class EventManager {
     private int eventTimer;                         // Compteur pour les événements
     private int bombTimer;                          // Compteur pour les bombes
 
-
     /**
     * Méthodes publiques - Interface externe
     **/

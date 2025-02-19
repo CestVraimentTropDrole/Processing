@@ -9,7 +9,7 @@ class WeaponProperties {
     static final float PICKUP_RADIUS = 100;    // Rayon de ramassage
 
     /**
-    * Variables de configuration de l'arme
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final float bulletSpeed;           // Vitesse des projectiles

@@ -5,7 +5,7 @@
 **/
 class SoundManager {
     /**
-    * Variables d'état audio
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final Minim minim;            // Moteur audio

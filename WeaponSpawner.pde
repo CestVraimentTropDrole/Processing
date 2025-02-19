@@ -19,7 +19,7 @@ class WeaponSpawner {
     private int spawnTimer;                     // Compteur pour le prochain spawn
     private ArrayList<Weapon> weapons;          // Liste des armes en jeu
     private AssetManager assets;                // Gestionnaire des ressources
-    private ArrayList<Platform> platforms;       // Liste des plateformes
+    private ArrayList<Platform> platforms;      // Liste des plateformes
 
     /**
     * Méthodes publiques - Interface externe

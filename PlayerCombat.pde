@@ -13,7 +13,7 @@ class PlayerCombat {
     static final float SHIELD_BREAK_MULTIPLIER = 1.5f;  // Multiplicateur de dégâts sur shield break
 
     /**
-    * Variables d'état du combat
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final Shield shield;               // Bouclier du joueur

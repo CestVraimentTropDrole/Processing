@@ -14,7 +14,7 @@ class PlayerMovement {
     static final float MAX_FALL_SPEED = 20;   // Vitesse maximale de chute
 
     /**
-    * Variables d'état de mouvement
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private boolean isDashing;                // État du dash

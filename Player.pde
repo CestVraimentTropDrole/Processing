@@ -5,7 +5,7 @@
 **/
 class Player {
     /**
-    * Variables d'état du joueur
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private PlayerMovement movement;

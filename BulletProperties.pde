@@ -11,7 +11,7 @@ class BulletProperties {
     static final int DEFAULT_RELOAD_TIME = 2000;     // Temps de rechargement par défaut (ms)
 
     /**
-    * Variables d'état du projectile
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final float speed;      // Vitesse de déplacement du projectile

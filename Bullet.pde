@@ -5,7 +5,7 @@
 **/
 class Bullet {
     /**
-    * Variables d'état du système de tir
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final BulletManager manager;        // Gestionnaire des projectiles actifs

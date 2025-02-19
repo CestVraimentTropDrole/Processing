@@ -5,7 +5,7 @@
 **/
 class Weapon {
     /**
-    * Variables d'état de l'arme
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final WeaponProperties properties;  // Propriétés de l'arme
