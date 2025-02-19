@@ -2,7 +2,7 @@
 * Laser - Gestion de l'événement laser, son déplacement, ses collisions
 *
 * Constantes de configuration du Laser
-*/
+**/
 class Laser extends Event {
     /**
     * Variables d'état internes
@@ -26,7 +26,7 @@ class Laser extends Event {
     * Constructeur pour initialiser un laser
     * @param p1 Référence au joueur 1
     * @param p2 Référence au joueur 2
-    */
+    **/
     Laser(Player p1, Player p2)
     {
         this.p1 = p1;
