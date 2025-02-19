@@ -31,49 +31,43 @@ class Laser extends Event {
     {
         this.p1 = p1;
         this.p2 = p2;
-        this.x = random(width * 0.2, width * 0.8);      // Spawn aléatoire du laser
-        this.movingRight = random(1) > 0.5;             // Départ aléatoire à gauche ou à droite
-        this.speed = random(3, 6);                      // Vitesse aléatoire du laser
+        this.x = random(width * 0.2, width * 0.8);
+        this.movingRight = random(1) > 0.5;
+        this.speed = random(3, 6);
     }
-
 
     void update()
     {
         if (warning) {
-            warningTime--;   // Décrémenter le temps d'avertissement
+            warningTime--;
             if (warningTime <= 0) {
                 warning = false;
-                active = true;  // Activer le laser après le délai d'avertissement
+                active = true;
             }
         } else if (active) {
-            duration--;  // Décrémenter la durée du laser
+            duration--;
             if (duration <= 0) {
-                finished = true;  // Fin du laser après sa durée
+                finished = true;
             }
-            // Déplacement horizontal du laser
             x += movingRight ? speed : -speed;
-            // Rebond du laser aux bords de l'écran
             if (x <= 200 || x >= width - (widthLaser + 200)) {
                 movingRight = !movingRight;
             }
-            checkHit();  // Vérification des collisions avec les joueurs
+            checkHit();
         }
     }
 
     void checkHit()
     {
         if (active) {
-            // Vérification des collisions pour le joueur 1
             if (abs(p1.pos.x - x) < widthLaser / 2) {
                 p1.takeDamage(30, 15, (p1.pos.x < x) ? -1 : 1);
             }
-            // Vérification des collisions pour le joueur 2
             if (abs(p2.pos.x - x) < widthLaser / 2) {
                 p2.takeDamage(30, 15, (p2.pos.x < x) ? -1 : 1);
             }
         }
     }
-
 
     void display()
     {
