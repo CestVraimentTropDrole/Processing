@@ -4,9 +4,10 @@
 * Constantes de configuration de l'état du jeu
 **/
 class GameState {
-    static final float COUNTDOWN_SCALE = 3.0f;      // Échelle du texte du compte à rebours
+    static final float COUNTDOWN_SCALE = 0.8f;      // Échelle réduite du texte du compte à rebours
     static final int COUNTDOWN_START = 3;           // Compte à rebours initial
-    static final int COUNTDOWN_FRAME_DURATION = 60; // Durée d'un frame du compte à rebours
+    static final int COUNTDOWN_FRAME_DURATION = 60; // 60 frames = 1 seconde à 60 FPS
+    static final int GO_DURATION = 60;              // Durée d'affichage du "GO"
 
     /**
     * Variables d'état internes
@@ -15,6 +16,7 @@ class GameState {
     private int countdownValue;                     // Valeur actuelle du compte à rebours
     private int countdownTimer;                     // Timer pour le compte à rebours
     private boolean isCountingDown;                 // État du compte à rebours
+    private boolean showingGo;                      // État d'affichage du "GO"
     private boolean gameStarted;                    // État du jeu
     private final GameManager gameManager;          // Référence au gestionnaire de jeu
     private final EventManager eventManager;        // Gestionnaire des événements
@@ -63,6 +65,7 @@ class GameState {
         countdownValue = COUNTDOWN_START;
         countdownTimer = COUNTDOWN_FRAME_DURATION;
         isCountingDown = true;
+        showingGo = false;
         gameStarted = false;
     }
 
@@ -71,12 +74,13 @@ class GameState {
         countdownValue = COUNTDOWN_START;
         countdownTimer = COUNTDOWN_FRAME_DURATION;
         isCountingDown = false;
+        showingGo = false;
         gameStarted = false;
     }
 
     // Getters
     boolean hasGameStarted() { return gameStarted; }
-    boolean isCountingDown() { return isCountingDown; }
+    boolean isCountingDown() { return isCountingDown || showingGo; }
 
     /**
     * Méthodes privées - Logique interne
@@ -103,12 +107,21 @@ class GameState {
 
     private void drawCountdown()
     {
-        if (isCountingDown && countdownValue > 0) {
+        if (isCountingDown || showingGo) {
             pushMatrix();
             imageMode(CENTER);
-            translate(width/2, height/2);
+            translate(width/2, height/6);
             scale(COUNTDOWN_SCALE);
-            image(gameManager.assets.getNumbers()[countdownValue], 0, 0);
+
+            String filename;
+            if (showingGo) {
+                filename = "go.png";
+            } else if (countdownValue > 0) {
+                filename = countdownValue + "_counter.png";
+            } else {
+                return;
+            }
+            image(loadImage("assets/sprites/ui/" + filename), 0, 0);
             imageMode(CORNER);
             popMatrix();
         }
@@ -125,9 +138,15 @@ class GameState {
     {
         countdownTimer--;
         if (countdownTimer <= 0) {
-            countdownValue--;
-            countdownTimer = COUNTDOWN_FRAME_DURATION;
-            if (countdownValue < 1) {
+            if (countdownValue > 0) {
+                countdownValue--;
+                countdownTimer = COUNTDOWN_FRAME_DURATION;
+                if (countdownValue == 0) {
+                    showingGo = true;
+                    countdownTimer = GO_DURATION;
+                }
+            } else if (showingGo) {
+                showingGo = false;
                 isCountingDown = false;
                 gameStarted = true;
             }
