@@ -7,7 +7,7 @@ class PlayerAnimator {
     static final float CROUCH_HEIGHT_RATIO = 0.6f;  // Ratio de la hauteur en position accroupie
 
     /**
-    * Variables d'état de l'animation
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private PImage sprite;                    // Sprite actuel

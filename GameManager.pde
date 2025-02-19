@@ -11,32 +11,25 @@ class GameManager {
     static final float PLAYER_START_Y = 700.0f;     // Distance du bas de l'écran pour le spawn
     static final color P1_COLOR = #00FF00;          // Couleur du joueur 1 (vert)
     static final color P2_COLOR = #FF0000;          // Couleur du joueur 2 (rouge)
-    static final int COUNTDOWN_START = 3;           // Compte à rebours initial
-    static final int COUNTDOWN_FRAME_DURATION = 60; // Durée d'un frame du compte à rebours
-    static final float COUNTDOWN_SCALE = 3.0f;      // Échelle du texte du compte à rebours
 
     /**
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private Player player1;                                     // Joueur 1
-    private Player player2;                                     // Joueur 2
-    private Arena arena;                                        // Arène de jeu
-    private boolean gameOver;                                   // État de fin de partie
-    private ArrayList<Weapon> weapons;                          // Liste des armes en jeu
-    private AssetManager assets;                                // Gestionnaire des ressources
-    private WeaponSpawner weaponSpawner;                        // Gestionnaire d'apparition des armes
-    private UIManager uiManager;                                // Gestionnaire de l'interface
-    private int countdownValue;
-    private int countdownTimer;
-    private boolean isCountingDown;
-    private boolean gameStarted;
-    private VictoryScreen victoryScreen;
-    private int eventTimer = 0;                                 // Compteur pour les événements
-    private int eventInterval = 900;                            // Intervalle entre les événements
-    private ArrayList<Event> events = new ArrayList<Event>();   // Liste des événements
-    private int bombTimer = 0;                                  // Compteur pour les bombes
-    private int bombInterval = 1;                               // Intervalle entre les bombes
+    private Player player1;                  // Joueur 1
+    private Player player2;                  // Joueur 2
+    private Arena arena;                     // Arène de jeu
+    private boolean gameOver;                // État de fin de partie
+    private ArrayList<Weapon> weapons;       // Liste des armes en jeu
+    private AssetManager assets;             // Gestionnaire des ressources
+    private WeaponSpawner weaponSpawner;     // Gestionnaire d'apparition des armes
+    private UIManager uiManager;             // Gestionnaire de l'interface
+    private VictoryScreen victoryScreen;     // Écran de victoire
+    private GameState gameState;             // Gestionnaire d'état du jeu
+    private ArrayList<Event> events;         // Liste des événements
+    private Minim minim;                     // Gestionnaire audio
+    private String currentMapName;           // Nom de la map actuelle
+    private boolean active = true;           // État d'activation du jeu
 
     /**
     * Méthodes publiques - Interface externe
@@ -48,105 +41,30 @@ class GameManager {
     **/
     GameManager(Minim minim)
     {
-        initializeManagers(minim);
-        initializePlayers();
-        setupArena(minim);
-        victoryScreen = new VictoryScreen();
-        gameOver = false;
+        this.minim = minim;
+        this.currentMapName = "battlefield";
+        initializeGame();
     }
 
-    void startGame()
+    void startGame(String mapName)
     {
+        this.currentMapName = mapName;
+        this.active = false;
         reset();
-        countdownValue = COUNTDOWN_START;
-        countdownTimer = COUNTDOWN_FRAME_DURATION;
-        isCountingDown = true;
+        setupArena(mapName);
+        initializePlayers();
+        weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
+        gameState.startCountdown();
     }
 
     void update()
     {
-        if (!gameOver) {
-            if (isCountingDown) {
-                updateCountdown();
-            } else if (gameStarted) {
-                updatePlayers();
-                checkCollisions();
-                weaponSpawner.update();
-                handleWeaponPickups();
-                eventTimer++;
-                if (eventTimer > eventInterval) {
-                    triggerRandomEvent();
-                    eventTimer = 0;
-                }
-                for (int i = events.size() - 1; i >= 0; i--) {
-                    Event e = events.get(i);
-                    e.update();
-                    if (e.finished) {
-                        events.remove(i);
-                    }
-                }
-            }
-        } else {
-            victoryScreen.update();
-        }
+        gameState.update();
     }
 
     void draw()
     {
-        if (!gameOver) {
-            background(200);
-            arena.draw();
-            uiManager.displayScore(player1, player2);
-            drawWeapons();
-            player1.draw();
-            player2.draw();
-            if (isCountingDown && countdownValue > 0) {
-                pushMatrix();
-                imageMode(CENTER);
-                translate(width/2, height/2);
-                scale(COUNTDOWN_SCALE);
-                image(assets.getNumbers()[countdownValue], 0, 0);
-                imageMode(CORNER);
-                popMatrix();
-            }
-            for (Event e : events) {
-                e.display();
-            }
-        } else {
-            victoryScreen.draw();
-        }
-    }
-
-    void triggerRandomEvent()
-    {
-        int rand = int(random(4));
-
-        switch (rand) {
-            case 0:
-                for (int i=0; i<= 10; i++) {
-                    bombTimer++;
-                    Platform platform = arena.platforms.get((int)random(arena.platforms.size()));
-                    float bombX = random(platform.x + 20, platform.x + platform.w - 20);
-                    float bombTargetY = platform.y - 10;
-                    if (bombTimer >= bombInterval) {
-                        events.add(new Bomb(bombX, bombTargetY, player1, player2));
-                        bombTimer = 0;
-                    }
-                }
-                break;
-            case 1:
-                if (!arena.platforms.isEmpty()) {
-                    int index = (int)random(arena.platforms.size());
-                    Platform platformToDestroy = arena.platforms.get(index);
-                    if (platformToDestroy == null) return; {
-                        events.add(new DestroyPlateform(arena, platformToDestroy));
-                    }
-                }
-                break;
-            case 2:
-                events.add(new Laser(player1, player2));
-                break;
-        }
+        gameState.draw();
     }
 
     void reset()
@@ -154,29 +72,30 @@ class GameManager {
         resetPlayers();
         weapons.clear();
         events.clear();
-        eventTimer = 0;
-        bombTimer = 0;
-        gameOver = false;
-        isCountingDown = false;
-        gameStarted = false;
+        gameState.reset();
         victoryScreen.reset();
     }
 
     // Getters
-    boolean hasGameStarted() { return gameStarted; }
-    boolean isCountingDown() { return isCountingDown; }
+    boolean hasGameStarted() { return gameState.hasGameStarted(); }
+    boolean isCountingDown() { return gameState.isCountingDown(); }
 
     /**
     * Méthodes privées - Logique interne
-    * @private Utilisées uniquement par les méthodes de cette classe
+    * @private Utilisées uniquement dans cette classe
     **/
-    private void initializeManagers(Minim minim)
+    private void initializeGame()
     {
         assets = new AssetManager();
         weapons = new ArrayList<Weapon>();
-        setupArena(minim);
+        events = new ArrayList<Event>();
+        setupArena(currentMapName);
+        initializePlayers();
         weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
         uiManager = new UIManager(assets.getNumbers(), assets.getP1Life(), assets.getP2Life());
+        victoryScreen = new VictoryScreen();
+        gameState = new GameState(this);
+        gameOver = false;
     }
 
     private void initializePlayers()
@@ -188,9 +107,12 @@ class GameManager {
         player2.setPlatforms(arena.platforms);
     }
 
-    private void setupArena(Minim minim)
+    private void setupArena(String mapName)
     {
-        arena = new Arena(width, height, minim);
+        arena = new Arena(width, height, this.minim, mapName);
+        if (player1 != null) player1.setPlatforms(arena.platforms);
+        if (player2 != null) player2.setPlatforms(arena.platforms);
+        if (weaponSpawner != null) weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
     }
 
     private void updatePlayers()
@@ -207,19 +129,6 @@ class GameManager {
         player2.lives = DEFAULT_LIVES;
         player1.reset();
         player2.reset();
-    }
-
-    private void updateCountdown()
-    {
-        countdownTimer--;
-        if (countdownTimer <= 0) {
-            countdownValue--;
-            countdownTimer = COUNTDOWN_FRAME_DURATION;
-            if (countdownValue < 1) {
-                isCountingDown = false;
-                gameStarted = true;
-            }
-        }
     }
 
     private void drawWeapons()

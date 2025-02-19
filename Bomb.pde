@@ -1,86 +1,124 @@
 /**
-* Bomb - Gestion de l'événement bombe, de sa chute, de l'explosion et de ses effets.
+* Bomb - Gestion de l'événement bombe, de sa chute, de l'explosion et de ses effets
 *
 * Constantes de configuration de la bombe
-*/
+**/
 class Bomb extends Event {
-    /** Position de la bombe */
-    float x, y;                    // Position actuelle de la bombe
-    float targetY;                 // Position de la plateforme où la bombe doit atterrir
+    static final float FALL_SPEED = 5;             // Vitesse de chute de la bombe
+    static final int EXPLOSION_TIMER = 60;         // Timer d'explosion (~1 sec)
+    static final float EXPLOSION_RADIUS = 80;      // Zone d'effet de l'explosion
+    static final float EXPLOSION_DAMAGE = 20;      // Dégâts infligés par l'explosion
+    static final float EXPLOSION_KNOCKBACK = 10;   // Force du knockback lors de l'explosion
+    static final float EXPLOSION_OFFSET = 30;      // Décalage vertical du centre de l'explosion
+    static final float BOMB_SIZE = 40;             // Taille de la bombe
+    static final int BLINK_RATE = 10;              // Vitesse de clignotement
+    static final float VERTICAL_OFFSET = -50;      // Position de départ au-dessus de l'écran
 
-    /** Vitesse et états de la bombe */
-    float speed = 5;               // Vitesse de chute de la bombe
-    boolean landed = false;        // Statut de la bombe (si elle a touché le sol ou non)
-    boolean exploded = false;      // Statut de la bombe (si elle a explosé ou non)
-    int explosionTimer = 60;       // Timer avant l'explosion après l'atterrissage (~1 sec)
-
-    /** Paramètres de l'explosion */
-    float explosionRadius = 80;    // Zone d'effet de l'explosion
-    float explosionDamage = 20;    // Dégâts infligés par l'explosion
-    float explosionKnockback = 10; // Force du knockback lors de l'explosion
-
-    /** Références aux joueurs pour appliquer les dégâts */
-    Player p1, p2;                // Joueurs 1 et 2 pour vérifier si ils sont affectés par l'explosion
+    /**
+    * Variables d'état internes
+    * @private Accessibles uniquement dans cette classe
+    **/
+    private float x, y;                   // Position actuelle de la bombe
+    private float targetY;                // Position cible d'atterrissage
+    private boolean landed;               // État d'atterrissage
+    private boolean exploded;             // État d'explosion
+    private int explosionTimer;           // Compteur avant explosion
+    private Player p1, p2;                // Références aux joueurs
 
     /**
     * Méthodes publiques - Interface externe
     **/
 
     /**
-    * Constructeur de la bombe.
+    * Constructeur de la bombe
     * @param x La position X de la bombe
-    * @param targetY La position Y où la bombe doit toucher le sol (plateforme)
+    * @param targetY La position Y où la bombe doit toucher le sol
     * @param p1 Référence au joueur 1
     * @param p2 Référence au joueur 2
-    */
+    **/
     Bomb(float x, float targetY, Player p1, Player p2)
     {
         this.x = x;
-        this.y = -50; // La bombe spawn juste au-dessus de l'écran
+        this.y = VERTICAL_OFFSET;
         this.targetY = targetY;
         this.p1 = p1;
         this.p2 = p2;
+        this.landed = false;
+        this.exploded = false;
+        this.explosionTimer = EXPLOSION_TIMER;
     }
 
     void update()
     {
         if (!landed) {
-            y += speed;  // La bombe chute à une certaine vitesse
-            if (y >= targetY) {  // Si elle atteint la plateforme
-                y = targetY;
-                landed = true;  // Marquer comme étant "atterrie"
-            }
+            updateFall();
         } else {
-            explosionTimer--;  // Décrémenter le timer avant l'explosion
-            if (explosionTimer <= 0) {
-                explode();  // Déclencher l'explosion si le timer atteint zéro
-            }
+            updateExplosionTimer();
         }
-    }
-
-    void explode()
-    {
-        exploded = true;  // Marquer la bombe comme ayant explosé
-        float explosionY = y - 30;  // Ajuste la hauteur de l'explosion
-
-        // Vérifie si les joueurs sont dans la zone d'effet de l'explosion
-        if (abs(p1.pos.x - x) < explosionRadius && abs(p1.pos.y - explosionY) < explosionRadius * 1.5) {
-            p1.takeDamage(explosionDamage, explosionKnockback, (p1.pos.x < x) ? -1 : 1);  // Dégâts à p1
-        }
-        if (abs(p2.pos.x - x) < explosionRadius && abs(p2.pos.y - explosionY) < explosionRadius * 1.5) {
-            p2.takeDamage(explosionDamage, explosionKnockback, (p2.pos.x < x) ? -1 : 1);  // Dégâts à p2
-        }
-        finished = true;  // Marquer l'événement comme terminé
     }
 
     void display()
     {
         if (!exploded) {
-            fill(frameCount % 10 < 5 ? color(255, 0, 0) : color(255, 150, 0));
-            ellipse(x, y, 40, 40);
+            drawBomb();
         } else {
-            fill(255, 165, 0, 150);
-            ellipse(x, y, explosionRadius * 3, explosionRadius * 3);
+            drawExplosion();
         }
+    }
+
+    /**
+    * Méthodes privées - Logique interne
+    * @private Utilisées uniquement dans cette classe
+    **/
+    private void updateFall()
+    {
+        y += FALL_SPEED;
+        if (y >= targetY) {
+            y = targetY;
+            landed = true;
+        }
+    }
+
+    private void updateExplosionTimer()
+    {
+        explosionTimer--;
+        if (explosionTimer <= 0) {
+            explode();
+        }
+    }
+
+    private void explode()
+    {
+        exploded = true;
+        float explosionY = y - EXPLOSION_OFFSET;
+
+        applyExplosionDamage(p1, explosionY);
+        applyExplosionDamage(p2, explosionY);
+        finished = true;
+    }
+
+    private void applyExplosionDamage(Player player, float explosionY)
+    {
+        if (isPlayerInExplosionRange(player, explosionY)) {
+            int direction = (player.pos.x < x) ? -1 : 1;
+            player.takeDamage(EXPLOSION_DAMAGE, EXPLOSION_KNOCKBACK, direction);
+        }
+    }
+
+    private boolean isPlayerInExplosionRange(Player player, float explosionY)
+    {
+        return abs(player.pos.x - x) < EXPLOSION_RADIUS && abs(player.pos.y - explosionY) < EXPLOSION_RADIUS * 1.5;
+    }
+
+    private void drawBomb()
+    {
+        fill(frameCount % BLINK_RATE < BLINK_RATE/2 ? color(255, 0, 0) : color(255, 150, 0));
+        ellipse(x, y, BOMB_SIZE, BOMB_SIZE);
+    }
+
+    private void drawExplosion()
+    {
+        fill(255, 165, 0, 150);
+        ellipse(x, y, EXPLOSION_RADIUS * 3, EXPLOSION_RADIUS * 3);
     }
 }

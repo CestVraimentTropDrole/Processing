@@ -7,7 +7,7 @@ class BulletManager {
     static final float BULLET_DESPAWN_DISTANCE = 50;  // Distance à laquelle les projectiles disparaissent de l'écran
 
     /**
-    * Variables d'état du gestionnaire
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final ArrayList<PVector> positions;             // Liste des positions de tous les projectiles actifs

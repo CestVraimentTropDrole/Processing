@@ -4,11 +4,11 @@
 * Constantes de configuration de l'interface
 **/
 class UIManager {
-    static final int MARGIN = 100;              // Marge horizontale pour les scores
-    static final int SPRITE_SPACING = 40;       // Espacement entre les sprites
-    static final int LIVES_VERTICAL_OFFSET = 40; // Décalage vertical des vies
-    static final int SCORE_Y = 50;              // Position Y des scores
-    static final int DECIMAL_CODE = -2;         // Code pour la virgule décimale
+    static final int MARGIN = 100;                  // Marge horizontale pour les scores
+    static final int SPRITE_SPACING = 40;           // Espacement entre les sprites
+    static final int LIVES_VERTICAL_OFFSET = 40;    // Décalage vertical des vies
+    static final int SCORE_Y = 50;                  // Position Y des scores
+    static final int DECIMAL_CODE = -2;             // Code pour la virgule décimale
 
     /**
     * Variables d'état internes
