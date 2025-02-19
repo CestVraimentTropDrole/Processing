@@ -8,13 +8,13 @@ class Platform {
     static final color SIDE_PLATFORM_COLOR = #A0522D;    // Couleur plateformes secondaires
 
     /**
-    * Variables d'état de la plateforme
+    * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
     private final float x, y;          // Position de la plateforme
     private final float w, h;          // Dimensions de la plateforme
     private final boolean isMain;      // Type de plateforme
-    private final PImage platform;     //Image de la plateforme
+    private final PImage platform;     // Image de la plateforme
 
     /**
     * Méthodes publiques - Interface externe
@@ -28,7 +28,7 @@ class Platform {
     * @param h Hauteur de la plateforme
     * @param isMain Définit si c'est la plateforme principale
     **/
-    Platform(float x, float y, float w, float h, boolean isMain)
+    Platform(float x, float y, float w, float h, boolean isMain, String mapName)
     {
         this.x = x;
         this.y = y;
@@ -37,20 +37,26 @@ class Platform {
         this.isMain = isMain;
 
         String type = (isMain ? "main" : "simple");
-        platform = loadImage("assets/sprites/background/battlefield/platform_" +type+ ".png");
+        String imagePath = "assets/sprites/background/" + mapName + "/platform_" + type + ".png";
+        platform = loadImage(imagePath);
         platform.resize((int)this.w, (int)this.h);
     }
 
     void draw()
     {
-        image(platform,x,y);
+        image(platform, x, y);
     }
 
     boolean isOnPlatform(float px, float py, float ph, float vy)
     {
         boolean horizontalCollision = px + 50 > x && px < x + w;
         boolean verticalCollision = py + ph > y && py + ph < y + h && vy >= 0;
-
         return horizontalCollision && verticalCollision;
     }
+
+    // Getters
+    float getX() { return x; }
+    float getY() { return y; }
+    float getWidth() { return w; }
+    float getHeight() { return h; }
 }

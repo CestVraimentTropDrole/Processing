@@ -21,6 +21,7 @@ class StartScreen {
     private final String[] menuOptions;           // Options du menu
     private int selectedOption;                   // Option actuellement sélectionnée
     private float optionSpacing;                  // Espacement entre les options
+    private MapSelector mapSelector;              // Sélecteur de map
 
     /**
     * Méthodes publiques - Interface externe
@@ -37,48 +38,65 @@ class StartScreen {
         this.menuOptions = new String[]{"BAGAR", "1V1", "TRAIN"};
         this.selectedOption = 0;
         this.optionSpacing = width / 4;
+        this.mapSelector = new MapSelector(game);
     }
 
     void draw()
     {
-        background(0);
-        drawTitle();
-        drawMenuOptions();
+        if (mapSelector.isActive()) {
+            mapSelector.draw();
+        } else if (active) {
+            background(0);
+            drawTitle();
+            drawMenuOptions();
+        }
     }
 
     void handleKeyPressed(char key, int keyCode)
     {
-        switch(keyCode) {
-            case LEFT:
-                selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
-                break;
-            case RIGHT:
-                selectedOption = (selectedOption + 1) % menuOptions.length;
-                break;
-            default:
-                if (key == ' ') {
-                    selectCurrentOption();
-                }
-                break;
+        if (mapSelector.isActive()) {
+            mapSelector.handleKeyPressed(key, keyCode);
+        } else {
+            switch(keyCode) {
+                case LEFT:
+                    selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
+                    break;
+                case RIGHT:
+                    selectedOption = (selectedOption + 1) % menuOptions.length;
+                    break;
+                default:
+                    if (key == ' ') {
+                        selectCurrentOption();
+                    }
+                    break;
+            }
         }
     }
 
     void mousePressed()
     {
-        for (int i = 0; i < menuOptions.length; i++) {
-            float x = optionSpacing + (i * optionSpacing);
-            if (mouseX > x - 75 && mouseX < x + 75 &&
-                mouseY > OPTIONS_Y - 25 && mouseY < OPTIONS_Y + 25) {
-                selectedOption = i;
-                selectCurrentOption();
-                break;
+        if (mapSelector.isActive()) {
+            mapSelector.mousePressed();
+        } else {
+            for (int i = 0; i < menuOptions.length; i++) {
+                float x = optionSpacing + (i * optionSpacing);
+                if (mouseX > x - 75 && mouseX < x + 75 &&
+                    mouseY > OPTIONS_Y - 25 && mouseY < OPTIONS_Y + 25) {
+                    selectedOption = i;
+                    selectCurrentOption();
+                    break;
+                }
             }
         }
     }
 
     boolean isActive()
     {
-        return active;
+        if (!game.active) {
+            active = false;
+            return false;
+        }
+        return active || mapSelector.isActive();
     }
 
     /**
@@ -115,10 +133,8 @@ class StartScreen {
         stroke(255);
         strokeWeight(2);
         noFill();
-
         line(x - BOX_WIDTH/2, y - BOX_HEIGHT/2, x - BOX_WIDTH/2 + ANGLE_WIDTH, y - BOX_HEIGHT/2);
         line(x - BOX_WIDTH/2, y - BOX_HEIGHT/2, x - BOX_WIDTH/2, y - BOX_HEIGHT/2 + ANGLE_HEIGHT);
-
         line(x + BOX_WIDTH/2 - ANGLE_WIDTH, y + BOX_HEIGHT/2, x + BOX_WIDTH/2, y + BOX_HEIGHT/2);
         line(x + BOX_WIDTH/2, y + BOX_HEIGHT/2 - ANGLE_HEIGHT, x + BOX_WIDTH/2, y + BOX_HEIGHT/2);
     }
@@ -134,7 +150,6 @@ class StartScreen {
 
         line(x - BOX_WIDTH/2 + shakeX, y - BOX_HEIGHT/2 + shakeY, x - BOX_WIDTH/2 + ANGLE_WIDTH + shakeX, y - BOX_HEIGHT/2 + shakeY);
         line(x - BOX_WIDTH/2 + shakeX, y - BOX_HEIGHT/2 + shakeY, x - BOX_WIDTH/2 + shakeX, y - BOX_HEIGHT/2 + ANGLE_HEIGHT + shakeY);
-
         line(x + BOX_WIDTH/2 - ANGLE_WIDTH + shakeX, y + BOX_HEIGHT/2 + shakeY, x + BOX_WIDTH/2 + shakeX, y + BOX_HEIGHT/2 + shakeY);
         line(x + BOX_WIDTH/2 + shakeX, y + BOX_HEIGHT/2 - ANGLE_HEIGHT + shakeY, x + BOX_WIDTH/2 + shakeX, y + BOX_HEIGHT/2 + shakeY);
     }
@@ -143,14 +158,13 @@ class StartScreen {
     {
         switch(selectedOption) {
             case 0:  // BAGAR
-                println("BAGAR selected - Placeholder");
+                mapSelector.activate(0);
                 break;
             case 1:  // 1V1
-                active = false;
-                game.startGame();
+                mapSelector.activate(1);
                 break;
             case 2:  // TRAIN
-                println("TRAIN selected - Placeholder");
+                mapSelector.activate(2);
                 break;
         }
     }

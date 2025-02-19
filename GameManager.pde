@@ -27,6 +27,9 @@ class GameManager {
     private VictoryScreen victoryScreen;     // Écran de victoire
     private GameState gameState;             // Gestionnaire d'état du jeu
     private ArrayList<Event> events;         // Liste des événements
+    private Minim minim;                     // Gestionnaire audio
+    private String currentMapName;           // Nom de la map actuelle
+    private boolean active = true;           // État d'activation du jeu
 
     /**
     * Méthodes publiques - Interface externe
@@ -38,17 +41,19 @@ class GameManager {
     **/
     GameManager(Minim minim)
     {
-        initializeManagers(minim);
-        initializePlayers();
-        setupArena(minim);
-        victoryScreen = new VictoryScreen();
-        gameState = new GameState(this);
-        gameOver = false;
+        this.minim = minim;
+        this.currentMapName = "battlefield";
+        initializeGame();
     }
 
-    void startGame()
+    void startGame(String mapName)
     {
+        this.currentMapName = mapName;
+        this.active = false;
         reset();
+        setupArena(mapName);
+        initializePlayers();
+        weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
         gameState.startCountdown();
     }
 
@@ -77,16 +82,20 @@ class GameManager {
 
     /**
     * Méthodes privées - Logique interne
-    * @private Utilisées uniquement par les méthodes de cette classe
+    * @private Utilisées uniquement dans cette classe
     **/
-    private void initializeManagers(Minim minim)
+    private void initializeGame()
     {
         assets = new AssetManager();
         weapons = new ArrayList<Weapon>();
         events = new ArrayList<Event>();
-        setupArena(minim);
+        setupArena(currentMapName);
+        initializePlayers();
         weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
         uiManager = new UIManager(assets.getNumbers(), assets.getP1Life(), assets.getP2Life());
+        victoryScreen = new VictoryScreen();
+        gameState = new GameState(this);
+        gameOver = false;
     }
 
     private void initializePlayers()
@@ -98,9 +107,12 @@ class GameManager {
         player2.setPlatforms(arena.platforms);
     }
 
-    private void setupArena(Minim minim)
+    private void setupArena(String mapName)
     {
-        arena = new Arena(width, height, minim);
+        arena = new Arena(width, height, this.minim, mapName);
+        if (player1 != null) player1.setPlatforms(arena.platforms);
+        if (player2 != null) player2.setPlatforms(arena.platforms);
+        if (weaponSpawner != null) weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
     }
 
     private void updatePlayers()

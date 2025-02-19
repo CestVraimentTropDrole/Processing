@@ -69,9 +69,6 @@ class GameController {
     {
         if (startScreen.isActive()) {
             startScreen.handleKeyPressed(key, keyCode);
-            if (!startScreen.isActive()) {
-                gameManager.arena.soundManager.startMusic();
-            }
         } else {
             handleGameInput(key, keyCode);
         }
