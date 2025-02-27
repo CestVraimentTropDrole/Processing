@@ -24,7 +24,7 @@ class SoundManager {
         this.minim = minimRef;
     }
 
-    void playMusic(String file)
+    void loadMusic(String file)
     {
         if (player != null) {
             player.close();
@@ -40,6 +40,14 @@ class SoundManager {
     {
         if (player != null && !player.isPlaying()) {
             player.play();
+        }
+    }
+
+    void stopMusic()
+    {
+        if (player != null && player.isPlaying()) {
+            player.pause();
+            player.rewind();
         }
     }
 }

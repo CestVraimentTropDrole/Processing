@@ -42,6 +42,7 @@ class Arena {
         this.deathY = height + DEATH_OFFSET;
         this.platforms = new ArrayList<Platform>();
         this.currentMap = mapName;
+        this.soundManager = new SoundManager(minim);
 
         loadMapAssets(mapName);
         setupPlatforms();
@@ -54,6 +55,7 @@ class Arena {
             platform.draw();
         }
         drawDeathLine();
+        soundManager.startMusic();
     }
 
     boolean checkPlayerDeath(Player player)
@@ -90,6 +92,9 @@ class Arena {
         String basePath = "assets/sprites/background/" + mapName + "/";
         background = loadImage(basePath + mapName + ".png");
         background.resize((int)width, (int)height);
+
+        String musicPath = "assets/musics/" + mapName + ".mp3";
+        soundManager.loadMusic(musicPath);
     }
 
     private void createSidePlatform(float xPosition, float yOffset, float width)
