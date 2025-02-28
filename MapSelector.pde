@@ -8,7 +8,7 @@ class MapSelector {
     static final float OPTIONS_Y = 600;            // Position verticale des options
     static final float ANGLE_WIDTH = 20;           // Largeur des angles de sélection
     static final float ANGLE_HEIGHT = 20;          // Hauteur des angles de sélection
-    static final float BOX_WIDTH = 150;            // Largeur de la boîte de sélection
+    static final float BOX_WIDTH = 0;            // Largeur de la boîte de sélection
     static final float BOX_HEIGHT = 50;            // Hauteur de la boîte de sélection
     static final float SHAKE_AMOUNT = 2;           // Intensité du tremblement
 
@@ -123,10 +123,11 @@ class MapSelector {
 
         for (int i = 0; i < mapOptions.size(); i++) {
             float x = startX + (i * optionSpacing);
+            float textWidth = textWidth(mapOptions.get(i).name);
             if (i == selectedOption) {
-                drawShakingAngles(x, OPTIONS_Y);
+                drawShakingAngles(x, OPTIONS_Y, textWidth);
             } else {
-                drawStaticAngles(x, OPTIONS_Y);
+                drawStaticAngles(x, OPTIONS_Y, textWidth);
             }
             fill(255);
             noStroke();
@@ -134,8 +135,9 @@ class MapSelector {
         }
     }
 
-    private void drawStaticAngles(float x, float y)
+    private void drawStaticAngles(float x, float y, float textWidth)
     {
+        float BOX_WIDTH = textWidth+40;
         stroke(255);
         strokeWeight(2);
         noFill();
@@ -145,8 +147,9 @@ class MapSelector {
         line(x + BOX_WIDTH/2, y + BOX_HEIGHT/2 - ANGLE_HEIGHT, x + BOX_WIDTH/2, y + BOX_HEIGHT/2);
     }
 
-    private void drawShakingAngles(float x, float y)
+    private void drawShakingAngles(float x, float y, float textWidth)
     {
+        float BOX_WIDTH = textWidth+40;
         stroke(255);
         strokeWeight(2);
         noFill();

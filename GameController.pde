@@ -127,8 +127,8 @@ class GameController {
     private void handleGameStateKeys(char key)
     {
         if (gameManager.gameOver && key == KEY_HOME) {
-            startScreen.active = true;
             gameManager.reset();
+            startScreen.active = true;
         }
     }
 
