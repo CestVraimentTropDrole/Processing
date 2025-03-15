@@ -17,6 +17,7 @@ class Weapon {
     private int currentAmmo;                    // Munitions actuelles
     private long spawnTime;                     // Temps d'apparition
 
+
     /**
     * Méthodes publiques - Interface externe
     **/

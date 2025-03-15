@@ -11,6 +11,7 @@ class Pistol extends Weapon {
     static final float MAX_DAMAGE = 6.0f;     // Dégâts maximum
     static final int RELOAD_TIME = 1500;      // Temps de rechargement
 
+
     /**
     * Constructeur du pistolet
     * @param x Position X initiale de l'arme

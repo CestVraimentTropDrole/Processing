@@ -26,10 +26,10 @@ class SoundManager {
 
     void loadMusic(String file)
     {
-        if (player != null) {
-            player.close();
+        if (player != null) { //S'il y a déjà une musique qui se joue
+            player.close(); //Elle s'arrête
         }
-        player = minim.loadFile(file);
+        player = minim.loadFile(file); //Chargement de la musique
         if (player != null) {
             player.loop();
         }
