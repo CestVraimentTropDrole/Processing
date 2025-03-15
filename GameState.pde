@@ -20,6 +20,7 @@ class GameState {
     private boolean gameStarted;                    // État du jeu
     private final GameManager gameManager;          // Référence au gestionnaire de jeu
     private final EventManager eventManager;        // Gestionnaire des événements
+    private int startTime;                          // Moment où la partie commence
 
     /**
     * Méthodes publiques - Interface externe
@@ -43,6 +44,7 @@ class GameState {
                 updateCountdown();
             } else if (gameStarted) {
                 updateGameplay();
+                updateTimer();
             }
         } else {
             gameManager.victoryScreen.update();
@@ -149,7 +151,18 @@ class GameState {
                 showingGo = false;
                 isCountingDown = false;
                 gameStarted = true;
+                startTime = millis();  // Temps où la partie commence
             }
+        }
+    }
+
+    private void updateTimer()
+    {
+        int timer, secondes, dixieme = 0;
+        if (gameStarted) {
+            timer = millis() - startTime;
+            secondes = timer / 1000;
+            dixieme = (timer / 100) % 10;
         }
     }
 }

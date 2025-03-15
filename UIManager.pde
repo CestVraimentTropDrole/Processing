@@ -47,6 +47,14 @@ class UIManager {
         displayPlayerScore(player2, false);
     }
 
+    void displayTimer(int sec, int dec)
+    {
+        if (timer == null)
+            return;
+        
+        println(sec +","+ dec);
+    }
+
     /**
     * Méthodes privées - Logique interne
     * @private Utilisées uniquement par les méthodes de cette classe
