@@ -4,28 +4,24 @@
 * Constantes de configuration du menu
 **/
 class StartScreen {
-    static final float TITLE_Y_POSITION = 200;     // Position verticale du titre
-    static final float OPTIONS_Y = 600;            // Position verticale des options
-    static final float ANGLE_WIDTH = 20;           // Largeur des angles de sélection
-    static final float ANGLE_HEIGHT = 20;          // Hauteur des angles de sélection
-    static final float BOX_WIDTH = 0;            // Largeur de la boîte de sélection
-    static final float BOX_HEIGHT = 50;            // Hauteur de la boîte de sélection
+    static final float OPTIONS_Y = 700;            // Position verticale des options
+    static final float VS_Y_OFFSET = -80;          // Décalage vers le haut pour l'option VS
     static final float SHAKE_AMOUNT = 2;           // Intensité du tremblement
+    static final float ICON_SIZE = 320;            // Taille des icônes
+    static final float ICON_HOVER_SIZE = 360;      // Taille des icônes en survol
+    static final float ICON_SPACING = 450;         // Espacement entre les icônes
 
     /**
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private boolean active;                       // État d'affichage du menu
+    boolean active;                               // État d'affichage du menu
+    MapSelector mapSelector;                      // Sélecteur de map
     private GameManager game;                     // Référence au gestionnaire de jeu
     private final String[] menuOptions;           // Options du menu
     private int selectedOption;                   // Option actuellement sélectionnée
-    private float optionSpacing;                  // Espacement entre les options
-    private MapSelector mapSelector;              // Sélecteur de map
-
-    /**
-    * Méthodes publiques - Interface externe
-    **/
+    private PImage backgroundImage;               // Image de fond du menu
+    private PImage[] menuIcons;                   // Tableau d'icônes pour les options du menu
 
     /**
     * Constructeur du menu de démarrage
@@ -37,8 +33,8 @@ class StartScreen {
         this.active = true;
         this.menuOptions = new String[]{"BAGAR", "1V1", "TRAIN"};
         this.selectedOption = 0;
-        this.optionSpacing = width / 4;
         this.mapSelector = new MapSelector(game);
+        loadAssets();
     }
 
     void draw()
@@ -46,8 +42,7 @@ class StartScreen {
         if (mapSelector.isActive()) {
             mapSelector.draw();
         } else if (active) {
-            background(0);
-            drawTitle();
+            image(backgroundImage, 0, 0, width, height);
             drawMenuOptions();
         }
     }
@@ -56,20 +51,22 @@ class StartScreen {
     {
         if (mapSelector.isActive()) {
             mapSelector.handleKeyPressed(key, keyCode);
-        } else {
-            switch(keyCode) {
-                case LEFT:
-                    selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
-                    break;
-                case RIGHT:
-                    selectedOption = (selectedOption + 1) % menuOptions.length;
-                    break;
-                default:
-                    if (key == ' ') {
-                        selectCurrentOption();
-                    }
-                    break;
-            }
+            return;
+        }
+        if (!active)
+            return;
+        switch(keyCode) {
+            case LEFT:
+                selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
+                break;
+            case RIGHT:
+                selectedOption = (selectedOption + 1) % menuOptions.length;
+                break;
+            default:
+                if (key == ' ') {
+                    selectCurrentOption();
+                }
+                break;
         }
     }
 
@@ -77,86 +74,98 @@ class StartScreen {
     {
         if (mapSelector.isActive()) {
             mapSelector.mousePressed();
-        } else {
-            for (int i = 0; i < menuOptions.length; i++) {
-                float x = optionSpacing + (i * optionSpacing);
-                if (mouseX > x - 75 && mouseX < x + 75 &&
-                    mouseY > OPTIONS_Y - 25 && mouseY < OPTIONS_Y + 25) {
-                    selectedOption = i;
-                    selectCurrentOption();
-                    break;
-                }
+            return;
+        }
+        if (!active)
+            return;
+        float startX = width/2 - ((menuOptions.length-1) * ICON_SPACING/2);
+        for (int i = 0; i < menuOptions.length; i++) {
+            float x = startX + (i * ICON_SPACING);
+            float iconSize = (i == selectedOption) ? ICON_HOVER_SIZE : ICON_SIZE;
+            float y = OPTIONS_Y;
+            if (i == 1) {
+                y += VS_Y_OFFSET;
+            }
+            if (mouseX > x - iconSize/2 && mouseX < x + iconSize/2 &&
+                mouseY > y - iconSize/2 && mouseY < y + iconSize/2) {
+                selectedOption = i;
+                selectCurrentOption();
+                break;
             }
         }
     }
 
     boolean isActive()
     {
-        if (!game.active) {
-            active = false;
-            return false;
-        }
         return active || mapSelector.isActive();
+    }
+
+    void activate()
+    {
+        active = true;
+        selectedOption = 0;
+        if (mapSelector != null) {
+            mapSelector.active = false;
+            mapSelector.mapSelected = false;
+        } else {
+            mapSelector = new MapSelector(game);
+        }
     }
 
     /**
     * Méthodes privées - Logique interne
     * @private Utilisées uniquement dans cette classe
     **/
-    private void drawTitle()
+    private void loadAssets()
     {
-        fill(255);
-        textSize(48);
-        textAlign(CENTER, CENTER);
-        text("SHADOW WIZARD", width/2, TITLE_Y_POSITION);
-        text("MONEY GAME", width/2, TITLE_Y_POSITION + 60);
+        backgroundImage = loadImage("assets/sprites/background/menus/background_modeselect.png");
+        backgroundImage.resize(width, height);
+        menuIcons = new PImage[menuOptions.length];
+        menuIcons[0] = loadImage("assets/sprites/ui/icon_solo.png");
+        menuIcons[1] = loadImage("assets/sprites/ui/icon_vs.png");
+        menuIcons[2] = loadImage("assets/sprites/ui/icon_train.png");
+        for (int i = 0; i < menuIcons.length; i++) {
+            menuIcons[i].resize((int)ICON_SIZE, (int)ICON_SIZE);
+        }
     }
 
     private void drawMenuOptions()
     {
-        textSize(48);
+        float startX = width/2 - ((menuOptions.length-1) * ICON_SPACING/2);
         for (int i = 0; i < menuOptions.length; i++) {
-            float x = optionSpacing + (i * optionSpacing);
-            float textWidth = textWidth(menuOptions[i]);
-    
-            if (i == selectedOption) {
-                drawShakingAngles(x, OPTIONS_Y, textWidth);
-            } else {
-                drawStaticAngles(x, OPTIONS_Y, textWidth);
+            float x = startX + (i * ICON_SPACING);
+            boolean isSelected = (i == selectedOption);
+            float y = OPTIONS_Y;
+            if (i == 1) {
+                y += VS_Y_OFFSET;
             }
-    
+            if (isSelected) {
+                drawSelectedIcon(x, y, i);
+            } else {
+                drawNormalIcon(x, y, i);
+            }
             fill(255);
-            noStroke();
-            text(menuOptions[i], x, OPTIONS_Y);
+            textSize(24);
+            textAlign(CENTER, CENTER);
+            text(menuOptions[i], x, y + (isSelected ? ICON_HOVER_SIZE/2 + 30 : ICON_SIZE/2 + 30));
         }
     }
 
-    private void drawStaticAngles(float x, float y, float textWidth)
+    private void drawNormalIcon(float x, float y, int iconIndex)
     {
-        float BOX_WIDTH = textWidth+40;
-        stroke(255);
-        strokeWeight(2);
-        noFill();
-        line(x - BOX_WIDTH/2, y - BOX_HEIGHT/2, x - BOX_WIDTH/2 + ANGLE_WIDTH, y - BOX_HEIGHT/2);
-        line(x - BOX_WIDTH/2, y - BOX_HEIGHT/2, x - BOX_WIDTH/2, y - BOX_HEIGHT/2 + ANGLE_HEIGHT);
-        line(x + BOX_WIDTH/2 - ANGLE_WIDTH, y + BOX_HEIGHT/2, x + BOX_WIDTH/2, y + BOX_HEIGHT/2);
-        line(x + BOX_WIDTH/2, y + BOX_HEIGHT/2 - ANGLE_HEIGHT, x + BOX_WIDTH/2, y + BOX_HEIGHT/2);
+        imageMode(CENTER);
+        image(menuIcons[iconIndex], x, y, ICON_SIZE, ICON_SIZE);
+        imageMode(CORNER);
     }
 
-    private void drawShakingAngles(float x, float y, float textWidth)
+    private void drawSelectedIcon(float x, float y, int iconIndex)
     {
-        float BOX_WIDTH = textWidth+40;
-        stroke(255);
-        strokeWeight(2);
-        noFill();
-
         float shakeX = random(-SHAKE_AMOUNT, SHAKE_AMOUNT);
         float shakeY = random(-SHAKE_AMOUNT, SHAKE_AMOUNT);
 
-        line(x - BOX_WIDTH/2 + shakeX, y - BOX_HEIGHT/2 + shakeY, x - BOX_WIDTH/2 + ANGLE_WIDTH + shakeX, y - BOX_HEIGHT/2 + shakeY);
-        line(x - BOX_WIDTH/2 + shakeX, y - BOX_HEIGHT/2 + shakeY, x - BOX_WIDTH/2 + shakeX, y - BOX_HEIGHT/2 + ANGLE_HEIGHT + shakeY);
-        line(x + BOX_WIDTH/2 - ANGLE_WIDTH + shakeX, y + BOX_HEIGHT/2 + shakeY, x + BOX_WIDTH/2 + shakeX, y + BOX_HEIGHT/2 + shakeY);
-        line(x + BOX_WIDTH/2 + shakeX, y + BOX_HEIGHT/2 - ANGLE_HEIGHT + shakeY, x + BOX_WIDTH/2 + shakeX, y + BOX_HEIGHT/2 + shakeY);
+        imageMode(CENTER);
+        image(menuIcons[iconIndex], x + shakeX, y + shakeY, ICON_HOVER_SIZE, ICON_HOVER_SIZE);
+        imageMode(CORNER);
     }
 
     private void selectCurrentOption()
@@ -172,5 +181,6 @@ class StartScreen {
                 mapSelector.activate(2);
                 break;
         }
+        active = false;
     }
 }
