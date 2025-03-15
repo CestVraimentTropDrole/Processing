@@ -21,6 +21,7 @@ class GameState {
     private final GameManager gameManager;          // Référence au gestionnaire de jeu
     private final EventManager eventManager;        // Gestionnaire des événements
     private int startTime;                          // Moment où la partie commence
+    private int seconde, dixieme;                   // Valeurs du timer
 
     /**
     * Méthodes publiques - Interface externe
@@ -44,7 +45,6 @@ class GameState {
                 updateCountdown();
             } else if (gameStarted) {
                 updateGameplay();
-                updateTimer();
             }
         } else {
             gameManager.victoryScreen.update();
@@ -95,6 +95,7 @@ class GameState {
         gameManager.weaponSpawner.update();
         gameManager.handleWeaponPickups();
         eventManager.update();
+        updateTimer();
     }
 
     private void drawGameplay()
@@ -102,6 +103,7 @@ class GameState {
         background(200);
         gameManager.arena.draw();
         gameManager.uiManager.displayScore(gameManager.player1, gameManager.player2);
+        gameManager.uiManager.displayTimer(seconde, dixieme);
         gameManager.drawWeapons();
         gameManager.player1.draw();
         gameManager.player2.draw();
@@ -158,10 +160,10 @@ class GameState {
 
     private void updateTimer()
     {
-        int timer, secondes, dixieme = 0;
+        int timer = 0;
         if (gameStarted) {
             timer = millis() - startTime;
-            secondes = timer / 1000;
+            seconde = timer / 1000;
             dixieme = (timer / 100) % 10;
         }
     }

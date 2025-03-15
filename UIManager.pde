@@ -49,10 +49,18 @@ class UIManager {
 
     void displayTimer(int sec, int dec)
     {
-        if (timer == null)
-            return;
-        
-        println(sec +","+ dec);
+        String secStr = str(sec);
+        float[] timeArray = new float[secStr.length() + 2];
+
+        for (int i=0; i<secStr.length(); i++) {
+            timeArray[i] = float(str(secStr.charAt(i)));
+        }
+        timeArray[secStr.length()] = -2;
+        timeArray[secStr.length() + 1] = dec;
+
+        int spacing = ((secStr.length() + 2) * SPRITE_SPACING) / 2;
+
+        drawDigits(timeArray, float(width/2 - spacing));
     }
 
     /**
