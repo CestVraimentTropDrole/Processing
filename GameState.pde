@@ -90,7 +90,10 @@ class GameState {
     **/
     private void updateGameplay()
     {
-        gameManager.updatePlayers();
+        gameManager.player1.update();
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
+            gameManager.player2.update();
+        }
         gameManager.checkCollisions();
         gameManager.weaponSpawner.update();
         gameManager.handleWeaponPickups();
@@ -153,8 +156,7 @@ class GameState {
                 showingGo = false;
                 isCountingDown = false;
                 gameStarted = true;
-                startTime = millis();  // Temps où la partie commence
-            }
+                startTime = millis();
         }
     }
 

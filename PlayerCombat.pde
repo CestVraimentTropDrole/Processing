@@ -16,10 +16,10 @@ class PlayerCombat {
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
+    float damagePercent;                       // Pourcentage de dégâts
     private final Shield shield;               // Bouclier du joueur
     private final Bullet bullet;               // Gestionnaire des projectiles
     private Weapon currentWeapon;              // Arme équipée
-    private float damagePercent;               // Pourcentage de dégâts
     private boolean isDeathKnockback;          // État de recul mortel
     private int knockbackTimer;                // Durée restante du recul
 

@@ -8,15 +8,16 @@ class Player {
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private PlayerMovement movement;
-    private PlayerCombat combat;
-    private PlayerAnimator animator;
-    private ArrayList<Platform> platforms = new ArrayList<>();
-    private PVector pos, vel;
-    private Arena arena;
-    private int lives = 3;
-    public color col;
-    public int score = 0;
+    private PlayerMovement movement;                            // Gestionnaire de mouvement du joueur
+    private PlayerCombat combat;                                // Gestionnaire de combat du joueur
+    private PlayerAnimator animator;                            // Gestionnaire d'animation du joueur
+    private ArrayList<Platform> platforms = new ArrayList<>();  // Liste des plateformes pour la collision
+    private PVector pos, vel;                                   // Position et vélocité du joueur
+    private Arena arena;                                        // Arène dans laquelle le joueur évolue
+    private boolean isDummy = false;                            // Indique si le joueur est un dummy en mode entraînement
+    private int lives = 3;                                      // Nombre de vies restantes
+    public color col;                                           // Couleur du joueur
+    public int score = 0;                                       // Score du joueur
 
     /**
     * Méthodes publiques - Interface externe
@@ -64,13 +65,25 @@ class Player {
 
     void crouch(boolean crouching)
     {
+        if (isDummy) {
+            return;
+        }
         movement.setCrouching(crouching, pos, vel);
         animator.crouch(pos, crouching);
     }
 
+    void setDummyMode(boolean isDummy)
+    {
+        this.isDummy = isDummy;
+    }
+
     void takeDamage(float damage, float knockback, int direction)
     {
-        combat.takeDamage(damage, knockback, direction, vel, movement);
+        if (isDummy) {
+            combat.damagePercent += damage;
+        } else {
+            combat.takeDamage(damage, knockback, direction, vel, movement);
+        }
     }
 
     void shoot()
@@ -106,13 +119,26 @@ class Player {
 
     void handleArenaCollision()
     {
-        arena.handlePlayerCollision(this);
-        if (arena.checkPlayerDeath(this)) {
-            lives--;
-            if (lives <= 0) {
-                lives = 0;
+        if (!isDummy) {
+            arena.handlePlayerCollision(this);
+            if (arena.checkPlayerDeath(this)) {
+                lives--;
+                if (lives <= 0) {
+                    lives = 0;
+                }
+                reset();
             }
-            reset();
+        } else {
+            boolean onAnyPlatform = false;
+            float spriteHeight = animator.getCurrentHeight();
+            for (Platform platform : platforms) {
+                if (platform.isOnPlatform(pos.x, pos.y, spriteHeight, vel.y)) {
+                    pos.y = platform.y - spriteHeight;
+                    vel.y = 0;
+                    onAnyPlatform = true;
+                    break;
+                }
+            }
         }
     }
 
