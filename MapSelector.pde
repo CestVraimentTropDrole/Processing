@@ -148,10 +148,6 @@ class MapSelector {
             textAlign(CENTER, CENTER);
             text(mapOptions.get(i).name, x, OPTIONS_Y + (isSelected ? MAP_HOVER_SIZE/2 + 40 : MAP_PREVIEW_SIZE/2 + 40));
         }
-        textSize(24);
-        fill(255);
-        textAlign(CENTER, BOTTOM);
-        text("Appuyez sur H pour revenir au menu principal", width/2, height - 30);
     }
 
     private void drawNormalMapPreview(float x, float y, MapOption mapOption)
@@ -184,6 +180,7 @@ class MapSelector {
         MapOption selectedMap = mapOptions.get(selectedOption);
         mapSelected = true;
         active = false;
+        game.gameMode = gameMode;
         game.startGame(selectedMap.folderName);
     }
 }

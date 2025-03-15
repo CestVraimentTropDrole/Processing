@@ -11,6 +11,9 @@ class GameManager {
     static final float PLAYER_START_Y = 700.0f;     // Distance du bas de l'écran pour le spawn
     static final color P1_COLOR = #00FF00;          // Couleur du joueur 1 (vert)
     static final color P2_COLOR = #FF0000;          // Couleur du joueur 2 (rouge)
+    static final int MODE_BAGAR = 0;                // Mode Bagar
+    static final int MODE_1V1 = 1;                  // Mode 1v1
+    static final int MODE_TRAIN = 2;                // Mode entraînement
 
     /**
     * Variables d'état internes
@@ -30,6 +33,8 @@ class GameManager {
     private Minim minim;                     // Gestionnaire audio
     private String currentMapName;           // Nom de la map actuelle
     private boolean active = true;           // État d'activation du jeu
+    private DummyController dummyController; // Contrôleur du mode dummy
+    private int gameMode;                    // Mode de jeu actuel
 
     /**
     * Méthodes publiques - Interface externe
@@ -62,6 +67,14 @@ class GameManager {
         if (gameState == null) {
             gameState = new GameState(this);
         }
+        if (dummyController == null) {
+            dummyController = new DummyController(player2);
+        }
+        if (gameMode == MODE_TRAIN) {
+            dummyController.activate();
+        } else {
+            dummyController.deactivate();
+        }
         gameState.startCountdown();
     }
 
@@ -69,6 +82,9 @@ class GameManager {
     {
         if (gameState != null) {
             gameState.update();
+            if (gameMode == MODE_TRAIN && dummyController != null) {
+                dummyController.update();
+            }
         } else {
             println("ERREUR: gameState est null!");
         }
@@ -126,6 +142,7 @@ class GameManager {
         victoryScreen = new VictoryScreen();
         gameState = new GameState(this);
         gameOver = false;
+        gameMode = MODE_1V1;
     }
 
     private void initializePlayers()
@@ -230,10 +247,12 @@ class GameManager {
 
     private void handleDeath(Player deadPlayer, Player winner)
     {
+        if (gameMode == MODE_TRAIN && deadPlayer == player2) {
+            return;
+        }
         deadPlayer.lives--;
         winner.score++;
         deadPlayer.reset();
-
         if (deadPlayer.lives <= 0 || winner.score >= WIN_SCORE) {
             gameOver = true;
             victoryScreen.startAnimation(winner, deadPlayer);

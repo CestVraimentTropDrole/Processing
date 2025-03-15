@@ -113,8 +113,10 @@ class GameController {
 
     private void updatePlayer2Movement()
     {
-        if (leftPressed2 && !rightPressed2) gameManager.player2.move(-1);
-        if (rightPressed2 && !leftPressed2) gameManager.player2.move(1);
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
+            if (leftPressed2 && !rightPressed2) gameManager.player2.move(-1);
+            if (rightPressed2 && !leftPressed2) gameManager.player2.move(1);
+        }
     }
 
     private void handleGameInput(char key, int keyCode)
@@ -162,12 +164,14 @@ class GameController {
         if (key == KEY_P1_SHIELD) gameManager.player1.activateShield();
 
         // Actions Joueur 2
-        if (keyCode == KEY_P2_JUMP) gameManager.player2.jump();
-        if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(true);
-        if (key == KEY_P2_SHOOT) gameManager.player2.shoot();
-        if (key == KEY_P2_DASH) gameManager.player2.dash(leftPressed2, rightPressed2);
-        if (key == KEY_P2_RELOAD) gameManager.player2.combat.bullet.startReload();
-        if (key == KEY_P2_SHIELD) gameManager.player2.activateShield();
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
+            if (keyCode == KEY_P2_JUMP) gameManager.player2.jump();
+            if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(true);
+            if (key == KEY_P2_SHOOT) gameManager.player2.shoot();
+            if (key == KEY_P2_DASH) gameManager.player2.dash(leftPressed2, rightPressed2);
+            if (key == KEY_P2_RELOAD) gameManager.player2.combat.bullet.startReload();
+            if (key == KEY_P2_SHIELD) gameManager.player2.activateShield();
+        }
     }
 
     private void handleMovementKeyReleased(char key, int keyCode)
@@ -177,8 +181,10 @@ class GameController {
         if (key == KEY_P1_RIGHT) rightPressed1 = false;
 
         // Joueur 2
-        if (keyCode == KEY_P2_LEFT) leftPressed2 = false;
-        if (keyCode == KEY_P2_RIGHT) rightPressed2 = false;
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
+            if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(false);
+            if (key == KEY_P2_SHIELD) gameManager.player2.deactivateShield();
+        }
     }
 
     private void handleActionKeyReleased(char key, int keyCode)
