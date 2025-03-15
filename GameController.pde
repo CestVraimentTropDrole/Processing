@@ -57,7 +57,7 @@ class GameController {
 
     void update()
     {
-        if (startScreen.isActive()) {
+        if (startScreen.active || startScreen.mapSelector.isActive()) {
             startScreen.draw();
         } else {
             updateGame();
@@ -126,9 +126,13 @@ class GameController {
 
     private void handleGameStateKeys(char key)
     {
-        if (gameManager.gameOver && key == KEY_HOME) {
-            gameManager.reset();
-            startScreen.active = true;
+        if (key == KEY_HOME) {
+            if (gameManager.gameOver || gameManager.victoryScreen.isActive()) {
+                gameManager.victoryScreen.reset();
+                gameManager.reset();
+                startScreen.activate();
+                gameManager.active = true;
+            }
         }
     }
 
@@ -145,7 +149,7 @@ class GameController {
 
     private void handleActionKeyPressed(char key, int keyCode)
     {
-        if (gameManager.isCountingDown() || !gameManager.hasGameStarted()) {
+        if (gameManager.isCountingDown() || !gameManager.hasGameStarted() || gameManager.gameOver) {
             return;
         }
 
@@ -179,7 +183,7 @@ class GameController {
 
     private void handleActionKeyReleased(char key, int keyCode)
     {
-        if (gameManager.isCountingDown() || !gameManager.hasGameStarted()) {
+        if (gameManager.isCountingDown() || !gameManager.hasGameStarted() || gameManager.gameOver) {
             return;
         }
 

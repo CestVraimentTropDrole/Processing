@@ -14,13 +14,14 @@ class MapSelector {
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private boolean active;                        // État d'affichage du menu
+    boolean active;                                // État d'affichage du menu
     private GameManager game;                      // Référence au gestionnaire de jeu
     private ArrayList<MapOption> mapOptions;       // Options de maps disponibles
     private int selectedOption;                    // Option actuellement sélectionnée
     private float optionSpacing;                   // Espacement entre les options
     private int gameMode;                          // Mode de jeu sélectionné
     private PImage backgroundImage;                // Image de fond du sélecteur
+    private boolean mapSelected = false;           // Indique si une carte a été sélectionnée
 
     class MapOption {
         String name;
@@ -52,6 +53,7 @@ class MapSelector {
         this.active = false;
         this.selectedOption = 0;
         this.optionSpacing = width / 3;
+        this.mapSelected = false;
 
         mapOptions = new ArrayList<MapOption>();
         mapOptions.add(new MapOption("BATTLEFIELD", "battlefield"));
@@ -66,6 +68,12 @@ class MapSelector {
         this.active = true;
         this.gameMode = gameMode;
         this.selectedOption = 0;
+        this.mapSelected = false;
+    }
+
+    void deactivate()
+    {
+        this.active = false;
     }
 
     void draw()
@@ -76,6 +84,8 @@ class MapSelector {
 
     void handleKeyPressed(char key, int keyCode)
     {
+        if (mapSelected)
+            return;
         switch(keyCode) {
             case LEFT:
                 selectedOption = (selectedOption - 1 + mapOptions.size()) % mapOptions.size();
@@ -86,6 +96,8 @@ class MapSelector {
             default:
                 if (key == ' ') {
                     selectCurrentMap();
+                } else if (key == 'h' || key == 'H') {
+                    deactivate();
                 }
                 break;
         }
@@ -93,6 +105,8 @@ class MapSelector {
 
     void mousePressed()
     {
+        if (mapSelected)
+            return;
         float startX = width/2 - ((mapOptions.size()-1) * optionSpacing/2);
 
         for (int i = 0; i < mapOptions.size(); i++) {
@@ -134,6 +148,10 @@ class MapSelector {
             textAlign(CENTER, CENTER);
             text(mapOptions.get(i).name, x, OPTIONS_Y + (isSelected ? MAP_HOVER_SIZE/2 + 40 : MAP_PREVIEW_SIZE/2 + 40));
         }
+        textSize(24);
+        fill(255);
+        textAlign(CENTER, BOTTOM);
+        text("Appuyez sur H pour revenir au menu principal", width/2, height - 30);
     }
 
     private void drawNormalMapPreview(float x, float y, MapOption mapOption)
@@ -164,7 +182,8 @@ class MapSelector {
     private void selectCurrentMap()
     {
         MapOption selectedMap = mapOptions.get(selectedOption);
-        game.startGame(selectedMap.folderName);
+        mapSelected = true;
         active = false;
+        game.startGame(selectedMap.folderName);
     }
 }

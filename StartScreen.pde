@@ -15,11 +15,11 @@ class StartScreen {
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
     **/
-    private boolean active;                       // État d'affichage du menu
+    boolean active;                               // État d'affichage du menu
+    MapSelector mapSelector;                      // Sélecteur de map
     private GameManager game;                     // Référence au gestionnaire de jeu
     private final String[] menuOptions;           // Options du menu
     private int selectedOption;                   // Option actuellement sélectionnée
-    private MapSelector mapSelector;              // Sélecteur de map
     private PImage backgroundImage;               // Image de fond du menu
     private PImage[] menuIcons;                   // Tableau d'icônes pour les options du menu
 
@@ -51,20 +51,22 @@ class StartScreen {
     {
         if (mapSelector.isActive()) {
             mapSelector.handleKeyPressed(key, keyCode);
-        } else {
-            switch(keyCode) {
-                case LEFT:
-                    selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
-                    break;
-                case RIGHT:
-                    selectedOption = (selectedOption + 1) % menuOptions.length;
-                    break;
-                default:
-                    if (key == ' ') {
-                        selectCurrentOption();
-                    }
-                    break;
-            }
+            return;
+        }
+        if (!active)
+            return;
+        switch(keyCode) {
+            case LEFT:
+                selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
+                break;
+            case RIGHT:
+                selectedOption = (selectedOption + 1) % menuOptions.length;
+                break;
+            default:
+                if (key == ' ') {
+                    selectCurrentOption();
+                }
+                break;
         }
     }
 
@@ -72,32 +74,42 @@ class StartScreen {
     {
         if (mapSelector.isActive()) {
             mapSelector.mousePressed();
-        } else {
-            float startX = width/2 - ((menuOptions.length-1) * ICON_SPACING/2);
-            for (int i = 0; i < menuOptions.length; i++) {
-                float x = startX + (i * ICON_SPACING);
-                float iconSize = (i == selectedOption) ? ICON_HOVER_SIZE : ICON_SIZE;
-                float y = OPTIONS_Y;
-                if (i == 1) {
-                    y += VS_Y_OFFSET;
-                }
-                if (mouseX > x - iconSize/2 && mouseX < x + iconSize/2 &&
-                    mouseY > y - iconSize/2 && mouseY < y + iconSize/2) {
-                    selectedOption = i;
-                    selectCurrentOption();
-                    break;
-                }
+            return;
+        }
+        if (!active)
+            return;
+        float startX = width/2 - ((menuOptions.length-1) * ICON_SPACING/2);
+        for (int i = 0; i < menuOptions.length; i++) {
+            float x = startX + (i * ICON_SPACING);
+            float iconSize = (i == selectedOption) ? ICON_HOVER_SIZE : ICON_SIZE;
+            float y = OPTIONS_Y;
+            if (i == 1) {
+                y += VS_Y_OFFSET;
+            }
+            if (mouseX > x - iconSize/2 && mouseX < x + iconSize/2 &&
+                mouseY > y - iconSize/2 && mouseY < y + iconSize/2) {
+                selectedOption = i;
+                selectCurrentOption();
+                break;
             }
         }
     }
 
     boolean isActive()
     {
-        if (!game.active) {
-            active = false;
-            return false;
-        }
         return active || mapSelector.isActive();
+    }
+
+    void activate()
+    {
+        active = true;
+        selectedOption = 0;
+        if (mapSelector != null) {
+            mapSelector.active = false;
+            mapSelector.mapSelected = false;
+        } else {
+            mapSelector = new MapSelector(game);
+        }
     }
 
     /**
@@ -169,5 +181,6 @@ class StartScreen {
                 mapSelector.activate(2);
                 break;
         }
+        active = false;
     }
 }

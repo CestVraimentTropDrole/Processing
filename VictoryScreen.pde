@@ -55,8 +55,8 @@ class VictoryScreen {
 
     void update()
     {
-        if (!active) return;
-        
+        if (!active)
+            return;
         phaseProgress += 1.0f / PHASE_DURATION;
         if (phaseProgress >= 1.0) {
             phaseProgress = 0;
@@ -112,8 +112,12 @@ class VictoryScreen {
         showReturnText = false;
         textAlpha = 0;
         winnerRotation = WINNER_ENTRY_ROTATION;
+        winner = null;
+        loser = null;
     }
-    boolean isActive() {
+
+    boolean isActive()
+    {
         return active;
     }
 

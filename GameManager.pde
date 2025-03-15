@@ -53,32 +53,62 @@ class GameManager {
         reset();
         setupArena(mapName);
         initializePlayers();
-        weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
+
+        if (weaponSpawner == null) {
+            weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
+        } else {
+            weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
+        }
+        if (gameState == null) {
+            gameState = new GameState(this);
+        }
         gameState.startCountdown();
     }
 
     void update()
     {
-        gameState.update();
+        if (gameState != null) {
+            gameState.update();
+        } else {
+            println("ERREUR: gameState est null!");
+        }
     }
 
     void draw()
     {
-        gameState.draw();
+        if (gameState != null) {
+            gameState.draw();
+        } else {
+            println("ERREUR: gameState est null!");
+        }
     }
 
     void reset()
     {
-        resetPlayers();
-        weapons.clear();
-        events.clear();
-        gameState.reset();
-        victoryScreen.reset();
+        if (victoryScreen != null) {
+            victoryScreen.reset();
+        }
+        gameOver = false;
+        if (arena != null && arena.soundManager != null) {
+            arena.soundManager.stopMusic();
+        }
+        if (player1 != null && player2 != null) {
+            resetPlayers();
+        }
+        if (weapons != null) {
+            weapons.clear();
+        }
+        if (events != null) {
+            events.clear();
+        }
+        if (gameState != null) {
+            gameState.reset();
+        }
     }
 
     // Getters
-    boolean hasGameStarted() { return gameState.hasGameStarted(); }
-    boolean isCountingDown() { return gameState.isCountingDown(); }
+    boolean hasGameStarted() { return gameState != null && gameState.hasGameStarted(); }
+    boolean isCountingDown() { return gameState != null && gameState.isCountingDown(); }
 
     /**
     * Méthodes privées - Logique interne
@@ -112,7 +142,6 @@ class GameManager {
         arena = new Arena(width, height, this.minim, mapName);
         if (player1 != null) player1.setPlatforms(arena.platforms);
         if (player2 != null) player2.setPlatforms(arena.platforms);
-        if (weaponSpawner != null) weaponSpawner = new WeaponSpawner(weapons, assets, arena.platforms);
     }
 
     private void updatePlayers()
