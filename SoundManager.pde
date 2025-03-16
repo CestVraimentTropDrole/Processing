@@ -50,4 +50,15 @@ class SoundManager {
             player.rewind();
         }
     }
+
+    void playWeaponSound(String weaponType)
+    {
+        String soundFile = "assets/musics/weapons/" + weaponType + ".mp3";
+        AudioPlayer soundEffect = minim.loadFile(soundFile);
+
+        if (soundEffect != null) {
+            soundEffect.rewind();
+            soundEffect.play();
+        }
+    }
 }

@@ -157,6 +157,7 @@ class GameState {
                 isCountingDown = false;
                 gameStarted = true;
                 startTime = millis();
+            }
         }
     }
 
