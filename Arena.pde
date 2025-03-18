@@ -22,6 +22,7 @@ class Arena {
     private final ArrayList<Platform> platforms;     // Liste des plateformes
     private PImage background;                       // Image de fond
     private SoundManager soundManager;               // Son de l'arène
+    private GameManager gameManager;                 // Gestionnaire principal du jeu
     private String currentMap;                       // Map actuelle
 
     /**
@@ -43,6 +44,7 @@ class Arena {
         this.platforms = new ArrayList<Platform>();
         this.currentMap = mapName;
         this.soundManager = new SoundManager(minim);
+        this.gameManager = null;
 
         loadMapAssets(mapName);
         setupPlatforms();
@@ -61,6 +63,11 @@ class Arena {
     boolean checkPlayerDeath(Player player)
     {
         return player.pos.y > deathY + DEATH_OFFSET || player.pos.x < -DEATH_BOUNDARY || player.pos.x > width + DEATH_BOUNDARY;
+    }
+
+    void setGameManager(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
     }
 
     void handlePlayerCollision(Player player)

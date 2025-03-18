@@ -74,12 +74,6 @@ class GameController {
         }
     }
 
-    void handleKeyReleased(char key, int keyCode)
-    {
-        handleMovementKeyReleased(key, keyCode);
-        handleActionKeyReleased(key, keyCode);
-    }
-
     /**
     * Méthodes privées - Logique interne
     * @private Utilisées uniquement dans cette classe
@@ -99,8 +93,11 @@ class GameController {
 
     private void updatePlayerMovements()
     {
-        if (!gameManager.isCountingDown() && gameManager.hasGameStarted()) {
-            updatePlayer1Movement();
+        if (gameManager.isCountingDown() || !gameManager.hasGameStarted()) {
+            return;
+        }
+        updatePlayer1Movement();
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
             updatePlayer2Movement();
         }
     }
@@ -145,8 +142,10 @@ class GameController {
         if (key == KEY_P1_RIGHT) rightPressed1 = true;
 
         // Joueur 2
-        if (keyCode == KEY_P2_LEFT) leftPressed2 = true;
-        if (keyCode == KEY_P2_RIGHT) rightPressed2 = true;
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
+            if (keyCode == KEY_P2_LEFT) leftPressed2 = true;
+            if (keyCode == KEY_P2_RIGHT) rightPressed2 = true;
+        }
     }
 
     private void handleActionKeyPressed(char key, int keyCode)
@@ -155,7 +154,7 @@ class GameController {
             return;
         }
 
-        // Actions Joueur 1
+        // Joueur 1
         if (key == KEY_P1_JUMP) gameManager.player1.jump();
         if (key == KEY_P1_CROUCH) gameManager.player1.crouch(true);
         if (key == KEY_P1_SHOOT) gameManager.player1.shoot();
@@ -163,7 +162,7 @@ class GameController {
         if (key == KEY_P1_RELOAD) gameManager.player1.combat.bullet.startReload();
         if (key == KEY_P1_SHIELD) gameManager.player1.activateShield();
 
-        // Actions Joueur 2
+        // Joueur 2
         if (gameManager.gameMode != GameManager.MODE_TRAIN) {
             if (keyCode == KEY_P2_JUMP) gameManager.player2.jump();
             if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(true);
@@ -174,31 +173,28 @@ class GameController {
         }
     }
 
-    private void handleMovementKeyReleased(char key, int keyCode)
+    void handleMovementKeyReleased(char key, int keyCode)
     {
-        // Joueur 1
-        if (key == KEY_P1_LEFT) leftPressed1 = false;
-        if (key == KEY_P1_RIGHT) rightPressed1 = false;
-
-        // Joueur 2
-        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
-            if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(false);
-            if (key == KEY_P2_SHIELD) gameManager.player2.deactivateShield();
-        }
-    }
-
-    private void handleActionKeyReleased(char key, int keyCode)
-    {
-        if (gameManager.isCountingDown() || !gameManager.hasGameStarted() || gameManager.gameOver) {
+        if (gameManager.isCountingDown() || !gameManager.hasGameStarted()) {
+            if (key == KEY_P1_LEFT) leftPressed1 = false;
+            if (key == KEY_P1_RIGHT) rightPressed1 = false;
+            if (keyCode == KEY_P2_LEFT) leftPressed2 = false;
+            if (keyCode == KEY_P2_RIGHT) rightPressed2 = false;
             return;
         }
 
         // Joueur 1
+        if (key == KEY_P1_LEFT) leftPressed1 = false;
+        if (key == KEY_P1_RIGHT) rightPressed1 = false;
         if (key == KEY_P1_CROUCH) gameManager.player1.crouch(false);
         if (key == KEY_P1_SHIELD) gameManager.player1.deactivateShield();
 
         // Joueur 2
-        if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(false);
-        if (key == KEY_P2_SHIELD) gameManager.player2.deactivateShield();
+        if (gameManager.gameMode != GameManager.MODE_TRAIN) {
+            if (keyCode == KEY_P2_LEFT) leftPressed2 = false;
+            if (keyCode == KEY_P2_RIGHT) rightPressed2 = false;
+            if (keyCode == KEY_P2_CROUCH) gameManager.player2.crouch(false);
+            if (key == KEY_P2_SHIELD) gameManager.player2.deactivateShield();
+        }
     }
 }

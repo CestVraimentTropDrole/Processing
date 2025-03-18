@@ -65,6 +65,9 @@ class Player {
 
     void crouch(boolean crouching)
     {
+        if (arena != null && arena.gameManager != null && (arena.gameManager.isCountingDown() || !arena.gameManager.hasGameStarted())) {
+            return;
+        }
         if (isDummy) {
             return;
         }

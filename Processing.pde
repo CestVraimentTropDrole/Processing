@@ -46,5 +46,5 @@ void keyPressed()
 **/
 void keyReleased()
 {
-    gameController.handleKeyReleased(key, keyCode);
+    gameController.handleMovementKeyReleased(key, keyCode);
 }

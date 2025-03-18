@@ -157,6 +157,7 @@ class GameManager {
     private void setupArena(String mapName)
     {
         arena = new Arena(width, height, this.minim, mapName);
+        arena.setGameManager(this);
         if (player1 != null) player1.setPlatforms(arena.platforms);
         if (player2 != null) player2.setPlatforms(arena.platforms);
     }
