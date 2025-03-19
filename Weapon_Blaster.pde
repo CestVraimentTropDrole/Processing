@@ -18,8 +18,8 @@ class Blaster extends Weapon {
     * @param sprite Sprite de l'arme
     * @param bulletSprite Sprite des projectiles
     **/
-    Blaster(float x, float y, PImage sprite, PImage bulletSprite)
+    Blaster(float x, float y, PImage sprite, PImage bulletSprite, String sound)
     {
-        super(x, y, sprite, bulletSprite, BULLET_SPEED, FIRE_RATE, AMMO_CAPACITY, MIN_DAMAGE, MAX_DAMAGE, RELOAD_TIME);
+        super(x, y, sprite, bulletSprite, BULLET_SPEED, FIRE_RATE, AMMO_CAPACITY, MIN_DAMAGE, MAX_DAMAGE, RELOAD_TIME, sound);
     }
 }

@@ -16,6 +16,7 @@ class Weapon {
     private Player owner;                       // Propriétaire
     private int currentAmmo;                    // Munitions actuelles
     private long spawnTime;                     // Temps d'apparition
+    private String soundEffect;                 // Sound effect
 
     /**
     * Méthodes publiques - Interface externe
@@ -34,7 +35,7 @@ class Weapon {
     * @param maxDamage Dégâts maximum
     * @param reloadTime Temps de rechargement
     **/
-    Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown, int maxAmmo, float minDamage, float maxDamage, int reloadTime)
+    Weapon(float x, float y, PImage weaponSprite, PImage bulletSprite, float bulletSpeed, float cooldown, int maxAmmo, float minDamage, float maxDamage, int reloadTime, String soundEffect)
     {
         this.x = x;
         this.y = y;
@@ -44,6 +45,7 @@ class Weapon {
         this.currentAmmo = properties.getMaxAmmo();
         this.isPickedUp = false;
         this.owner = null;
+        this.soundEffect = soundEffect;
     }
 
     void draw()
@@ -86,6 +88,7 @@ class Weapon {
 
     // Getters
     WeaponRenderer getRenderer() { return renderer; }
+    String getSoundEffect() { return soundEffect; }
 
     /**
     * Méthodes privées - Logique interne

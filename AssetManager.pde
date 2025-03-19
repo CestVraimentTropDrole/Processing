@@ -8,6 +8,7 @@ class AssetManager {
     static final int NUMBER_COUNT = 10;                     // Nombre de chiffres à charger
     static final int SPECIAL_CHARS = 2;                     // Nombre de caractères spéciaux (%, ,)
     static final String ASSETS_PATH = "assets/sprites/";    // Chemin de base des assets
+    static final String MUSICS_PATH = "assets/musics/weapons/";     // Chemin de base des soundeffects
 
     /**
     * Variables d'état internes
@@ -20,6 +21,7 @@ class AssetManager {
     private PImage gunSprite, pistolSprite;         // Sprites des armes à feu
     private PImage blasterSprite, bowSprite;        // Sprites des armes spéciales
     private PImage[] numbers;                       // Chiffres pour l'affichage des dégâts
+    private String soundPistol, soundGun, soundBow, soundLaser; // Noms de fichiers des soundeffects
 
     /**
     * Méthodes publiques - Interface externe
@@ -34,6 +36,7 @@ class AssetManager {
         loadPlayerAssets();
         loadWeaponAssets();
         loadBulletAssets();
+        loadSoundEffects();
         loadUIAssets();
         resizeAssets();
     }
@@ -55,6 +58,12 @@ class AssetManager {
     PImage getPistolSprite() { return pistolSprite; }
     PImage getBlasterSprite() { return blasterSprite; }
     PImage getBowSprite() { return bowSprite; }
+
+    // Getters pour les sound effects
+    String getPistolSound() { return soundPistol; }
+    String getGunSound() { return soundGun; }
+    String getBowSound() { return soundBow; }
+    String getLaserSound() { return soundLaser; }
 
     // Getter pour les assets UI
     PImage[] getNumbers() { return numbers; }
@@ -85,6 +94,14 @@ class AssetManager {
         bulletLaser = loadImage(ASSETS_PATH + "bullet/laser.png");
         bulletArrow = loadImage(ASSETS_PATH + "bullet/arrow.png");
         bulletLong = loadImage(ASSETS_PATH + "bullet/long.png");
+    }
+
+    private void loadSoundEffects()
+    {
+        soundPistol = MUSICS_PATH + "gunsimple.mp3";
+        soundGun = MUSICS_PATH + "ak47.mp3";
+        soundBow = MUSICS_PATH + "bow.mp3";
+        soundLaser = MUSICS_PATH + "blaster.mp3";
     }
 
     private void loadUIAssets()

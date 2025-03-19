@@ -93,7 +93,7 @@ class Player {
     {
         if (combat.currentWeapon != null && combat.bullet.canShoot()) {
             if (arena != null && arena.soundManager != null) {
-                arena.soundManager.playWeaponSound("pistol");
+                arena.soundManager.playWeaponSound(combat.currentWeapon.getSoundEffect());
             }
             combat.shoot(pos, animator.getWidth(), animator.getCurrentHeight(), movement.getFacing());
         } else {

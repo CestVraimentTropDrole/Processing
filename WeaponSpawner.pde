@@ -87,13 +87,13 @@ class WeaponSpawner {
         float rand = random(1);
 
         if (rand < GUN_CHANCE) {
-            return new Gun(x, y, assets.getGunSprite(), assets.getBulletLong());
+            return new Gun(x, y, assets.getGunSprite(), assets.getBulletLong(), assets.getGunSound());
         } else if (rand < PISTOL_CHANCE) {
-            return new Pistol(x, y, assets.getPistolSprite(), assets.getBulletSimple());
+            return new Pistol(x, y, assets.getPistolSprite(), assets.getBulletSimple(), assets.getPistolSound());
         } else if (rand < BLASTER_CHANCE) {
-            return new Blaster(x, y, assets.getBlasterSprite(), assets.getBulletLaser());
+            return new Blaster(x, y, assets.getBlasterSprite(), assets.getBulletLaser(), assets.getLaserSound());
         } else {
-            return new Bow(x, y, assets.getBowSprite(), assets.getBulletArrow());
+            return new Bow(x, y, assets.getBowSprite(), assets.getBulletArrow(), assets.getBowSound());
         }
     }
 

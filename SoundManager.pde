@@ -51,9 +51,8 @@ class SoundManager {
         }
     }
 
-    void playWeaponSound(String weaponType)
+    void playWeaponSound(String soundFile)
     {
-        String soundFile = "assets/musics/weapons/" + weaponType + ".mp3";
         AudioPlayer soundEffect = minim.loadFile(soundFile);
 
         if (soundEffect != null) {
