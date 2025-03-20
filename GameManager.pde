@@ -224,8 +224,14 @@ class GameManager {
 
     private void checkPlayerDeaths()
     {
-        if (arena.checkPlayerDeath(player1)) handleDeath(player1, player2);
-        if (arena.checkPlayerDeath(player2)) handleDeath(player2, player1);
+        if (arena.checkPlayerDeath(player1)) {
+            handleDeath(player1, player2);
+            arena.soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
+        }
+        if (arena.checkPlayerDeath(player2)){
+            handleDeath(player2, player1);
+            arena.soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
+        }
     }
 
     private void checkArenaCollisions()
