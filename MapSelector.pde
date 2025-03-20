@@ -22,6 +22,7 @@ class MapSelector {
     private int gameMode;                          // Mode de jeu sélectionné
     private PImage backgroundImage;                // Image de fond du sélecteur
     private boolean mapSelected = false;           // Indique si une carte a été sélectionnée
+    private SoundManager soundManager;             // Son de l'écran
 
     class MapOption {
         String name;
@@ -47,13 +48,14 @@ class MapSelector {
     * Constructeur du sélecteur de map
     * @param gameInstance Référence au gestionnaire de jeu principal
     **/
-    MapSelector(GameManager gameInstance)
+    MapSelector(GameManager gameInstance, Minim minim)
     {
         this.game = gameInstance;
         this.active = false;
         this.selectedOption = 0;
         this.optionSpacing = width / 3;
         this.mapSelected = false;
+        this.soundManager = new SoundManager(minim);
 
         mapOptions = new ArrayList<MapOption>();
         mapOptions.add(new MapOption("BATTLEFIELD", "battlefield"));
@@ -88,14 +90,19 @@ class MapSelector {
             return;
         switch(keyCode) {
             case LEFT:
+            case 'Q':
                 selectedOption = (selectedOption - 1 + mapOptions.size()) % mapOptions.size();
+                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
                 break;
             case RIGHT:
+            case 'D':
                 selectedOption = (selectedOption + 1) % mapOptions.size();
+                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
                 break;
             default:
-                if (key == ' ') {
+                if (key == ' ' || key == '0') {
                     selectCurrentMap();
+                    soundManager.playWeaponSound("assets/musics/menus/select_1.mp3");
                 } else if (key == 'h' || key == 'H') {
                     deactivate();
                 }

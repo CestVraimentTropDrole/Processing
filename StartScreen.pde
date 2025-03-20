@@ -22,18 +22,22 @@ class StartScreen {
     private int selectedOption;                   // Option actuellement sélectionnée
     private PImage backgroundImage;               // Image de fond du menu
     private PImage[] menuIcons;                   // Tableau d'icônes pour les options du menu
+    private SoundManager soundManager;            // Son de l'écran
+    private Minim minim;
 
     /**
     * Constructeur du menu de démarrage
     * @param gameInstance Référence au gestionnaire de jeu principal
     **/
-    StartScreen(GameManager gameInstance)
+    StartScreen(GameManager gameInstance, Minim minim)
     {
         this.game = gameInstance;
         this.active = true;
         this.menuOptions = new String[]{"BAGAR", "1V1", "TRAIN"};
         this.selectedOption = 0;
-        this.mapSelector = new MapSelector(game);
+        this.mapSelector = new MapSelector(game, minim);
+        this.soundManager = new SoundManager(minim);
+        this.minim = minim;
         loadAssets();
     }
 
@@ -45,6 +49,7 @@ class StartScreen {
             image(backgroundImage, 0, 0, width, height);
             drawMenuOptions();
         }
+        soundManager.startMusic();
     }
 
     void handleKeyPressed(char key, int keyCode)
@@ -57,14 +62,19 @@ class StartScreen {
             return;
         switch(keyCode) {
             case LEFT:
+            case 'Q':
                 selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
+                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
                 break;
             case RIGHT:
+            case 'D':
                 selectedOption = (selectedOption + 1) % menuOptions.length;
+                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
                 break;
             default:
-                if (key == ' ') {
+                if (key == ' ' || key == '0') {
                     selectCurrentOption();
+                    soundManager.playWeaponSound("assets/musics/menus/select_1.mp3");
                 }
                 break;
         }
@@ -108,7 +118,7 @@ class StartScreen {
             mapSelector.active = false;
             mapSelector.mapSelected = false;
         } else {
-            mapSelector = new MapSelector(game);
+            mapSelector = new MapSelector(game, minim);
         }
     }
 
@@ -127,6 +137,7 @@ class StartScreen {
         for (int i = 0; i < menuIcons.length; i++) {
             menuIcons[i].resize((int)ICON_SIZE, (int)ICON_SIZE);
         }
+        soundManager.loadMusic("assets/musics/menus/menu.mp3");
     }
 
     private void drawMenuOptions()

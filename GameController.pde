@@ -82,7 +82,7 @@ class GameController {
     {
         minim = new Minim(processingSketch);
         gameManager = new GameManager(minim);
-        startScreen = new StartScreen(gameManager);
+        startScreen = new StartScreen(gameManager, minim);
     }
 
     private void updateGame()
