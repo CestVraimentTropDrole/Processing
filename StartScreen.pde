@@ -49,7 +49,6 @@ class StartScreen {
             image(backgroundImage, 0, 0, width, height);
             drawMenuOptions();
         }
-        soundManager.startMusic();
     }
 
     void handleKeyPressed(char key, int keyCode)
@@ -137,7 +136,6 @@ class StartScreen {
         for (int i = 0; i < menuIcons.length; i++) {
             menuIcons[i].resize((int)ICON_SIZE, (int)ICON_SIZE);
         }
-        soundManager.loadMusic("assets/musics/menus/menu.mp3");
     }
 
     private void drawMenuOptions()

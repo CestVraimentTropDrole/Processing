@@ -63,6 +63,8 @@ class MapSelector {
 
         backgroundImage = loadImage("assets/sprites/background/menus/background_modeselect.png");
         backgroundImage.resize(width, height);
+        soundManager.loadMusic("assets/musics/menus/menu.mp3"); // Charge la musique
+        soundManager.startMusic();  // Lance la musique
     }
 
     void activate(int gameMode)
@@ -188,6 +190,7 @@ class MapSelector {
         mapSelected = true;
         active = false;
         game.gameMode = gameMode;
+        soundManager.stopMusic();   // Arrête la musique
         game.startGame(selectedMap.folderName);
     }
 }
