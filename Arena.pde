@@ -96,11 +96,11 @@ class Arena {
     **/
     private void loadMapAssets(String mapName)
     {
-        String basePath = "assets/sprites/background/" + mapName + "/";
+        String basePath = "data/sprites/background/" + mapName + "/";
         background = loadImage(basePath + mapName + ".png");
         background.resize((int)width, (int)height);
 
-        String musicPath = "assets/musics/arenas/" + mapName + ".mp3";
+        String musicPath = "data/musics/arenas/" + mapName + ".mp3";
         soundManager.loadMusic(musicPath);
     }
 

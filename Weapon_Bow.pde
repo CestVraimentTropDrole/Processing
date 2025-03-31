@@ -5,7 +5,7 @@
 **/
 class Bow extends Weapon {
     static final float BULLET_SPEED = 20;     // Vitesse des projectiles
-    static final float FIRE_RATE = 3000;      // Délai entre les tirs
+    static final float FIRE_RATE = 1000;      // Délai entre les tirs
     static final int AMMO_CAPACITY = 8;       // Capacité en munitions
     static final float MIN_DAMAGE = 6.0f;     // Dégâts minimum
     static final float MAX_DAMAGE = 10.0f;    // Dégâts maximum

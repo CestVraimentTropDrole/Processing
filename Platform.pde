@@ -37,7 +37,7 @@ class Platform {
         this.isMain = isMain;
 
         String type = (isMain ? "main" : "simple");
-        String imagePath = "assets/sprites/background/" + mapName + "/platform_" + type + ".png";
+        String imagePath = "data/sprites/background/" + mapName + "/platform_" + type + ".png";
         platform = loadImage(imagePath);
         platform.resize((int)this.w, (int)this.h);
     }

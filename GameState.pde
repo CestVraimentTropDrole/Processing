@@ -128,7 +128,7 @@ class GameState {
             } else {
                 return;
             }
-            image(loadImage("assets/sprites/ui/" + filename), 0, 0);
+            image(loadImage("data/sprites/ui/" + filename), 0, 0);
             imageMode(CORNER);
             popMatrix();
         }

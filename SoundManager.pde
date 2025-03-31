@@ -46,7 +46,7 @@ class SoundManager {
     void stopMusic()
     {
         if (player != null && player.isPlaying()) {
-            player.close();
+            player.pause();
         }
     }
 

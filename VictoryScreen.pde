@@ -127,7 +127,7 @@ class VictoryScreen {
     **/
     private void loadAssets()
     {
-        backgroundImage = loadImage("assets/sprites/background/victory/victory_screen.png");
+        backgroundImage = loadImage("data/sprites/background/victory/victory_screen.png");
         backgroundImage.resize(width, height);
     }
 

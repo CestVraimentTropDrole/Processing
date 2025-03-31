@@ -33,7 +33,7 @@ class MapSelector {
         {
             this.name = name;
             this.folderName = folderName;
-            String previewPath = "assets/sprites/background/" + folderName + "/" + folderName + ".png";
+            String previewPath = "data/sprites/background/" + folderName + "/" + folderName + ".png";
 
             preview = loadImage(previewPath);
             preview.resize((int)MAP_PREVIEW_SIZE, (int)MAP_PREVIEW_SIZE);
@@ -61,9 +61,9 @@ class MapSelector {
         mapOptions.add(new MapOption("BATTLEFIELD", "battlefield"));
         mapOptions.add(new MapOption("BAGARCITY", "bagarcity"));
 
-        backgroundImage = loadImage("assets/sprites/background/menus/background_modeselect.png");
+        backgroundImage = loadImage("data/sprites/background/menus/background_modeselect.png");
         backgroundImage.resize(width, height);
-        soundManager.loadMusic("assets/musics/menus/menu.mp3"); // Charge la musique
+        soundManager.loadMusic("data/musics/menus/menu.mp3"); // Charge la musique
         soundManager.startMusic();  // Lance la musique
     }
 
@@ -73,6 +73,7 @@ class MapSelector {
         this.gameMode = gameMode;
         this.selectedOption = 0;
         this.mapSelected = false;
+        soundManager.startMusic();
     }
 
     void deactivate()
@@ -94,17 +95,17 @@ class MapSelector {
             case LEFT:
             case 'Q':
                 selectedOption = (selectedOption - 1 + mapOptions.size()) % mapOptions.size();
-                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
+                soundManager.playWeaponSound("data/musics/menus/select_2.mp3");
                 break;
             case RIGHT:
             case 'D':
                 selectedOption = (selectedOption + 1) % mapOptions.size();
-                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
+                soundManager.playWeaponSound("data/musics/menus/select_2.mp3");
                 break;
             default:
                 if (key == ' ' || key == '0') {
                     selectCurrentMap();
-                    soundManager.playWeaponSound("assets/musics/menus/select_1.mp3");
+                    soundManager.playWeaponSound("data/musics/menus/select_1.mp3");
                 } else if (key == 'h' || key == 'H') {
                     deactivate();
                 }

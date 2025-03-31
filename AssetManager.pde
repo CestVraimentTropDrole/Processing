@@ -7,8 +7,8 @@ class AssetManager {
     static final int BULLET_SIZE = 20;                      // Taille des projectiles
     static final int NUMBER_COUNT = 10;                     // Nombre de chiffres à charger
     static final int SPECIAL_CHARS = 2;                     // Nombre de caractères spéciaux (%, ,)
-    static final String ASSETS_PATH = "assets/sprites/";    // Chemin de base des assets
-    static final String MUSICS_PATH = "assets/musics/weapons/";     // Chemin de base des soundeffects
+    static final String ASSETS_PATH = "data/sprites/";    // Chemin de base des assets
+    static final String MUSICS_PATH = "data/musics/weapons/";     // Chemin de base des soundeffects
 
     /**
     * Variables d'état internes

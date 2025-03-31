@@ -26,7 +26,7 @@ class GameController {
 
     // Contrôles globaux
     static final char KEY_HOME = 'h';             // Retour au menu
-    static final char KEY_START = ' ';            // Démarrer la partie
+    static final char KEY_START = 'b';            // Démarrer la partie
 
     /**
     * Variables d'état internes

@@ -63,17 +63,17 @@ class StartScreen {
             case LEFT:
             case 'Q':
                 selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
-                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
+                soundManager.playWeaponSound("data/musics/menus/select_2.mp3");
                 break;
             case RIGHT:
             case 'D':
                 selectedOption = (selectedOption + 1) % menuOptions.length;
-                soundManager.playWeaponSound("assets/musics/menus/select_2.mp3");
+                soundManager.playWeaponSound("data/musics/menus/select_2.mp3");
                 break;
             default:
                 if (key == ' ' || key == '0') {
                     selectCurrentOption();
-                    soundManager.playWeaponSound("assets/musics/menus/select_1.mp3");
+                    soundManager.playWeaponSound("data/musics/menus/select_1.mp3");
                 }
                 break;
         }
@@ -127,12 +127,12 @@ class StartScreen {
     **/
     private void loadAssets()
     {
-        backgroundImage = loadImage("assets/sprites/background/menus/background_modeselect.png");
+        backgroundImage = loadImage("data/sprites/background/menus/background_modeselect.png");
         backgroundImage.resize(width, height);
         menuIcons = new PImage[menuOptions.length];
-        menuIcons[0] = loadImage("assets/sprites/ui/icon_solo.png");
-        menuIcons[1] = loadImage("assets/sprites/ui/icon_vs.png");
-        menuIcons[2] = loadImage("assets/sprites/ui/icon_train.png");
+        menuIcons[0] = loadImage("data/sprites/ui/icon_solo.png");
+        menuIcons[1] = loadImage("data/sprites/ui/icon_vs.png");
+        menuIcons[2] = loadImage("data/sprites/ui/icon_train.png");
         for (int i = 0; i < menuIcons.length; i++) {
             menuIcons[i].resize((int)ICON_SIZE, (int)ICON_SIZE);
         }
