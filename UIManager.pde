@@ -6,7 +6,7 @@
 class UIManager {
     static final int MARGIN = 100;                  // Marge horizontale pour les scores
     static final int SPRITE_SPACING = 64;           // Espacement entre les sprites
-    static final int LIVES_VERTICAL_OFFSET = 48;    // Décalage vertical des vies
+    static final int LIVES_VERTICAL_OFFSET = 72;    // Décalage vertical des vies
     static final int SCORE_Y = 50;                  // Position Y des scores
     static final int DECIMAL_CODE = -2;             // Code pour la virgule décimale
 
