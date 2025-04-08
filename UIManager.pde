@@ -47,6 +47,15 @@ class UIManager {
         displayPlayerScore(player2, false);
     }
 
+    void displayAmmo(Player player1, Player player2)
+    {
+        if (player1 == null || player2 == null)
+            return;
+
+        displayPlayerAmmo(player1, true);
+        displayPlayerAmmo(player2, false);
+    }
+
     void displayTimer(int sec, int dec)
     {
         String secStr = str(sec);
@@ -75,6 +84,32 @@ class UIManager {
         drawDigits(percentDigits, startX);
         drawPercentSymbol(startX, percentDigits.length);
         displayPlayerLives(player, startX, isLeftSide);
+    }
+
+    private void displayPlayerAmmo(Player player, boolean isLeftSide)
+    {
+        if (player.combat.currentWeapon == null)
+            return;
+
+        int currentAmmo = player.combat.getCurrentAmmo();
+        int maxAmmo = player.combat.getMaxAmmo();
+        float startX = isLeftSide ? MARGIN : width - MARGIN - maxAmmo * 12;
+
+        for (int i = 0; i < currentAmmo; i++) {
+            float x = startX + 12 * i;
+            float y = LIVES_VERTICAL_OFFSET * 2 + SCORE_Y;
+
+            PImage bullet = player.combat.getBulletSprite();
+
+            pushMatrix();
+            translate(x + bullet.width / 2, y + bullet.height / 2); // on se place au centre de l’image
+            rotate(HALF_PI + PI); // 270° dans le sens horaire
+            imageMode(CENTER); // pour dessiner centré autour de (0, 0)
+            image(bullet, 0, 0);
+            imageMode(CORNER); // on remet pour pas gêner le reste du code
+            popMatrix();
+        }
+        return;
     }
 
     private float calculateStartX(int digitCount, boolean isLeftSide)

@@ -123,4 +123,6 @@ class Bullet {
         manager.clear();
         resetProperties();
     }
+
+    int getCurrentAmmo() { return currentAmmo; }
 }
