@@ -89,6 +89,7 @@ class Weapon {
     // Getters
     WeaponRenderer getRenderer() { return renderer; }
     String getSoundEffect() { return soundEffect; }
+    int getCurrentAmmo() { return owner.combat.bullet.getCurrentAmmo(); }
 
     /**
     * Méthodes privées - Logique interne

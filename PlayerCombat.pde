@@ -112,6 +112,14 @@ class PlayerCombat {
     // Getters
     float getDamagePercent() { return damagePercent; }
     boolean isInDeathKnockback() { return isDeathKnockback; }
+    int getCurrentAmmo()
+    {
+        if (currentWeapon != null) {
+            return currentWeapon.getCurrentAmmo(); 
+        } else {
+            return 0;
+        }
+    }
 
     /**
     * Méthodes privées - Logique interne

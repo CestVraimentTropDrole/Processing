@@ -107,6 +107,7 @@ class GameState {
         gameManager.arena.draw();
         gameManager.uiManager.displayScore(gameManager.player1, gameManager.player2);
         gameManager.uiManager.displayTimer(seconde, dixieme);
+        gameManager.uiManager.displayAmmo(gameManager.player1, gameManager.player2);
         gameManager.drawWeapons();
         gameManager.player1.draw();
         gameManager.player2.draw();

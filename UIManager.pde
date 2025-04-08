@@ -47,6 +47,15 @@ class UIManager {
         displayPlayerScore(player2, false);
     }
 
+    void displayAmmo(Player player1, Player player2)
+    {
+        if (player1 == null || player2 == null)
+            return;
+
+        displayPlayerAmmo(player1, true);
+        displayPlayerAmmo(player2, false);
+    }
+
     void displayTimer(int sec, int dec)
     {
         String secStr = str(sec);
@@ -75,6 +84,15 @@ class UIManager {
         drawDigits(percentDigits, startX);
         drawPercentSymbol(startX, percentDigits.length);
         displayPlayerLives(player, startX, isLeftSide);
+    }
+
+    private void displayPlayerAmmo(Player player, boolean isLeftSide)
+    {
+        int currentAmmo = player.combat.getCurrentAmmo();
+
+        float startX = calculateStartX(1, isLeftSide);
+        text(str(currentAmmo), startX, MARGIN + LIVES_VERTICAL_OFFSET + SCORE_Y);
+        return;
     }
 
     private float calculateStartX(int digitCount, boolean isLeftSide)
