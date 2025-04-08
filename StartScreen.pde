@@ -48,6 +48,7 @@ class StartScreen {
         } else if (active) {
             image(backgroundImage, 0, 0, width, height);
             drawMenuOptions();
+            mapSelector.drawInputs();
         }
     }
 

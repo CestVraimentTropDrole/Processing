@@ -92,7 +92,8 @@ class UIManager {
             return;
 
         int currentAmmo = player.combat.getCurrentAmmo();
-        float startX = isLeftSide ? MARGIN : width - MARGIN;
+        int maxAmmo = player.combat.getMaxAmmo();
+        float startX = isLeftSide ? MARGIN : width - MARGIN - maxAmmo * 12;
 
         for (int i = 0; i < currentAmmo; i++) {
             float x = startX + 12 * i;

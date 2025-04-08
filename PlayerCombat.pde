@@ -121,6 +121,7 @@ class PlayerCombat {
         }
     }
     PImage getBulletSprite() { return currentWeapon.bulletSprite; }
+    int getMaxAmmo() { return currentWeapon.currentAmmo; }
 
     /**
     * Méthodes privées - Logique interne
