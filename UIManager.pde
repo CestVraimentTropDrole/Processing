@@ -88,10 +88,26 @@ class UIManager {
 
     private void displayPlayerAmmo(Player player, boolean isLeftSide)
     {
-        int currentAmmo = player.combat.getCurrentAmmo();
+        if (player.combat.currentWeapon == null)
+            return;
 
-        float startX = calculateStartX(1, isLeftSide);
-        text(str(currentAmmo), startX, MARGIN + LIVES_VERTICAL_OFFSET + SCORE_Y);
+        int currentAmmo = player.combat.getCurrentAmmo();
+        float startX = isLeftSide ? MARGIN : width - MARGIN;
+
+        for (int i = 0; i < currentAmmo; i++) {
+            float x = startX + 12 * i;
+            float y = LIVES_VERTICAL_OFFSET * 2 + SCORE_Y;
+
+            PImage bullet = player.combat.getBulletSprite();
+
+            pushMatrix();
+            translate(x + bullet.width / 2, y + bullet.height / 2); // on se place au centre de l’image
+            rotate(HALF_PI + PI); // 270° dans le sens horaire
+            imageMode(CENTER); // pour dessiner centré autour de (0, 0)
+            image(bullet, 0, 0);
+            imageMode(CORNER); // on remet pour pas gêner le reste du code
+            popMatrix();
+        }
         return;
     }
 

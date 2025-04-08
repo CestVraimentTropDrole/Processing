@@ -120,6 +120,7 @@ class PlayerCombat {
             return 0;
         }
     }
+    PImage getBulletSprite() { return currentWeapon.bulletSprite; }
 
     /**
     * Méthodes privées - Logique interne
