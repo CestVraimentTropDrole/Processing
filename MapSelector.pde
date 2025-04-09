@@ -137,10 +137,10 @@ class MapSelector {
     {
         strokeWeight(0);
         textFont(createFont("Arial", 24));
-        textAlign(RIGHT, BOTTOM);
-        text("SÉLECTIONNE", width - 30 - CIRCLE_DIAMETER, height - 30);
+        textAlign(RIGHT, CENTER);
+        text("SÉLECTIONNE", width - CIRCLE_DIAMETER - 40, height - CIRCLE_DIAMETER/2 - 30);
         fill(127,127,255);
-        circle(width - CIRCLE_DIAMETER/2 - 20, height - CIRCLE_DIAMETER/2 - 20, CIRCLE_DIAMETER);
+        circle(width - CIRCLE_DIAMETER/2 - 30, height - CIRCLE_DIAMETER/2 - 30, CIRCLE_DIAMETER);
         return;
     }
 

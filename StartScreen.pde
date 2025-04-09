@@ -10,8 +10,7 @@ class StartScreen {
     static final float ICON_SIZE = 320;            // Taille des icônes
     static final float ICON_HOVER_SIZE = 360;      // Taille des icônes en survol
     static final float ICON_SPACING = 450;         // Espacement entre les icônes
-
-    static final int CREDITS_START = 5000;         // Temps en ms avant que les crédits se lancent
+    static final int CREDITS_START = 10000;         // Temps en ms avant que les crédits se lancent
 
     /**
     * Variables d'état internes
@@ -26,9 +25,8 @@ class StartScreen {
     private PImage[] menuIcons;                   // Tableau d'icônes pour les options du menu
     private SoundManager soundManager;            // Son de l'écran
     private Minim minim;
-
-    private Credits credits;
-    private int timer, startTimer;
+    private Credits credits;                      // Crédits du jeu
+    private int startTimer;                       // Timer d'intervalle sans input
 
     /**
     * Constructeur du menu de démarrage
@@ -44,9 +42,8 @@ class StartScreen {
         this.soundManager = new SoundManager(minim);
         this.minim = minim;
         loadAssets();
-
         this.credits = new Credits();
-        this.timer = this.startTimer = 0;
+        this.startTimer = 0;
     }
 
     void draw()
@@ -64,7 +61,6 @@ class StartScreen {
                 credits.activate();
             }
         }
-
         if (credits.isActive()) {
             credits.draw();
         }
