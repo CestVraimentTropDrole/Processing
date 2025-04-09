@@ -11,6 +11,8 @@ class StartScreen {
     static final float ICON_HOVER_SIZE = 360;      // Taille des icônes en survol
     static final float ICON_SPACING = 450;         // Espacement entre les icônes
 
+    static final int CREDITS_START = 5000;         // Temps en ms avant que les crédits se lancent
+
     /**
     * Variables d'état internes
     * @private Accessibles uniquement dans cette classe
@@ -24,6 +26,9 @@ class StartScreen {
     private PImage[] menuIcons;                   // Tableau d'icônes pour les options du menu
     private SoundManager soundManager;            // Son de l'écran
     private Minim minim;
+
+    private Credits credits;
+    private int timer, startTimer;
 
     /**
     * Constructeur du menu de démarrage
@@ -39,6 +44,9 @@ class StartScreen {
         this.soundManager = new SoundManager(minim);
         this.minim = minim;
         loadAssets();
+
+        this.credits = new Credits();
+        this.timer = this.startTimer = 0;
     }
 
     void draw()
@@ -50,10 +58,25 @@ class StartScreen {
             drawMenuOptions();
             mapSelector.drawInputs();
         }
+
+        if (isActive()) {
+            if ((millis() - startTimer) > CREDITS_START && !credits.isActive()) {
+                credits.activate();
+            }
+        }
+
+        if (credits.isActive()) {
+            credits.draw();
+        }
     }
 
     void handleKeyPressed(char key, int keyCode)
     {
+        if (credits.isActive()) {
+            startTimer = millis();
+            credits.desactivate();
+        }
+
         if (mapSelector.isActive()) {
             mapSelector.handleKeyPressed(key, keyCode);
             return;
