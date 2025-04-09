@@ -115,7 +115,7 @@ class Bomb extends Event {
         int bombFrame = frameCount % BLINK_RATE < BLINK_RATE/2 ? 0 : 1;
         PImage bombImage = loadImage("data/sprites/stupid/bomb" + bombFrame + ".png");
         imageMode(CENTER);
-        image(bombImage, x, y);
+        image(bombImage, x, y, BOMB_SIZE, BOMB_SIZE);
         imageMode(CORNER);
     }
 
