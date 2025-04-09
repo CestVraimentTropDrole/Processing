@@ -112,8 +112,11 @@ class Bomb extends Event {
 
     private void drawBomb()
     {
-        fill(frameCount % BLINK_RATE < BLINK_RATE/2 ? color(255, 0, 0) : color(255, 150, 0));
-        ellipse(x, y, BOMB_SIZE, BOMB_SIZE);
+        int bombFrame = frameCount % BLINK_RATE < BLINK_RATE/2 ? 0 : 1;
+        PImage bombImage = loadImage("data/sprites/stupid/bomb" + bombFrame + ".png");
+        imageMode(CENTER);
+        image(bombImage, x, y);
+        imageMode(CORNER);
     }
 
     private void drawExplosion()
