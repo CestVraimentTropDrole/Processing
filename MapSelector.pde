@@ -9,7 +9,7 @@ class MapSelector {
     static final float SHAKE_AMOUNT = 2;           // Intensité du tremblement
     static final float MAP_PREVIEW_SIZE = 250;     // Taille des aperçus de map
     static final float MAP_HOVER_SIZE = 300;       // Taille des aperçus en survol
-    static final int CIRCLE_DIAMETER = 30;         // Diamètre des cercles
+    static final int CIRCLE_DIAMETER = 40;         // Diamètre des cercles
 
     /**
     * Variables d'état internes
@@ -135,11 +135,12 @@ class MapSelector {
 
     void drawInputs()
     {
+        strokeWeight(0);
         textFont(createFont("Arial", 24));
         textAlign(RIGHT, BOTTOM);
-        text("Sélectionner", width-30-CIRCLE_DIAMETER, height-30);
+        text("SÉLECTIONNE", width - 30 - CIRCLE_DIAMETER, height - 30);
         fill(127,127,255);
-        circle(width - 30, height - 30 - CIRCLE_DIAMETER/2, CIRCLE_DIAMETER);
+        circle(width - CIRCLE_DIAMETER/2 - 20, height - CIRCLE_DIAMETER/2 - 20, CIRCLE_DIAMETER);
         return;
     }
 

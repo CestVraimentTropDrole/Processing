@@ -97,10 +97,10 @@ class VictoryScreen {
                 break;
         }
         if (showReturnText) {
-            textFont(createFont("Arial", 24));
-            textAlign(CENTER, BOTTOM);
+            textFont(createFont("Arial Unicode", 24));
+            textAlign(RIGHT, BOTTOM);
             fill(255, textAlpha);
-            text("Appuyez sur H pour revenir au menu", width/2, height - 30);
+            text("RECOMMENCER 👤", width - 50, height - 30);
         }
     }
 
