@@ -4,36 +4,64 @@
 * Constantes de configuration des contrôles
 **/
 class Credits {
-    private boolean active;
-    private String credits_text;
+    static final String CREDITS_PATH = "data/sprites/menus/credits.png";
+    static final int CREDITS_TIMER = 50000;
+
+    private boolean active;         // État des crédits
+    private PImage credits_img;
+    private float imgRatio, imgWidth, imgHeight;
+    private int startTimer, time;
+    private float percent;
+    private boolean finished;
 
     Credits() {
         active = false;
-        // Je vais bien trouver un moyen d'ouvrir un fichier texte et le convertir en String parce que là mdr c'est affreux bigup à celui qui lit
-        credits_text = ("Une production MMI2 & Studio Cacabox \n Shadow Wizard Money Gang \n\n CRÉDITS \n Chef de projet : Haloys aka le petit indien \n Programmeurs : Fabien, Evan, Tim \n\n Remerciements spéciaux : \n Mathieu Tom et le Benge \n Le légendaire 3-0 Houzet VS Carron en 20 secondes \n Les neuilles \n Ceux qui ont testé \n Le type qui zyeute mon écran de pc là je te vois");
+        finished = false;
+        startTimer = 0;
+        percent = 0.0;
+
+        credits_img = loadImage(CREDITS_PATH);
+        imgRatio = (float) credits_img.height / credits_img.width;
+        imgWidth = width;
+        imgHeight = imgWidth * imgRatio;
     }
 
     void draw() {
-        if (!active) { 
-            return; 
+        if (!active)
+            return;
+
+        percent = calculateTime(startTimer);
+
+        if (percent >= 1.0) {
+            desactivate();
         }
 
-        fill(0,0,0);
-        rect(0,0, width, height);
-
-        fill(255,255,255);
-        textFont(createFont("Arial", 24));
-        textAlign(CENTER, CENTER);
-        text(credits_text, width/2, height/2);
+        float yOffset = -(imgHeight - height) * percent;
+        image(credits_img, 0, yOffset, imgWidth, imgHeight);
     }
 
     void activate() {
         active = true;
+        startTimer = millis();
+        finished = false;
     }
     void desactivate() {
         active = false;
+        finished = true;
     }
 
     // Getters
     boolean isActive() { return active; }
+    boolean isFinished() { return finished; }
+
+    // Setters
+    void setFinished() { finished = false; }
+
+
+    private float calculateTime(int startTimer) {
+        float elapsed = (float)(millis() - startTimer);  // Cast explicite en float
+        float percentTimer = elapsed / CREDITS_TIMER;
+
+        return constrain(percentTimer, 0.0, 1.0);
+    }
 }
