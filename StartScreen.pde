@@ -10,6 +10,7 @@ class StartScreen {
     static final float ICON_SIZE = 320;            // Taille des icônes
     static final float ICON_HOVER_SIZE = 360;      // Taille des icônes en survol
     static final float ICON_SPACING = 450;         // Espacement entre les icônes
+    static final int CREDITS_START = 30000;         // Temps en ms avant que les crédits se lancent
 
     /**
     * Variables d'état internes
@@ -24,6 +25,8 @@ class StartScreen {
     private PImage[] menuIcons;                   // Tableau d'icônes pour les options du menu
     private SoundManager soundManager;            // Son de l'écran
     private Minim minim;
+    private Credits credits;                      // Crédits du jeu
+    private int startTimer;                       // Timer d'intervalle sans input
 
     /**
     * Constructeur du menu de démarrage
@@ -33,12 +36,14 @@ class StartScreen {
     {
         this.game = gameInstance;
         this.active = true;
-        this.menuOptions = new String[]{"BAGAR", "1V1", "TRAIN"};
+        this.menuOptions = new String[]{"", "", ""};
         this.selectedOption = 0;
         this.mapSelector = new MapSelector(game, minim);
         this.soundManager = new SoundManager(minim);
         this.minim = minim;
         loadAssets();
+        this.credits = new Credits();
+        this.startTimer = 0;
     }
 
     void draw()
@@ -50,10 +55,28 @@ class StartScreen {
             drawMenuOptions();
             mapSelector.drawInputs();
         }
+
+        if (isActive()) {
+            if ((millis() - startTimer) > CREDITS_START && !credits.isActive() && !credits.isFinished()) {   // Si la durée idle est suffisante
+                credits.activate(); // Active les crédits
+            }
+            if (credits.isFinished()) { // Si les crédits se terminent
+                credits.setFinished();  // On remet les crédits à zéro
+                startTimer = millis();  // On reset le timer
+            }
+        }
+        if (credits.isActive()) {
+            credits.draw(); // Affiche les crédits
+        }
     }
 
     void handleKeyPressed(char key, int keyCode)
     {
+        if (credits.isActive()) {   // Si un input est entré
+            startTimer = millis();  // Restart le timer
+            credits.desactivate();  // Désactive les crédits
+        }
+
         if (mapSelector.isActive()) {
             mapSelector.handleKeyPressed(key, keyCode);
             return;
@@ -114,6 +137,7 @@ class StartScreen {
     {
         active = true;
         selectedOption = 0;
+        startTimer = millis();
         if (mapSelector != null) {
             mapSelector.active = false;
             mapSelector.mapSelected = false;
